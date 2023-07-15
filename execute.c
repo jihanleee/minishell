@@ -12,8 +12,8 @@
 
 typedef struct s_cmd
 {
-    int     cnt_word;    
-    char    **av; //파이프랑  ; 전 까지 끊어서 저장해두고 execve 에 통째로 넣어줌.
+    int     cnt_word; // ./a.out ls -al | wc -l 일때, 파이프 인덱스 찾아서 넣고
+    char    **av; //파이프랑  ; 전 까지 끊어서 저장해두고 execve 에 통째로 넣어줌. ex) ./a.out ls-al | wc -l strdup 으로 new->av[0] 에 ls, new->av[1] 에 -l 넣음
     int     end_type;
     int     fd[2];
     struct  s_cmd *prev; // 파이프 중간에 있는지 확인해야하니까
