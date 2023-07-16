@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -34,18 +33,18 @@ int ft_strlen(char *s)
     return (len);
 }
 
-char *ft_strdup(char *s)
+char *ft_strdup(char *s1, char *s2)
 {
-	int len = ft_strlen(s);
+	int len = ft_strlen(str);
 	char *new;
 
-	if (!s)
+	if (!str)
 		return (NULL);
 	if (!(new = (char *)malloc(sizeof(char) * (len + 1))))
 		return (NULL);
 	new[len] = '\0';
 	while (--len >= 0)
-		new[len] = s[len];
+		new[len] = str[len];
 	return (new);
 }
 
@@ -177,7 +176,7 @@ int main(int ac, char **av)
     int i;
     
     if (ac < 1)
-        return (0); // 에러 메세지 출력하기
+        return (0) // 에러 메세지 출력하기
     i = 1;
     cmd = NULL;
     while (av[1])
