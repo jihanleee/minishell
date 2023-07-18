@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -8,6 +7,7 @@
 
 //av 로 받은 인자들을 "|" 나 ";" 으로 끊어서 struct 에 넣고 연결 리스트로 이어붙힘.
 // av 돌면서 "|" ";"
+
 
 
 typedef struct s_cmd
@@ -21,6 +21,83 @@ typedef struct s_cmd
 }   t_cmd;
 
 
+
+int	ft_word_count(char const *s, char c)
+{
+	int	i;
+	int	cnt;
+
+	i = 0;
+	cnt = 0;
+	while (s[i])
+	{
+		if (s[i] == c)
+			i++;
+		else
+		{
+			cnt++;
+			while (s[i] && s[i] != c)
+				i++;
+		}
+	}
+	return (cnt);
+}
+
+char	*ft_word_make(char *word, char const *s, int k, int word_len)
+{
+	int		i;
+
+	i = 0;
+	while (word_len > 0)
+		word[i++] = s[k - word_len--];
+	word[i] = '\0';
+	return (word);
+}
+
+char	**ft_split2(char **result, char const *s, char c, int word_num)
+{
+	int		i;
+	int		k;
+	int		word_len;
+
+	i = 0;
+	k = 0;
+	word_len = 0;
+	while (s[k] && i < word_num)
+	{
+		while (s[k] && s[k] == c)
+			k++;
+		while (s[k] && s[k] != c)
+		{
+			k++;
+			word_len++;
+		}
+		result[i] = (char *)malloc(sizeof(char) * (word_len + 1));
+		if (!(result[i]))
+			return (NULL);
+		ft_word_make(result[i], s, k, word_len);
+		word_len = 0;
+		i++;
+	}
+	result[i] = 0;
+	return (result);
+}
+
+char	**ft_split(char const *s, char c)
+{
+	int		word_num;
+	char	**result;
+
+	if (s == 0)
+		return (NULL);
+	word_num = ft_word_count(s, c);
+	result = (char **)malloc(sizeof(char *) * (word_num + 1));
+	if (!(result))
+		return (NULL);
+	ft_split2(result, s, c, word_num);
+	return (result);
+}
+
 int ft_strlen(char *s)
 {
     int len = 0;
@@ -33,6 +110,45 @@ int ft_strlen(char *s)
     }
     return (len);
 }
+
+
+char	*ft_strjoin(char *s1, char *s2)
+{
+	char	*str;
+	int		s1_len;
+	int		s2_len;
+	int		i;
+	int		j;
+
+	i = -1;
+	j = -1;
+	if (s1 == 0 || s2 == 0)
+		return (0);
+	s1_len = ft_strlen(s1);
+	s2_len = ft_strlen(s2);
+	str = (char *)malloc(sizeof(char) * (s1_len + s2_len + 1));
+	if (!str)
+		return (0);
+	while (++i < s1_len)
+		str[i] = s1[i];
+	while (++j < s2_len)
+		str[i++] = s2[j];
+	str[i] = 0;
+	return (str);
+}
+
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	unsigned int	i;
+
+	i = 0;
+	if (n == 0 || !s1)
+		return (0);
+	while (s1[i] == s2[i] && s1[i] != '\0' && s2[i] != '\0' && i < n - 1)
+		i++;
+	return (s1[i] - s2[i]);
+}
+
 
 char *ft_strdup(char *s)
 {
@@ -65,12 +181,41 @@ void    ft_lst_add_back(t_cmd **cmd, t_cmd *new)
 	}
 }
 
-/*
-1. ls -al ===> 명령어 하나 (prev 없고 next 없을때) -> fork만
-2. ls -al ; echo hello ===> end type 세미 콜론일, cmd->next 존재 fork 만 해줌 
-3. ls -al | wc -l ===> end_type 파이프, cmd->next 있을때-> fork, pipe
-4. ls -al | wc -l | grep hi ===> 이전 endtype 도 파이프 현재 endtype 도 파이프
-*/
+char	*ft_cmd(char **path, char *cmd)
+{
+    int		i;
+    char	*path_cmd;
+    char	*temp;
+
+    if (access(cmd, X_OK) == 0)
+        return (cmd);
+    i = -1;
+    while (path[++i])
+    {
+        temp = ft_strjoin(path[i], "/");
+        path_cmd = ft_strjoin(temp, cmd);
+        free(temp);
+        if (access(path_cmd, X_OK) == 0)
+            return (path_cmd);
+        free(path_cmd);
+    }
+    return (NULL);
+}
+
+char	**trim_path(char **envp)
+{
+    int		i;
+    char	**path;
+
+    i = -1;
+    while (envp[++i])
+    {
+        if (ft_strncmp("PATH", envp[i], 4) == 0)
+            break ;
+    }
+    path = ft_split(envp[i] + 5, ':');
+    return (path);
+}
 
 int    exec_cmd(t_cmd *cmd, char **env)
 {
@@ -98,8 +243,21 @@ int    exec_cmd(t_cmd *cmd, char **env)
         else if (cmd->prev && cmd->prev->end_type == 1 && dup2(cmd->prev->end[0], 0) < 0) //파이프 read end 가 stdin 으로 dup 되어 대체 됨. 첫번째 두번째 proc 파이프 연결 완료! 
             return (-1); //에러 출력
 
-    	if (execve(cmd->av[0], cmd->av, env) < 0) //=> 여기서 실행해줌.
-            return (-1); //에러 출력쓰
+        char **path = trim_path(env);
+        char *full_path = ft_cmd(path, cmd->av[0]);
+
+        if (!full_path)
+        {
+            while (*path)
+                free(*path++);
+            free(path);
+            perror("Command error");
+            exit(1);
+        }
+        cmd->av[0] = full_path;
+        
+        if (execve(cmd->av[0], cmd->av, env) < 0) //=> 여기서 실행해줌.
+            return (0);
     }
 
     else // 부모 프로세스는 적절하게 if 문으로 파이프 fd 둘 다 닫아버리면 끝
@@ -115,32 +273,33 @@ int    exec_cmd(t_cmd *cmd, char **env)
         }
     }
 
+    return (1);
 }
 
 
 void ft_execute(t_cmd *cmd, char **env)
 {
-	t_cmd *temp;
+    t_cmd *temp;
 
-	temp = cmd;
-	while (temp)
-	{
-		// if (strcmp("cd", temp->argv[0]) == 0)  /// 나중에 빌트인 함수 넣어서 진행
-		// {
+    temp = cmd;
+    while (temp)
+    {
+        // if (strcmp("cd", temp->argv[0]) == 0)  /// 나중에 빌트인 함수 넣어서 진행
+        // {
 
-		// }
+        // }
         // if (strcmp("echo", temp->argv[0]) == 0)
         // {
 
         // } 
 
-		//else                                      //// 이 외 함수
-		    exec_cmd(temp, env);
-		temp = temp->next;
-	}
+        //else                                      //// 이 외 함수
+        exec_cmd(temp, env);
+        temp = temp->next;
+    }
 }
 
-int parse_cmd(t_cmd **cmd, char **av)
+int parse_cmd(t_cmd **cmd, char **av) // malloc 은 내일...
 {
     t_cmd *new;
     int cnt_word;
@@ -196,4 +355,5 @@ int main(int ac, char **av, char **env)
     if (cmd)
         ft_execute(cmd, env);
     //ft_free(cmd); 나중에
+    return 0;
 }
