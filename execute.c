@@ -140,7 +140,7 @@ void ft_execute(t_cmd *cmd, char **env)
 	}
 }
 
-int parse_cmd(t_cmd **cmd, char **av) // malloc 은 내일...
+int parse_cmd(t_cmd **cmd, char **av)
 {
     t_cmd *new;
     int cnt_word;
