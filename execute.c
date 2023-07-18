@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -6,7 +7,7 @@
 #include <sys/wait.h>
 
 //av 로 받은 인자들을 "|" 나 ";" 으로 끊어서 struct 에 넣고 연결 리스트로 이어붙힘.
-// av 돌면서 "|" ";" ㅁ
+// av 돌면서 "|" ";"
 
 
 typedef struct s_cmd
@@ -14,7 +15,7 @@ typedef struct s_cmd
     int     cnt_word; // 명령어 묶음 개수
     char    **av; //파이프랑  ; 전 까지 끊어서 저장해두고 execve 에 통째로 넣어줌.
     int     end_type;
-    int     fd[2];
+    int     end[2];
     struct  s_cmd *prev; // 파이프 중간에 있는지 확인해야하니까
     struct  s_cmd *next;
 }   t_cmd;
@@ -33,18 +34,18 @@ int ft_strlen(char *s)
     return (len);
 }
 
-char *ft_strdup(char *s1, char *s2)
+char *ft_strdup(char *s)
 {
-	int len = ft_strlen(str);
+	int len = ft_strlen(s);
 	char *new;
 
-	if (!str)
+	if (!s)
 		return (NULL);
 	if (!(new = (char *)malloc(sizeof(char) * (len + 1))))
 		return (NULL);
 	new[len] = '\0';
 	while (--len >= 0)
-		new[len] = str[len];
+		new[len] = s[len];
 	return (new);
 }
 
@@ -71,31 +72,33 @@ void    ft_lst_add_back(t_cmd **cmd, t_cmd *new)
 4. ls -al | wc -l | grep hi ===> 이전 endtype 도 파이프 현재 endtype 도 파이프
 */
 
-void    exec_cmd(t_base *cmd, char **env)
+int    exec_cmd(t_cmd *cmd, char **env)
 {
     int status;
     int pid;
-    int has_pipe = 0;
+    int has_pipe;
 
-    if (!cmd->prev && !cmd->next) ||  // 1번, 3번인 경우 = 포크만
+    has_pipe = 0;
+    if (!cmd->prev && !cmd->next)  // 1번, 3번인 경우 = 포크만
         pid = fork();
     else if ((cmd->prev && cmd->prev->end_type == 1) || cmd->end_type == 1) // 2번인 경우 = 포크, 파이프 생성
     {
         pid = fork();
-        pipe(cmd->pipe);
+        pipe(cmd->end);
         has_pipe = 1;
     }
     
     if (pid < 0)
-        return (0) // 파이프 실패 에러 메세지 출력
+        return (0); // 파이프 실패 에러 메세지 출력
 
     else if (pid == 0) // 자식 프로세스
     {
-        if (cmd->end_type == 1 && dup2(cmd->fd[1], STDOUT_FILENO ) < 0 ); //파이프 write end 가 stdout 으로 dup 되어 대체 됨.
+        if (cmd->end_type == 1 && dup2(cmd->end[1], STDOUT_FILENO ) < 0 ) //파이프 write end 가 stdout 으로 dup 되어 대체 됨.
             return (-1); //에러 출력
-        else if (cmp->prev && cmd->prev->end_type == 1 && dup2(cmd->prev->fd[0], STDIN) < 0); //파이프 read end 가 stdin 으로 dup 되어 대체 됨. 첫번째 두번째 proc 파이프 연결 완료! 
+        else if (cmd->prev && cmd->prev->end_type == 1 && dup2(cmd->prev->end[0], 0) < 0) //파이프 read end 가 stdin 으로 dup 되어 대체 됨. 첫번째 두번째 proc 파이프 연결 완료! 
             return (-1); //에러 출력
-    	if (execve(cmd->argv[0], cmd->av, env) < 0) => 여기서 실행해줌.
+
+    	if (execve(cmd->av[0], cmd->av, env) < 0) //=> 여기서 실행해줌.
             return (-1); //에러 출력쓰
     }
 
@@ -104,16 +107,15 @@ void    exec_cmd(t_base *cmd, char **env)
         waitpid(pid, &status, 0);
         if (has_pipe)
         {
-            close(cmd->fd[1]);
-            if (!cmd->next || cmd->type != 1)
-                close(cmd->prev->fd[0]);
-            if (cmd->prev && cmd->prev->type == 1)
-                close(cmd->prev->fd[0]);
+            close(cmd->end[1]);
+            if (!cmd->next || cmd->end_type != 1)
+                close(cmd->prev->end[0]);
+            if (cmd->prev && cmd->prev->end_type == 1)
+                close(cmd->prev->end[0]);
         }
     }
 
 }
-
 
 
 void ft_execute(t_cmd *cmd, char **env)
@@ -138,12 +140,15 @@ void ft_execute(t_cmd *cmd, char **env)
 	}
 }
 
-char **parse_cmd(t_cmd *cmd, char **av) // malloc 은 내일...
+int parse_cmd(t_cmd **cmd, char **av) // malloc 은 내일...
 {
     t_cmd *new;
     int cnt_word;
-    int i = 0;
+
+    if (!(new = (t_cmd *)malloc(sizeof(t_cmd))))
+        return (0);
 ////////////////struct 에 넣을 인자 갯수 확인/////////////////
+    int i = 0;
     while (av[i])
     {
         if (av[i] == ";" || av[i] == "|")
@@ -151,6 +156,8 @@ char **parse_cmd(t_cmd *cmd, char **av) // malloc 은 내일...
         i++;
     }
 ////////////////////cnt_word 초기화, av 끝에 null ///////////////////
+    if (!(new->av = (char **)malloc(sizeof(char *) * (i + 1))))
+        return (0);
     new->cnt_word= i;
     new->av[i] = NULL;
 //////////////////struct 에 "|" , ";" 전까지 나온 인자 strdup///////////
@@ -170,18 +177,18 @@ char **parse_cmd(t_cmd *cmd, char **av) // malloc 은 내일...
     return (new->cnt_word);
 }
 
-int main(int ac, char **av)
+int main(int ac, char **av, char **env)
 {
     t_cmd *cmd;
     int i;
     
     if (ac < 1)
-        return (0) // 에러 메세지 출력하기
+        return (0); // 에러 메세지 출력하기
     i = 1;
     cmd = NULL;
     while (av[1])
     {
-        i += parse_cmd(&cmd, av[1]); // 파싱해서 ptr 에 저장
+        i += parse_cmd(&cmd, &av[1]); // 파싱해서 cmd 에 저장
         if (!av[i]) // 다음 인자 없으면 여기서 파싱 끝
             break;
         i++;
