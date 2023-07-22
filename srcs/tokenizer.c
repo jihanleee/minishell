@@ -37,7 +37,12 @@ void	mark_double_quote(char *line, int *result, int *i)
 	else if (line[*i] == '\"')
 		result[(*i)] = 2;
 }
-
+/*
+creates quote info in a malloc'd int array.
+ex)
+00000011111100000222222
+sgkfgj'sgjs'fskgj"sfdf"
+*/
 int	*create_quote_info(char *line)
 {
 	int	*result;
@@ -58,179 +63,6 @@ int	*create_quote_info(char *line)
 	return (result);
 }
 
-bool	is_delim(const char *delim, char c)
-{
-	int	i;
-
-	i = 0;
-	while (delim[i])
-	{
-		if (delim[i] == c)
-			return (TRUE);
-		i++;
-	}
-	return (FALSE);
-}
-
-/*behavior would be undefined if the function reads a new string before
-it finishes reading previous one.*/
-char	*ft_strtok(char *str, const char *delim, int *quote_info)
-{
-	static int	offset;
-	int			i;
-	int			sublen;
-	char		*result;
-
-	while (!quote_info[offset] && is_delim(delim, str[offset]) && str[offset])
-		offset++;
-	if (str[offset] == '\0')
-		return (offset = 0, NULL);
-	sublen = 0;
-	while (!(!quote_info[offset + sublen] && is_delim(delim, str[offset + sublen])) && str[offset + sublen])
-		sublen++;
-	result = (char *)calloc(sublen + 1, sizeof(char));
-	if (result == 0)
-		return ((char *)-1);//malloc error
-	i = 0;
-	while (i < sublen)
-		result[i++] = str[offset++];
-	return (result);
-}
-
-int		count_tokens(char *str, int *quote_info, const char *delim)
-{
-	int	i;
-	int	count;
-
-	i = 0;
-	count = 0;
-	while (str[i])
-	{
-		while (!quote_info[i] && is_delim(delim, str[i]) && str[i])
-			i++;
-		if (str[i])
-			count++;
-		while (!(!quote_info[i] && is_delim(delim, str[i])) && str[i])
-			i++;
-	}
-	return (count);
-}
-
-int	count_single_quote(char *line, int *i)
-{
-	int	start;
-
-	start = *i;
-	(*i)++;
-	while (line[(*i)] && line[(*i)] != '\'')
-		(*i)++;
-	(*i)++;
-	return (1);
-}
-
-int	count_double_quote(char *line, int *i)
-{
-	int	start;
-
-	start = *i;
-	(*i)++;
-	while (line[(*i)] && line[(*i)] != '\"')
-		(*i)++;
-	(*i)++;
-	return (1);
-}
-
-int		count_words(char *str, int *quote_info)
-{
-	int	i;
-	int	count;
-
-	i = 0;
-	count = 0;
-	while (str[i])
-	{
-		if (quote_info[i] == 1)
-			count += count_single_quote(str, &i);
-		else if (quote_info[i] == 2)
-			count += count_double_quote(str, &i);
-		else if (str[i])
-		{
-			count++;
-			while (str[i] && quote_info[i] == 0)
-				i++;
-		}
-	}
-	return (count);
-}
-
-/* t_word	assign_single_quote(char *line, int *i, int *quote_info)
-{
-	int		start;
-	int		size;
-	t_word	result;
-
-	result.quote_type = single_quoted;
-	size = 0;
-	(*i)++;
-	start = *i;
-	if (line[(*i)] == '\'' && quote_info[*i] == 1)
-	{
-		result.word = ft_substr(line, start, 0);
-		return ((*i)++, result);
-	}
-	while (line[(*i)] && line[(*i)] != '\'' && quote_info[*i] == 1)
-	{
-		size++;
-		(*i)++;
-	}
-	(*i)++;
-	result.word = ft_substr(line, start, size);
-	return (result);
-}
-
-t_word	assign_double_quote(char *line, int *i, int *quote_info)
-{
-	int		start;
-	int		size;
-	t_word	result;
-
-	result.quote_type = double_quoted;
-	size = 0;
-	(*i)++;
-	start = *i;
-	if (line[(*i)] == '\"' && quote_info[*i] == 2)
-	{
-		result.word = ft_substr(line, start, 0);
-		return ((*i)++, result);
-	}
-	while (line[(*i)] && line[(*i)] != '\"' && quote_info[*i] == 2)
-	{
-		size++;
-		(*i)++;
-	}
-	(*i)++;
-	result.word = ft_substr(line, start, size);
-	return (result);
-}
-
-t_word	assign_non_quote(char *line, int *i, int *quote_info)
-{
-	int		start;
-	int		size;
-	t_word	result;
-
-	result.quote_type = non_quoted;
-	size = 0;
-	start = *i;
-	while (line[*i] && quote_info[*i] == 0)
-	{
-		(*i)++;
-		size++;
-	}
-	result.word = ft_substr(line, start, size);
-	return (result);
-} */
-
 bool	is_op(char c)
 {
 	if (c == '>' || c == '<' || c == '|')
@@ -247,6 +79,114 @@ bool	is_blank(char c)
 		return (0);
 }
 
+int	token_op_len(char *line, int start, t_token_type *type, int *quote_info)
+{
+	int	len;
+
+	len = 0;
+	if (line[start] == '<' && !quote_info[start])
+	{
+		if (line[start + 1] && !quote_info[start + 1])
+			len = 2;
+		else
+			len = 1;
+	}
+	else if (line[start] == '>')
+	{
+		if (line[start + 1] && !quote_info[start + 1])
+			len = 2;
+		else
+			len = 1;
+	}
+	else if (line[start] == '|')
+		len = 1;
+	*type = operator;
+	return (len);
+}
+
+int	token_word_len(char *line, int start, t_token_type *type, int *quote_info)
+{
+	int	len;
+
+	len = 0;
+	while (!((is_op(line[start + len])
+			|| is_blank(line[start + len]))
+				&& !quote_info[start + len])
+					&& line[start + len])
+		len++;
+	*type = token;
+	return (len);
+}
+
+void	read_tokens(t_token *current)
+{
+	int		i;
+	
+	i = 0;
+	while (current)
+	{
+		ft_printf("index:\t%d\n", i);
+		ft_printf("str:\t%s\n", current->str);
+		ft_printf("type:\t%d\n", current->type);
+		current = current->next;
+		i++;
+	}
+}
+
+void	clear_tokens(t_token **lst, void (*del)(void *))
+{
+	t_token	*current;
+	t_token	*next;
+
+	if (lst == 0)
+		return ;
+	if (del == 0)
+		return ;
+	current = *lst;
+	while (current)
+	{
+		next = current->next;
+		if (current->str)
+			del(current->str);
+		free(current);
+		current = next;
+	}
+	*lst = 0;
+}
+
+t_token	*new_token(char *line, int start, int len, t_token_type type)
+{
+	t_token *new;
+	
+	new = (t_token *)ft_calloc(1, sizeof (t_token));
+	if (new == NULL)
+		return (NULL);
+	new->str = ft_substr(line, start, len);
+	if (new->str == NULL)
+		return (free(new), NULL);
+	new->type = type;
+	ft_printf("type:%d\n", new->type);
+	return (new);
+}
+
+int	append_token(t_token **tokens, t_token *new)
+{
+	t_token	*current;
+
+	if (new == 0)
+		return (-1);
+	if (*tokens == 0)
+		*tokens = new;
+ 	else
+	{
+		current = *tokens;
+		while (current->next)
+			current = current->next;
+		current->next = new;
+	}
+	return (0);
+}
+
 t_token	*create_tokens(char *line, int *quote_info)
 {
 	t_token			*tokens;
@@ -259,46 +199,21 @@ t_token	*create_tokens(char *line, int *quote_info)
 	start = 0;
 	while (line[start])
 	{
-		len = 0;
 		if (is_blank(line[start]) && !quote_info[start])
 			start++;
 		else
 		{
 			if (is_op(line[start]) && !quote_info[start])
-			{
-				if (line[start] == '<' && !quote_info[start])
-				{
-					if (line[start + 1] && !quote_info[start + 1])
-						len = 2;
-					else
-						len = 1;
-				}
-				else if (line[start] == '>')
-				{
-					if (line[start + 1] && !quote_info[start + 1])
-						len = 2;
-					else
-						len = 1;
-				}
-				else if (line[start] == '|')
-					len = 1;
-				type = operator;
-			}
+				len = token_op_len(line, start, &type, quote_info);
 			else
-			{
-				while (!((is_op(line[start + len])
-						|| is_blank(line[start + len]))
-							&& !quote_info[start + len])
-								&& line[start + len])
-					len++;
-			}
-			ft_printf("s %d, len %d \n", start, len);
-			str = ft_substr(line, start, len);
-			printf("%s\n", str);
+				len = token_word_len(line, start, &type, quote_info);
+			if (append_token(&tokens, new_token(line, start, len, type)) == -1)
+				return (clear_tokens(&tokens, free), NULL);
 			start += len;
 		}
 	}
-	return (NULL);
+	read_tokens(tokens);
+	return (tokens);
 }
 
 int	main()
@@ -321,7 +236,7 @@ int	main()
 	while (1)
 	{
 		line = readline("%");
-		printf("line : %s\n", line);
+		printf("line : %s", line);
 		info = create_quote_info(line);
 		create_tokens(line, info);
 	}
