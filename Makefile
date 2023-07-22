@@ -25,8 +25,9 @@ ${NAME}: ${OBJS}
 	${CC} ${CLFAGS} ${OBJS} ${INCLUDES} -o ${NAME} -L${L_PATH} -lft -lreadline
 
 clean:
-	${RM} ${OBJS}
-	${RM} ${L_PATH}*.o
+	${RM} ./*.o
+	${RM} ./*/*.o
+	${RM} ./*/*/*.o
 
 #혹시 위의 clean이 안되면 이 아래에 있는거 사용하세요
 #둘 다 안되면... 연락 주세요..
@@ -36,7 +37,7 @@ clean:
 
 fclean: clean
 	${RM} ${NAME}
-	${RM} ${L_PATH}${LIBFT}
+	${RM} ./includes/libft/libft.a
 
 #혹시 위의 fclean이 안되면 이 아래에 있는거 사용하세요
 #둘 다 안되면... 연락 주세요..

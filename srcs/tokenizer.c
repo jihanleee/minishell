@@ -1,15 +1,5 @@
 #include "minishell.h"
 
-size_t	ft_strlen(const char *str)
-{
-	size_t	i;
-
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
-
 void	mark_single_quote(char *line, int *result, int *i)
 {
 	int	start;
@@ -55,7 +45,7 @@ int	*create_quote_info(char *line)
 
 	result = (int *)calloc(strlen(line) + 1, sizeof(int));
 	if (result == 0)
-		return (0);//malloc error
+		return (-1);//malloc error
 	i = 0;
 	while (line[i])
 	{
@@ -126,45 +116,28 @@ int		count_tokens(char *str, int *quote_info, const char *delim)
 	return (count);
 }
 
-int	count_single_quote(char *line, int *i, int *quote_info)
+int	count_single_quote(char *line, int *i)
 {
 	int	start;
 
 	start = *i;
 	(*i)++;
-	while (line[(*i)] && line[(*i)] != '\'' && quote_info[*i] == 1)
+	while (line[(*i)] && line[(*i)] != '\'')
 		(*i)++;
-	if (line[*i] == 0)
-	{
-		*i = start + 1;
-		return (0);
-	}
-	else if (line[*i] == '\'' && quote_info[*i] == 1)
-	{
-		(*i)++;
-		return (1);
-	}
+	(*i)++;
+	return (1);
 }
 
-/* maybe quote_info is redundant here...*/
-int	count_double_quote(char *line, int *i, int *quote_info)
+int	count_double_quote(char *line, int *i)
 {
 	int	start;
 
 	start = *i;
 	(*i)++;
-	while (line[(*i)] && line[(*i)] != '\"' && quote_info[*i] == 2)
+	while (line[(*i)] && line[(*i)] != '\"')
 		(*i)++;
-	if (line[*i] == 0)
-	{
-		*i = start + 1;
-		return (0);
-	}
-	else if (line[*i] == '\"' && quote_info[*i] == 2)
-	{
-		(*i)++;
-		return (1);
-	}
+	(*i)++;
+	return (1);
 }
 
 int		count_words(char *str, int *quote_info)
@@ -177,9 +150,9 @@ int		count_words(char *str, int *quote_info)
 	while (str[i])
 	{
 		if (quote_info[i] == 1)
-			count += count_single_quote(str, &i, quote_info);
+			count += count_single_quote(str, &i);
 		else if (quote_info[i] == 2)
-			count += count_double_quote(str, &i, quote_info);
+			count += count_double_quote(str, &i);
 		else if (str[i])
 		{
 			count++;
@@ -190,35 +163,7 @@ int		count_words(char *str, int *quote_info)
 	return (count);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
-{
-	char	*sub;
-	size_t	i;
-
-	if (start >= ft_strlen(s))
-	{
-		sub = (char *)malloc(sizeof (char) * 1);
-		if (sub != 0)
-			sub[0] = '\0';
-		return (sub);
-	}
-	else if (len > ft_strlen(s + start))
-		sub = (char *)malloc(sizeof (char) * (ft_strlen(s + start) + 1));
-	else
-		sub = (char *)malloc(sizeof (char) * (len + 1));
-	if (sub == 0)
-		return (NULL);
-	i = 0;
-	while (i < len && s[start + i] && start < ft_strlen(s))
-	{
-		sub[i] = s[(size_t)start + i];
-		i++;
-	}
-	sub[i] = '\0';
-	return (sub);
-}
-
-t_word	assign_single_quote(char *line, int *i, int *quote_info)
+/* t_word	assign_single_quote(char *line, int *i, int *quote_info)
 {
 	int		start;
 	int		size;
@@ -284,97 +229,76 @@ t_word	assign_non_quote(char *line, int *i, int *quote_info)
 	}
 	result.word = ft_substr(line, start, size);
 	return (result);
+} */
+
+bool	is_op(char c)
+{
+	if (c == '>' || c == '<' || c == '|')
+		return (1);
+	else
+		return (0);
 }
 
-int	copy_words(char *str, t_word *result, int *quote_info)
+bool	is_blank(char c)
 {
-	int	i;
-	int	index;
+	if (c == ' ' || c == '\t')
+		return (1);
+	else
+		return (0);
+}
 
-	index = 0;
-	i = 0;
-	while (index < count_words(str, quote_info))
+t_token	*create_tokens(char *line, int *quote_info)
+{
+	t_token			*tokens;
+	int				start;
+	int				len;
+	t_token_type	type;
+	char			*str;
+
+ 	tokens = 0;
+	start = 0;
+	while (line[start])
 	{
-		if (str[i] == '\'' && quote_info[i] == 1)
-			result[index] = assign_single_quote(str, &i, quote_info);
-		else if (str[i] == '\"' && quote_info[i] == 2)
-			result[index] = assign_double_quote(str, &i, quote_info);
-		else if (str[i] && quote_info[i] == 0)
-			result[index] = assign_non_quote(str, &i, quote_info);
-		if (result[index].word == 0)
-			printf("mallocerror\n");
-		index++;
-	}
-	result[index].word = 0;
-	return (0);
-}
-
-t_word	*extract_words(char *str)
-{
-	int	*quote_info;
-	t_word	*result;
-	int		i;
-
-	quote_info = create_quote_info(str);
-	if (quote_info == 0)
-		return (NULL);//malloc_error
-	result = (t_word *)calloc(count_words(str, quote_info) + 1, sizeof(t_word));
-	if (result == 0)
-		return (NULL);//malloc_error
-	if (copy_words(str, result, quote_info) == -1)
-		return (NULL);//malloc_error
-	return (result);
-}
-
-t_token	*extract_tokens(char *line)
-{
-	int		*quote_info;
-	int		i;
-	t_token	*result;
-	char	*current_token;
-	int		j;//debug
-
-
-	quote_info = create_quote_info(line);
-	if (quote_info == 0)
-		return (NULL);// malloc error
-	result = (t_token *)calloc(count_tokens(line, quote_info, " \t") + 1, sizeof (t_token));
-	if (result == 0)
-		return (free(quote_info), NULL);// malloc error
-	i = 0;
-	while (1)
-	{
-		current_token = ft_strtok(line, " \t", quote_info);// check malloc error
-		if (current_token == 0)
-			break;
-/* 		printf("current_token%s\n", current_token); */
-		result[i].words = extract_words(current_token);// check malloc error
-		i++;
-	}
-	result[++i].words = 0;
-	return (result);
-}
-
-void	tokenreader(t_token *tokens)
-{
-	int	i;
-	int	j;
-
-	i = 0;
-	while (tokens[i].words)
-	{
-		printf("token %d\n", i);
-		j = 0;
-		while (tokens[i].words[j].word)
+		len = 0;
+		if (is_blank(line[start]) && !quote_info[start])
+			start++;
+		else
 		{
-			printf("\tindex\t%d\n", j);
-			printf("\tword\t:%s\n", tokens[i].words[j].word);
-			printf("\ttype\t:%d\n", tokens[i].words[j].quote_type);
-			printf("\n");
-			j++;
+			if (is_op(line[start]) && !quote_info[start])
+			{
+				if (line[start] == '<' && !quote_info[start])
+				{
+					if (line[start + 1] && !quote_info[start + 1])
+						len = 2;
+					else
+						len = 1;
+				}
+				else if (line[start] == '>')
+				{
+					if (line[start + 1] && !quote_info[start + 1])
+						len = 2;
+					else
+						len = 1;
+				}
+				else if (line[start] == '|')
+					len = 1;
+				type = operator;
+			}
+			else
+			{
+				while (!((is_op(line[start + len])
+						|| is_blank(line[start + len]))
+							&& !quote_info[start + len])
+								&& line[start + len])
+					len++;
+			}
+			ft_printf("s %d, len %d \n", start, len);
+			str = ft_substr(line, start, len);
+			printf("%s\n", str);
+			start += len;
 		}
-		i++;
 	}
+	return (NULL);
 }
 
 int	main()
@@ -398,9 +322,8 @@ int	main()
 	{
 		line = readline("%");
 		printf("line : %s\n", line);
-		tokens = extract_tokens(line);
-		printf("------token read---------\n");
-		tokenreader(tokens);
+		info = create_quote_info(line);
+		create_tokens(line, info);
 	}
 	return (0);
 }
