@@ -24,11 +24,23 @@ typedef enum e_token_type
 	token
 }			t_token_type;
 
+typedef struct s_word
+{
+	t_quote_type	type;
+	char			*str;
+	struct s_word	*next;
+}				t_word;
+
 typedef struct s_token
 {
 	t_token_type	type;
 	char 			*str;
 	struct s_token	*next;
 }			t_token;
+
+/*tokenizer.c*/
+int		*create_quote_info(char *line);
+t_token	*create_tokens(char *line);
+int		*create_quote_info(char *line);
 
 #endif

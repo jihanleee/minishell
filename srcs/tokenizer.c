@@ -38,7 +38,7 @@ void	mark_double_quote(char *line, int *result, int *i)
 		result[(*i)] = 2;
 }
 /*
-creates quote info in a malloc'd int array.
+creates quote info in a malloc'd int array. returns -1 for malloc failure.
 ex)
 00000011111100000222222
 sgkfgj'sgjs'fskgj"sfdf"
@@ -165,7 +165,6 @@ t_token	*new_token(char *line, int start, int len, t_token_type type)
 	if (new->str == NULL)
 		return (free(new), NULL);
 	new->type = type;
-	ft_printf("type:%d\n", new->type);
 	return (new);
 }
 
@@ -187,16 +186,20 @@ int	append_token(t_token **tokens, t_token *new)
 	return (0);
 }
 
-t_token	*create_tokens(char *line, int *quote_info)
+/*breaks up a line into tokens ,
+assigns them to a t_token type linked-list,
+and returns it. NULL is returned for malloc failure.*/
+t_token	*create_tokens(char *line)
 {
 	t_token			*tokens;
 	int				start;
 	int				len;
 	t_token_type	type;
-	char			*str;
+	int				*quote_info;
 
- 	tokens = 0;
-	start = 0;
+	if ((quote_info = create_quote_info(line), quote_info) == 0)
+		return (NULL);
+ 	tokens = (start = 0, 0);
 	while (line[start])
 	{
 		if (is_blank(line[start]) && !quote_info[start])
@@ -208,37 +211,27 @@ t_token	*create_tokens(char *line, int *quote_info)
 			else
 				len = token_word_len(line, start, &type, quote_info);
 			if (append_token(&tokens, new_token(line, start, len, type)) == -1)
-				return (clear_tokens(&tokens, free), NULL);
+				return (clear_tokens(&tokens, free), (free(quote_info), NULL));
 			start += len;
 		}
 	}
 	read_tokens(tokens);
-	return (tokens);
+	return (free(quote_info), tokens);
 }
 
-int	main()
+int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
 	char	*line;
 	int		*info;
 	int		i;
 	char	*tok;
-/* 	line = "word1 word2 word3";
-	info = create_quote_info(line);
-	while (1)
-	{
-		tok = ft_strtok(line, " ", info);
 
-		if (tok == 0)
-			break ;
-		printf("%s\n", tok);
-	} */
 	while (1)
 	{
 		line = readline("%");
 		printf("line : %s", line);
-		info = create_quote_info(line);
-		create_tokens(line, info);
+		create_tokens(line);
 	}
 	return (0);
 }
