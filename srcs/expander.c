@@ -176,7 +176,7 @@ void	split_expansions(t_word *words)
 		next = current->next;
 		//split them!
 		i = 0;
-		if (current->type != 1)
+		while (current->type != 1)
 		{
 			while (current->str[i] && current->str[i] != '$')
 				i++;

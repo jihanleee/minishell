@@ -86,14 +86,14 @@ int	token_op_len(char *line, int start, int *quote_info)
 	len = 0;
 	if (line[start] == '<' && !quote_info[start])
 	{
-		if (line[start + 1] && !quote_info[start + 1])
+		if (line[start + 1] == '<' && !quote_info[start + 1])
 			len = 2;
 		else
 			len = 1;
 	}
 	else if (line[start] == '>')
 	{
-		if (line[start + 1] && !quote_info[start + 1])
+		if (line[start + 1] == '>' && !quote_info[start + 1])
 			len = 2;
 		else
 			len = 1;
@@ -161,6 +161,7 @@ t_token	*new_token(char *line, int start, int len, t_token_type type)
 	if (new == NULL)
 		return (NULL);
 	new->str = ft_substr(line, start, len);
+	ft_printf("len %d\n", len);
 	if (new->str == NULL)
 		return (free(new), NULL);
 	new->type = type;
@@ -189,15 +190,15 @@ void	set_tokentype(t_token *tokens)
 {
 	while (tokens)
 	{
-		if (strcmp(tokens->str, "<") == 0)
+		if (ft_strncmp(tokens->str, "<", 2) == 0)
 			tokens->type = in;
-		if (strcmp(tokens->str, "<<") == 0)
+		else if (ft_strncmp(tokens->str, "<<", 2) == 0)
 			tokens->type = heredoc;
-		if (strcmp(tokens->str, ">") == 0)
+		else if (ft_strncmp(tokens->str, ">", 2) == 0)
 			tokens->type = out;
-		if (strcmp(tokens->str, ">>") == 0)
+		else if (ft_strncmp(tokens->str, ">>", 2) == 0)
 			tokens->type = append;
-		if (strcmp(tokens->str, "|") == 0)
+		else if (ft_strncmp(tokens->str, "|", 2) == 0)
 			tokens->type = pipe_op;
 		tokens = tokens->next;
 	}
