@@ -259,6 +259,16 @@ int	main(int argc, char **argv, char **envp)
 		line = readline("%");
 		ft_printf("line : %s\n", line);
 		create_tokens(line);
+		if (check_tokens(tokens) != 0)
+			//parsing error
 	}
 	return (0);
 }
+
+//token type
+//0: word
+//1: <
+//2: heredoc
+//3: >
+//4: append
+//5: pipe
