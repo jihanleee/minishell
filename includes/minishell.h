@@ -47,5 +47,6 @@ typedef struct s_token
 int		*create_quote_info(char *line);
 t_token	*create_tokens(char *line);
 int		*create_quote_info(char *line);
+char	*find_param(char *p_name, char **envp);
 
 #endif

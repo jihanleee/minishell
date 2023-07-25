@@ -246,7 +246,7 @@ t_token	*create_tokens(char *line)
 	return (free(quote_info), tokens);
 }
 
-int	main(int argc, char **argv, char **envp)
+/* int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
 	char	*line;
@@ -263,7 +263,7 @@ int	main(int argc, char **argv, char **envp)
 			//parsing error
 	}
 	return (0);
-}
+} */
 
 //token type
 //0: word

@@ -131,6 +131,10 @@ void	read_words(t_word *current)
 		ft_printf("index:\t%d\n", i);
 		ft_printf("str:\t%s\n", current->str);
 		ft_printf("type:\t%d\n", current->type);
+		if (current->exp == 1)
+			ft_printf("exp:\tTRUE\n");
+		else
+			ft_printf("exp:\tFALSE\n");
 		current = current->next;
 		i++;
 	}
@@ -176,13 +180,18 @@ void	split_expansions(t_word *words)
 		next = current->next;
 		//split them!
 		i = 0;
-		while (current->type != 1)
+		while (current->type != 1 && current->str[i])
 		{
+			if (current->str[i] == '$' && current->type != 1)
+			{
+				i++;
+				current->type = TRUE;
+			}
 			while (current->str[i] && current->str[i] != '$')
 				i++;
 			if (current->str[i] == '$')
 			{
-				current->next = new_word(&(current->str[i + 1]), current->type);
+				current->next = new_word(ft_strdup(&(current->str[i])), current->type);
 				current->next->next = next;
 				current->next->exp = TRUE;
 				current->str[i] = '\0';
@@ -206,7 +215,7 @@ void	split_expansions(t_word *words)
 	}
 } */
 
-/* int	main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
 	char	*line;
@@ -221,4 +230,4 @@ void	split_expansions(t_word *words)
 		split_words(line);
 	}
 	return (0);
-} */
+}
