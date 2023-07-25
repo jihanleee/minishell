@@ -197,7 +197,7 @@ void	set_tokentype(t_token *tokens)
 			tokens->type = out;
 		if (strcmp(tokens->str, ">>") == 0)
 			tokens->type = append;
-		if (strcmp(tokens->str, "|"))
+		if (strcmp(tokens->str, "|") == 0)
 			tokens->type = pipe_op;
 		tokens = tokens->next;
 	}
