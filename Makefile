@@ -11,7 +11,8 @@ L_PATH		= ./includes/libft/ #libft should be replaced by 'your teammate's libft'
 
 INCLUDES	= -I ${I_PATH} -I ${L_PATH}
 
-SRCS		= ./srcs/expander.c ./srcs/tokenizer.c # change or add files if needed
+SRCS		= ./srcs/expander.c ./srcs/tokenizer.c \
+				./srcs/parser.c # change or add files if needed
 OBJS		= ${SRCS:.c=.o}
 
 all: ${NAME}
