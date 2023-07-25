@@ -142,8 +142,10 @@ void	clear_tokens(t_token **lst, void (*del)(void *))
 	if (del == 0)
 		return ;
 	current = *lst;
+	printf("currently in clear tokens function\n"); //
 	while (current)
 	{
+		printf("token we are deleting is %s\n", current->str);//
 		next = current->next;
 		if (current->str)
 			del(current->str);
@@ -161,7 +163,7 @@ t_token	*new_token(char *line, int start, int len, t_token_type type)
 	if (new == NULL)
 		return (NULL);
 	new->str = ft_substr(line, start, len);
-	ft_printf("len %d\n", len);
+	//ft_printf("len %d\n", len);
 	if (new->str == NULL)
 		return (free(new), NULL);
 	new->type = type;
@@ -227,6 +229,7 @@ int	line_to_token(t_token **tokens, int *quote_info, char *line)
 			start += len;
 		}
 	}
+	return (0);
 }
 /*breaks up a line into tokens ,
 assigns them to a t_token type linked-list,
@@ -242,25 +245,26 @@ t_token	*create_tokens(char *line)
 	if (line_to_token(&tokens, quote_info, line) == -1)
 		return (NULL);
 	set_tokentype(tokens);
-	read_tokens(tokens);
+	//read_tokens(tokens);
 	return (free(quote_info), tokens);
 }
 
 /* int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
+	t_token	*temp;
 	char	*line;
 	int		*info;
 	int		i;
 	char	*tok;
 
 	while (1)
-	{
+	{	temp = tokens;
 		line = readline("%");
 		ft_printf("line : %s\n", line);
-		create_tokens(line);
+		tokens = create_tokens(line);
 		if (check_tokens(tokens) != 0)
-			//parsing error
+			exit_error("bash: syntax error\n", &temp);
 	}
 	return (0);
 } */
