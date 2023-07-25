@@ -48,4 +48,8 @@ int		*create_quote_info(char *line);
 t_token	*create_tokens(char *line);
 int		*create_quote_info(char *line);
 
+/*parser.c*/
+int	check_tokens(t_token *tokens);
+void	exit_error(char *message, t_token **temp);
+
 #endif
