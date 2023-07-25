@@ -50,7 +50,7 @@ int	*create_quote_info(char *line)
 
 	result = (int *)calloc(strlen(line) + 1, sizeof(int));
 	if (result == 0)
-		return (-1);//malloc error
+		return (NULL);//malloc error
 	i = 0;
 	while (line[i])
 	{
@@ -79,7 +79,7 @@ bool	is_blank(char c)
 		return (0);
 }
 
-int	token_op_len(char *line, int start, t_token_type *type, int *quote_info)
+int	token_op_len(char *line, int start, int *quote_info)
 {
 	int	len;
 
@@ -100,7 +100,6 @@ int	token_op_len(char *line, int start, t_token_type *type, int *quote_info)
 	}
 	else if (line[start] == '|')
 		len = 1;
-	*type = operator;
 	return (len);
 }
 
@@ -114,7 +113,7 @@ int	token_word_len(char *line, int start, t_token_type *type, int *quote_info)
 				&& !quote_info[start + len])
 					&& line[start + len])
 		len++;
-	*type = token;
+	*type = word;
 	return (len);
 }
 
@@ -186,20 +185,32 @@ int	append_token(t_token **tokens, t_token *new)
 	return (0);
 }
 
-/*breaks up a line into tokens ,
-assigns them to a t_token type linked-list,
-and returns it. NULL is returned for malloc failure.*/
-t_token	*create_tokens(char *line)
+void	set_tokentype(t_token *tokens)
 {
-	t_token			*tokens;
-	int				start;
-	int				len;
-	t_token_type	type;
-	int				*quote_info;
+	while (tokens)
+	{
+		if (strcmp(tokens->str, "<") == 0)
+			tokens->type = in;
+		if (strcmp(tokens->str, "<<") == 0)
+			tokens->type = heredoc;
+		if (strcmp(tokens->str, ">") == 0)
+			tokens->type = out;
+		if (strcmp(tokens->str, ">>") == 0)
+			tokens->type = append;
+		if (strcmp(tokens->str, "|"))
+			tokens->type = pipe_op;
+		tokens = tokens->next;
+	}
+}
 
-	if ((quote_info = create_quote_info(line), quote_info) == 0)
-		return (NULL);
- 	tokens = (start = 0, 0);
+int	line_to_token(t_token **tokens, int *quote_info, char *line)
+{
+	int				len;
+	int				start;
+	t_token_type	type;
+
+	start = 0;
+ 	*tokens = 0;
 	while (line[start])
 	{
 		if (is_blank(line[start]) && !quote_info[start])
@@ -207,14 +218,29 @@ t_token	*create_tokens(char *line)
 		else
 		{
 			if (is_op(line[start]) && !quote_info[start])
-				len = token_op_len(line, start, &type, quote_info);
+				len = token_op_len(line, start, quote_info);
 			else
 				len = token_word_len(line, start, &type, quote_info);
-			if (append_token(&tokens, new_token(line, start, len, type)) == -1)
-				return (clear_tokens(&tokens, free), (free(quote_info), NULL));
+			if (append_token(tokens, new_token(line, start, len, type)) == -1)
+				return (clear_tokens(tokens, free), (free(quote_info), -1));
 			start += len;
 		}
 	}
+}
+/*breaks up a line into tokens ,
+assigns them to a t_token type linked-list,
+and returns it. NULL is returned for malloc failure.*/
+t_token	*create_tokens(char *line)
+{
+	t_token			*tokens;
+	int				*quote_info;
+	
+	quote_info = create_quote_info(line);
+	if (quote_info == 0)
+		return (NULL);
+	if (line_to_token(&tokens, quote_info, line) == -1)
+		return (NULL);
+	set_tokentype(tokens);
 	read_tokens(tokens);
 	return (free(quote_info), tokens);
 }
@@ -230,7 +256,7 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		line = readline("%");
-		printf("line : %s", line);
+		ft_printf("line : %s\n", line);
 		create_tokens(line);
 	}
 	return (0);

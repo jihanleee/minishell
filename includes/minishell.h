@@ -20,14 +20,19 @@ typedef enum e_quote_type
 
 typedef enum e_token_type
 {
-	operator,
-	token
+	word,
+	in,
+	heredoc,
+	out,
+	append,
+	pipe_op
 }			t_token_type;
 
 typedef struct s_word
 {
 	t_quote_type	type;
 	char			*str;
+	bool			exp;
 	struct s_word	*next;
 }				t_word;
 

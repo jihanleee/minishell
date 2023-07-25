@@ -159,13 +159,43 @@ t_word	*split_words(char *str)
 			newstr = assign_non_quote(str, &i, quote_info, &type);
 		append_word(&result, new_word(newstr, type));
 	}
+	split_expansions(result);
 	read_words(result);
 	return (free(quote_info), 0);
+}
+
+void	split_expansions(t_word *words)
+{
+	t_word	*current;
+	t_word	*next;
+	int		i;
+
+	current = words;
+	while (current)
+	{
+		next = current->next;
+		//split them!
+		i = 0;
+		if (current->type != 1)
+		{
+			while (current->str[i] && current->str[i] != '$')
+				i++;
+			if (current->str[i] == '$')
+			{
+				current->next = new_word(&(current->str[i + 1]), current->type);
+				current->next->next = next;
+				current->next->exp = TRUE;
+				current->str[i] = '\0';
+			}
+		}
+		current = current->next;
+	}
 }
 
 /* t_token	*expand(t_token *tokens)
 {
 	t_token	*new;
+	
 	int		i;
 	char	str;
 
@@ -187,7 +217,7 @@ t_word	*split_words(char *str)
 	while (1)
 	{
 		line = readline("%");
-		printf("line : %s", line);
+		ft_printf("line : %s\n", line);
 		split_words(line);
 	}
 	return (0);
