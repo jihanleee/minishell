@@ -132,29 +132,6 @@ void	read_tokens(t_token *current)
 	}
 }
 
-void	clear_tokens(t_token **lst, void (*del)(void *))
-{
-	t_token	*current;
-	t_token	*next;
-
-	if (lst == 0)
-		return ;
-	if (del == 0)
-		return ;
-	current = *lst;
-	printf("currently in clear tokens function\n"); //
-	while (current)
-	{
-		printf("token we are deleting is %s\n", current->str);//
-		next = current->next;
-		if (current->str)
-			del(current->str);
-		free(current);
-		current = next;
-	}
-	*lst = 0;
-}
-
 t_token	*new_token(char *line, int start, int len, t_token_type type)
 {
 	t_token *new;
@@ -225,7 +202,7 @@ int	line_to_token(t_token **tokens, int *quote_info, char *line)
 			else
 				len = token_word_len(line, start, &type, quote_info);
 			if (append_token(tokens, new_token(line, start, len, type)) == -1)
-				return (clear_tokens(tokens, free), (free(quote_info), -1));
+				return (finish_clear_tokens(tokens, free), (free(quote_info), -1));
 			start += len;
 		}
 	}
@@ -245,7 +222,7 @@ t_token	*create_tokens(char *line)
 	if (line_to_token(&tokens, quote_info, line) == -1)
 		return (NULL);
 	set_tokentype(tokens);
-	//read_tokens(tokens);
+	read_tokens(tokens);
 	return (free(quote_info), tokens);
 }
 

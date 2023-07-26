@@ -54,12 +54,16 @@ char	*find_param(char *p_name, char **envp);
 /*tokenizer.c*/
 int		*create_quote_info(char *line);
 t_token	*create_tokens(char *line);
-void	clear_tokens(t_token **lst, void (*del)(void *));
 int		*create_quote_info(char *line);
 char	*find_param(char *p_name, char **envp);
 
 /*parser.c*/
-int	check_tokens(t_token *tokens);
+void	temp_read_tokens(t_token **lst);
+int		check_tokens(t_token *tokens);
 void	exit_error(char *message, t_token **temp);
+t_token	*parse_tokens(t_token **lst, void (*del)(void *));
+
+/*main.c*/
+void	finish_clear_tokens(t_token **lst, void (*del)(void *));
 
 #endif

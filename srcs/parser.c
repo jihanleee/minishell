@@ -22,28 +22,98 @@ if token after pipe is not a word, redirection etc...
 	//if pipe is followed by a pipe ==> error
 	//no file(word in this case) after redirections
 
-void	exit_error(char *message, t_token **temp)
+
+void	temp_read_tokens(t_token **lst)
 {
-	write(STDERR_FILENO, message, ft_strlen(message));
-	clear_tokens(temp, free);
+
+	t_token	*current;
+
+	current = *lst;
+	printf("currently in temp read function\n"); //
+	while (current)
+	{
+		printf("\tcurrent token has %s with type %d\n", current->str, current->type);
+		current = current->next;
+	}
 }
 
 
+t_token	*parse_tokens(t_token **lst, void (*del)(void *))
+{
+	t_token	*current;
+	t_token	*result;
+	t_token	*temp;
+	t_token	*next;
+
+	if (lst == 0)
+		return (NULL);
+	if (del == 0)
+		return (NULL);
+	result = *lst;
+	current = *lst;
+	printf("\n\ncurrently in parse tokens function\n"); //
+	if (current->type != 0) //&& current->type != 5
+	{
+		temp = current;
+		current = current->next;
+		result = result->next;
+		temp->next = NULL;
+		free(temp);
+	}
+	while (current && current->next)
+	{
+		printf("\tcurrent token is %s\n", current->str);//
+		next = current->next;
+		if (next->type != 0 && next->type != 5)
+		{
+			next->next->type = next->type;
+			current->next = next->next;
+			next->next = NULL;
+			free(next);
+		}
+		current = current->next;
+	}
+	return (result);
+}
+
+
+void	exit_error(char *message, t_token **lst)
+{
+	write(STDERR_FILENO, message, ft_strlen(message));
+	//temp_read_tokens(temp);
+	//parse_clear_tokens(temp, free);
+	finish_clear_tokens(lst, free);
+}
+
 int	check_tokens(t_token *tokens)
 {
-	printf("in check tokens function\n");//
-	while (tokens && tokens->str)
+	int	result;
+
+	result = 0;
+	printf("\n\nin check tokens function\n");//
+	if (tokens->type == 5)	//if the first token is a type
 	{
-		printf("in check tokens loop\n");//
-		printf("\tcurrent token is %s\n", tokens->str);//
-		if (tokens->type == in || tokens->type == out)
-		{
-			if (tokens->next->type != word)
-				return (1);
-		}
-		if (tokens->type == pipe_op && tokens->next->type == pipe_op)
-			return (1);
+		result = 1;
 		tokens = tokens->next;
 	}
-	return (0);
+	while (tokens && tokens->str)
+	{
+		printf("\tcurrent token is %s\n", tokens->str);//
+		if (tokens->type != 0 && tokens->type != 5)
+		{
+			if (tokens->next == NULL || tokens->next->type != 0)
+				//when line ends with <, <<, >, >>
+				result = 1;
+		}
+		//if (tokens->type == in || tokens->type == out)
+		//{
+		//	if (tokens->next->type != word)
+		//		result = 1;
+		//}
+		if (tokens->type == pipe_op && tokens->next->type == pipe_op)
+			result = 1;
+		tokens = tokens->next;
+	}
+	printf("result is %d\n", result);
+	return (result);
 }
