@@ -25,7 +25,11 @@ typedef enum e_token_type
 	heredoc,
 	out,
 	append,
-	pipe_op
+	pipe_op,
+	in_file,
+	hdoc_delim,
+	out_file,
+	app_file
 }			t_token_type;
 
 typedef struct s_word
@@ -33,6 +37,7 @@ typedef struct s_word
 	t_quote_type	type;
 	char			*str;
 	bool			exp;
+	bool			p_found;
 	struct s_word	*next;
 }				t_word;
 
@@ -43,9 +48,13 @@ typedef struct s_token
 	struct s_token	*next;
 }			t_token;
 
+/*find_param.c*/
+char	*find_param(char *p_name, char **envp);
+
 /*tokenizer.c*/
 int		*create_quote_info(char *line);
 t_token	*create_tokens(char *line);
+void	clear_tokens(t_token **lst, void (*del)(void *));
 int		*create_quote_info(char *line);
 char	*find_param(char *p_name, char **envp);
 
