@@ -5,6 +5,7 @@ char	*find_param(char *p_name, char **envp)
 	int		i;
 	char	*str;
 
+	str = 0;
 	i = 0;
 	while (envp[i])
 	{
