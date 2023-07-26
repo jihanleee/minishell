@@ -224,7 +224,34 @@ void	replace_params(t_word *words, char **envp)
 		current = current->next;
 	}
 }
+/*lets use this structure*/
+/*
+int	line_to_token(t_token **tokens, int *quote_info, char *line)
+{
+	int				len;
+	int				start;
+	t_token_type	type;
 
+	start = 0;
+ 	*tokens = 0;
+	while (line[start])
+	{
+		if (is_blank(line[start]) && !quote_info[start])
+			start++;
+		else
+		{
+			if (is_op(line[start]) && !quote_info[start])
+				len = token_op_len(line, start, quote_info);
+			else
+				len = token_word_len(line, start, &type, quote_info);
+			if (append_token(tokens, new_token(line, start, len, type)) == -1)
+				return (clear_tokens(tokens, free), (free(quote_info), -1));
+			start += len;
+		}
+	}
+	return (0);
+}
+*/
 t_token	*words_to_tokens(t_word *words)
 {
 }
@@ -233,7 +260,7 @@ char	*field_split()
 {
 }
 
-int	main(int argc, char **argv, char **envp)
+/* int	main(int argc, char **argv, char **envp)
 {
 	t_word	*words;
 	char	*line;
@@ -252,4 +279,4 @@ int	main(int argc, char **argv, char **envp)
 		read_words(words);
 	}
 	return (0);
-}
+} */
