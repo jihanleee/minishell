@@ -164,8 +164,7 @@ t_word	*split_words(char *str)
 		append_word(&result, new_word(newstr, type));
 	}
 	split_expansions(result);
-	read_words(result);
-	return (free(quote_info), 0);
+	return (free(quote_info), result);
 }
 
 void	split_expansions(t_word *words)
@@ -185,13 +184,14 @@ void	split_expansions(t_word *words)
 			if (current->str[i] == '$' && current->type != 1)
 			{
 				i++;
-				current->type = TRUE;
+				current->exp = TRUE;
 			}
 			while (current->str[i] && current->str[i] != '$')
 				i++;
 			if (current->str[i] == '$')
 			{
 				current->next = new_word(ft_strdup(&(current->str[i])), current->type);
+				//protect the malloc
 				current->next->next = next;
 				current->next->exp = TRUE;
 				current->str[i] = '\0';
@@ -201,23 +201,41 @@ void	split_expansions(t_word *words)
 	}
 }
 
-/* t_token	*expand(t_token *tokens)
+void	replace_params(t_word *words, char **envp)
 {
-	t_token	*new;
-	
-	int		i;
-	char	str;
+	t_word	*current;
+	char	*newstr;
 
-	i = 0;
-	while (str[i])
+	current = words;
+	while (current)
 	{
-
+		ft_printf("%s\n", current->str);
+		newstr = 0;
+		if (current->exp == TRUE)
+		{
+			newstr = find_param(&(current->str[1]), envp);
+			if (newstr)
+			{
+				current->p_found = TRUE;
+				free(current->str);
+				current->str = newstr;
+			}
+		}
+		current = current->next;
 	}
-} */
+}
+
+t_token	*words_to_tokens(t_word *words)
+{
+}
+
+char	*field_split()
+{
+}
 
 int	main(int argc, char **argv, char **envp)
 {
-	t_token	*tokens;
+	t_word	*words;
 	char	*line;
 	int		*info;
 	int		i;
@@ -227,7 +245,11 @@ int	main(int argc, char **argv, char **envp)
 	{
 		line = readline("%");
 		ft_printf("line : %s\n", line);
-		split_words(line);
+		words = split_words(line);
+		read_words(words);
+		replace_params(words, envp);
+		ft_printf("after expansion\n");
+		read_words(words);
 	}
 	return (0);
 }
