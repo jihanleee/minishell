@@ -202,7 +202,7 @@ int	line_to_token(t_token **tokens, int *quote_info, char *line)
 			else
 				len = token_word_len(line, start, &type, quote_info);
 			if (append_token(tokens, new_token(line, start, len, type)) == -1)
-				return (finish_clear_tokens(tokens, free), (free(quote_info), -1));
+				return (clear_tokens(tokens, free), (free(quote_info), -1));
 			start += len;
 		}
 	}

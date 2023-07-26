@@ -82,7 +82,7 @@ void	exit_error(char *message, t_token **lst)
 	write(STDERR_FILENO, message, ft_strlen(message));
 	//temp_read_tokens(temp);
 	//parse_clear_tokens(temp, free);
-	finish_clear_tokens(lst, free);
+	clear_tokens(lst, free);
 }
 
 int	check_tokens(t_token *tokens)

@@ -64,6 +64,6 @@ void	exit_error(char *message, t_token **temp);
 t_token	*parse_tokens(t_token **lst, void (*del)(void *));
 
 /*main.c*/
-void	finish_clear_tokens(t_token **lst, void (*del)(void *));
+void	clear_tokens(t_token **lst, void (*del)(void *));
 
 #endif

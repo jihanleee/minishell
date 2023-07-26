@@ -1,5 +1,5 @@
 #include "minishell.h"
-void	finish_clear_tokens(t_token **lst, void (*del)(void *))
+void	clear_tokens(t_token **lst, void (*del)(void *))
 {
 	t_token	*current;
 	t_token	*next;
@@ -52,7 +52,7 @@ int	main(int argc, char **argv, char **envp)
 		}
 		//expansion
 		//execution
-		finish_clear_tokens(&tokens, free);
+		clear_tokens(&tokens, free);
 	}
 	return (0);
 }
