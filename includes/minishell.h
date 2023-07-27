@@ -32,14 +32,14 @@ typedef enum e_token_type
 	app_file
 }			t_token_type;
 
-typedef struct s_word
+typedef struct s_lexeme
 {
 	t_quote_type	type;
 	char			*str;
 	bool			exp;
 	bool			p_found;
 	struct s_word	*next;
-}				t_word;
+}				t_lexeme;
 
 typedef struct s_token
 {
