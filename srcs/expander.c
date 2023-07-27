@@ -174,7 +174,7 @@ void	split_expansions(t_lexeme *lexemes)
 	}
 }
 
-t_lexeme	*split_lexemes(char *str)
+t_lexeme	*word_to_lexemes(char *str)
 {
 	int				i;
 	char			*newstr;
@@ -200,8 +200,6 @@ t_lexeme	*split_lexemes(char *str)
 	split_expansions(result);
 	return (free(quote_info), result);
 }
-
-
 
 void	replace_params(t_lexeme *lexemes, char **envp)
 {
@@ -333,10 +331,7 @@ int	line_to_token(t_token **tokens, int *quote_info, char *line)
 		else
 		{
 			if (is_op(line[start]) && !quote_info[start])
-				len = token_op_len(line, start, quote_info);
-			else
-				len = token_lexeme_len(line, start, &type, quote_info);
-			if (append_token(tokens, new_token(line, start, len, type)) == -1)
+				len = token_op_len(line, start, quote_info);new_expanded_token()
 				return (clear_tokens(tokens, free), (free(quote_info), -1));
 			start += len;
 		}
@@ -345,7 +340,7 @@ int	line_to_token(t_token **tokens, int *quote_info, char *line)
 }
 */
 
-t_token	*lexeme_to_tokens(int *lexeme)
+t_token	*iword_to_tokens(int *lexeme)
 {
 	t_token	*result;
 	int		start;
@@ -364,9 +359,106 @@ t_token	*lexeme_to_tokens(int *lexeme)
 			return (clear_tokens(result, free), (free(lexeme), -1));
 		start += len;
 	}
+	ft_printf("exiting iword_to_tokens\n");
 	return (result);
 }
 
+t_token	*token_to_newtoken(t_token *old, char **envp)
+{
+	t_lexeme	*lexemes;
+	int			*iword;
+
+	lexemes = word_to_lexemes(old->str);
+	replace_params(lexemes, envp);
+	iword = lexemes_to_int(lexemes);
+	return (iword_to_tokens(iword));
+}
+
+void	expansion(t_token **tokens, char **envp)
+{
+	t_token	*current;
+	t_token	*next;
+	t_token	*prev;
+	t_token	*expanded;
+
+	prev = 0;
+	current = *tokens;
+	while (current)
+	{
+		next = current->next;
+		expanded = token_to_newtoken(current, envp);
+		read_tokens(expanded);
+		if (expanded)
+			expanded->type = current->type;
+		if (prev == 0)
+		{
+			if (expanded == NULL)
+				*tokens = next;
+			else
+			{
+				*tokens = expanded;
+				while (expanded->next)
+					expanded = expanded->next;
+				expanded->next = next;
+				prev = expanded;
+			}
+		}
+		else
+		{
+			if (expanded == NULL)
+				prev->next = next;
+			else
+			{
+				prev->next = expanded;
+				while (expanded->next)
+					expanded = expanded->next;
+				expanded->next = next;
+				prev = expanded;
+			}
+		}
+		free(current);
+		current = next;
+	}
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	t_token	*tokens;
+	//t_token	*temp;
+	char	*line;
+	//int		*info;
+	//int		i;
+	//char	*tok;
+
+	while (1)
+	{	//temp = &tokens;
+		line = readline("%");
+		ft_printf("line : %s\n", line);
+		tokens = create_tokens(line);
+		printf("\n-----tokenize done-----\n");
+		printf("\n-----parsing starts-----\n");
+		temp_read_tokens(&tokens);
+		if (check_tokens(tokens) != 0)
+		{
+			exit_error("bash: syntax error\n", &tokens);
+		}
+		else
+		{
+			tokens = parse_tokens(&tokens, free);
+			printf("\ntokens after parsing\n");
+			temp_read_tokens(&tokens); //
+		}
+		//expansion
+		//execution
+		expansion(&tokens, envp);
+		temp_read_tokens(&tokens);
+		clear_tokens(&tokens, free);
+
+			//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함
+			//main 정확히 짤 때는 두번 콜되지 않게 조심하기
+	}
+	return (0);
+}
 /*expansion module tests*/
 /* int	main(int argc, char **argv, char **envp)
 {
@@ -382,7 +474,7 @@ t_token	*lexeme_to_tokens(int *lexeme)
 	{
 		line = readline("%");
 		ft_printf("line : %s\n", line);
-		lexemes = split_lexemes(line);
+		lexemes = word_to_lexemes(line);
 		read_lexemes(lexemes);
 		replace_params(lexemes, envp);
 		ft_printf("after expansion\n");
