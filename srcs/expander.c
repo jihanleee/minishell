@@ -140,33 +140,6 @@ void	read_words(t_word *current)
 	}
 }
 
-t_word	*split_words(char *str)
-{
-	int				i;
-	char			*newstr;
-	t_word			*result;
-	t_quote_type	type;
-	int				*quote_info;
-
-	quote_info = create_quote_info(str);
-	if (quote_info == 0)
-		return (NULL);
-	result = 0;
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '\'' && quote_info[i] == 1)
-			newstr = assign_single_quote(str, &i, quote_info, &type);
-		else if (str[i] == '\"' && quote_info[i] == 2)
-			newstr = assign_double_quote(str, &i, quote_info, &type);
-		else if (str[i] && quote_info[i] == 0)
-			newstr = assign_non_quote(str, &i, quote_info, &type);
-		append_word(&result, new_word(newstr, type));
-	}
-	split_expansions(result);
-	return (free(quote_info), result);
-}
-
 void	split_expansions(t_word *words)
 {
 	t_word	*current;
@@ -201,6 +174,35 @@ void	split_expansions(t_word *words)
 	}
 }
 
+t_word	*split_words(char *str)
+{
+	int				i;
+	char			*newstr;
+	t_word			*result;
+	t_quote_type	type;
+	int				*quote_info;
+
+	quote_info = create_quote_info(str);
+	if (quote_info == 0)
+		return (NULL);
+	result = 0;
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' && quote_info[i] == 1)
+			newstr = assign_single_quote(str, &i, quote_info, &type);
+		else if (str[i] == '\"' && quote_info[i] == 2)
+			newstr = assign_double_quote(str, &i, quote_info, &type);
+		else if (str[i] && quote_info[i] == 0)
+			newstr = assign_non_quote(str, &i, quote_info, &type);
+		append_word(&result, new_word(newstr, type));
+	}
+	split_expansions(result);
+	return (free(quote_info), result);
+}
+
+
+
 void	replace_params(t_word *words, char **envp)
 {
 	t_word	*current;
@@ -223,6 +225,96 @@ void	replace_params(t_word *words, char **envp)
 		}
 		current = current->next;
 	}
+}
+
+int	wordlen(t_word *words)
+{
+	t_word	*current;
+	int		*word;
+	int		i;
+	int		count;
+
+	count = 0;
+	current = words;
+	while (current)
+	{
+		i = 0;
+		while (current->str[i])
+		{
+			if (current->exp == TRUE && current->p_found == FALSE)
+				break;
+			i++;
+			count++;
+		}
+		current = current->next;
+	}
+	return (count);
+}
+
+/*IFS characters are '\n', '\t' and ' ' by default in POSIX shell.*/
+bool	is_ifs(char c)
+{
+	if (c == '\n' || c == '\t' || c == ' ')
+		return (1);
+	else
+		return (0);
+}
+
+t_token	*new_expanded_token(int *word, int start, int len)
+{
+	t_token *new;
+	int		i;
+
+	new = (t_token *)ft_calloc(1, sizeof (t_token));
+	if (new == NULL)
+		return (NULL);
+	if (len)
+		new->str = ft_calloc(sizeof(char), len + 1);
+	else
+		return (NULL);
+	//ft_printf("len %d\n", len);
+	if (new->str == NULL)
+		return (free(new), NULL);
+	i = 0;
+	while (i < len)
+		new->str[i++] = (char)word[start++];
+	return (new);
+}
+/*returns an int array in which IFS will be translated into -1,
+and used as separator to perform field splitting.
+if not IFS, each element is stored as ascii value of the original character.
+the returned array is NULL-terminated.*/
+int	*words_to_int(t_word *words)
+{
+	t_word	*current;
+	int		*word;
+	int		i;
+	int		j;
+
+	j = 0;
+	word = (int *)ft_calloc(wordlen(words) + 1, sizeof(int));
+	if (word == 0)
+		return (NULL);
+	current = words;
+	while (current)
+	{
+		while (current->exp == TRUE && current->p_found == FALSE)
+			current = current->next;
+		if (current == 0)
+			break ;
+		i = 0;
+		while (current->str[i])
+		{
+			ft_printf("beh");
+			if (is_ifs(current->str[i]) && current->type == 0)
+				word[j++] = -1;
+			else
+				word[j++] = current->str[i];
+			i++;
+		}
+		current = current->next;
+	}
+	return (word);
 }
 /*lets use this structure*/
 /*
@@ -252,21 +344,39 @@ int	line_to_token(t_token **tokens, int *quote_info, char *line)
 	return (0);
 }
 */
-t_token	*words_to_tokens(t_word *words)
+
+t_token	*word_to_tokens(int *word)
 {
+	t_token	*result;
+	int		start;
+	int		len;
+
+	result = 0;
+	start = 0;
+	while (word[start])
+	{
+		while(word[start] == -1)
+			start++;
+		len = 0;
+		while (word[start + len] && word[start + len] != -1)
+			len++;
+		if (append_token(&result, new_expanded_token(word, start, len)) == -1)
+			return (clear_tokens(result, free), (free(word), -1));
+		start += len;
+	}
+	return (result);
 }
 
-char	*field_split()
-{
-}
-
+/*expansion module tests*/
 /* int	main(int argc, char **argv, char **envp)
 {
 	t_word	*words;
+	t_token	*newtok;
 	char	*line;
 	int		*info;
-	int		i;
+	int		*word;
 	char	*tok;
+	int		i;
 
 	while (1)
 	{
@@ -277,6 +387,13 @@ char	*field_split()
 		replace_params(words, envp);
 		ft_printf("after expansion\n");
 		read_words(words);
+		word = words_to_int(words);
+		i = 0;
+		while (word[i])
+			printf("%d\n", word[i++]);
+		ft_printf("%d\n", wordlen(words));
+		newtok = word_to_tokens(word);
+		read_tokens(newtok);
 	}
 	return (0);
 } */
