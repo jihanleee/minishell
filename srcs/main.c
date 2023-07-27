@@ -23,7 +23,7 @@ void	clear_tokens(t_token **lst, void (*del)(void *))
 	*lst = 0;
 }
 
-/* int	main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
 	//t_token	*temp;
@@ -57,7 +57,7 @@ void	clear_tokens(t_token **lst, void (*del)(void *))
 			//main 정확히 짤 때는 두번 콜되지 않게 조심하기
 	}
 	return (0);
-} */
+}
 
 //token type
 //0: word

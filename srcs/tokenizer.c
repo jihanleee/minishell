@@ -121,6 +121,8 @@ void	read_tokens(t_token *current)
 {
 	int		i;
 	
+	if (current == NULL)
+		ft_printf("(NULL)\n");
 	i = 0;
 	while (current)
 	{

@@ -298,14 +298,14 @@ int	*lexemes_to_int(t_lexeme *lexemes)
 	current = lexemes;
 	while (current)
 	{
-		while (current->exp == TRUE && current->p_found == FALSE)
+		ft_printf("lexems_to_int_while\n");
+		while (current && current->exp == TRUE && current->p_found == FALSE)
 			current = current->next;
 		if (current == 0)
 			break ;
 		i = 0;
 		while (current->str[i])
 		{
-			ft_printf("beh");
 			if (is_ifs(current->str[i]) && current->type == 0)
 				lexeme[j++] = -1;
 			else
@@ -368,7 +368,7 @@ t_token	*lexeme_to_tokens(int *lexeme)
 }
 
 /*expansion module tests*/
-int	main(int argc, char **argv, char **envp)
+/* int	main(int argc, char **argv, char **envp)
 {
 	t_lexeme	*lexemes;
 	t_token	*newtok;
@@ -396,4 +396,4 @@ int	main(int argc, char **argv, char **envp)
 		read_tokens(newtok);
 	}
 	return (0);
-}
+} */
