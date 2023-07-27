@@ -12,7 +12,7 @@
 
 typedef struct s_cmd
 {
-    int     cnt_word; // 명령어 묶음 개수
+    int     cnt_lexeme; // 명령어 묶음 개수
     char    **av; //파이프랑  ; 전 까지 끊어서 저장해두고 execve 에 통째로 넣어줌.
     int     end_type;
     int     end[2];
@@ -22,7 +22,7 @@ typedef struct s_cmd
 
 
 
-int	ft_word_count(char const *s, char c)
+int	ft_lexeme_count(char const *s, char c)
 {
 	int	i;
 	int	cnt;
@@ -43,40 +43,40 @@ int	ft_word_count(char const *s, char c)
 	return (cnt);
 }
 
-char	*ft_word_make(char *word, char const *s, int k, int word_len)
+char	*ft_lexeme_make(char *lexeme, char const *s, int k, int lexeme_len)
 {
 	int		i;
 
 	i = 0;
-	while (word_len > 0)
-		word[i++] = s[k - word_len--];
-	word[i] = '\0';
-	return (word);
+	while (lexeme_len > 0)
+		lexeme[i++] = s[k - lexeme_len--];
+	lexeme[i] = '\0';
+	return (lexeme);
 }
 
-char	**ft_split2(char **result, char const *s, char c, int word_num)
+char	**ft_split2(char **result, char const *s, char c, int lexeme_num)
 {
 	int		i;
 	int		k;
-	int		word_len;
+	int		lexeme_len;
 
 	i = 0;
 	k = 0;
-	word_len = 0;
-	while (s[k] && i < word_num)
+	lexeme_len = 0;
+	while (s[k] && i < lexeme_num)
 	{
 		while (s[k] && s[k] == c)
 			k++;
 		while (s[k] && s[k] != c)
 		{
 			k++;
-			word_len++;
+			lexeme_len++;
 		}
-		result[i] = (char *)malloc(sizeof(char) * (word_len + 1));
+		result[i] = (char *)malloc(sizeof(char) * (lexeme_len + 1));
 		if (!(result[i]))
 			return (NULL);
-		ft_word_make(result[i], s, k, word_len);
-		word_len = 0;
+		ft_lexeme_make(result[i], s, k, lexeme_len);
+		lexeme_len = 0;
 		i++;
 	}
 	result[i] = 0;
@@ -85,16 +85,16 @@ char	**ft_split2(char **result, char const *s, char c, int word_num)
 
 char	**ft_split(char const *s, char c)
 {
-	int		word_num;
+	int		lexeme_num;
 	char	**result;
 
 	if (s == 0)
 		return (NULL);
-	word_num = ft_word_count(s, c);
-	result = (char **)malloc(sizeof(char *) * (word_num + 1));
+	lexeme_num = ft_lexeme_count(s, c);
+	result = (char **)malloc(sizeof(char *) * (lexeme_num + 1));
 	if (!(result))
 		return (NULL);
-	ft_split2(result, s, c, word_num);
+	ft_split2(result, s, c, lexeme_num);
 	return (result);
 }
 
@@ -302,7 +302,7 @@ void ft_execute(t_cmd *cmd, char **env)
 int parse_cmd(t_cmd **cmd, char **av) // malloc 은 내일...
 {
     t_cmd *new;
-    int cnt_word;
+    int cnt_lexeme;
 
     if (!(new = (t_cmd *)malloc(sizeof(t_cmd))))
         return (0);
@@ -314,18 +314,18 @@ int parse_cmd(t_cmd **cmd, char **av) // malloc 은 내일...
             break;
         i++;
     }
-////////////////////cnt_word 초기화, av 끝에 null ///////////////////
+////////////////////cnt_lexeme 초기화, av 끝에 null ///////////////////
     if (!(new->av = (char **)malloc(sizeof(char *) * (i + 1))))
         return (0);
-    new->cnt_word= i;
+    new->cnt_lexeme= i;
     new->av[i] = NULL;
 //////////////////struct 에 "|" , ";" 전까지 나온 인자 strdup///////////
     while (--i >= 0)
         new->av[i] = strdup(av[i]);
 ////////////////////// 뒤에 파이프인제 세미콜론인지 확인////////////////
-    if (av[new->cnt_word] == "|")
+    if (av[new->cnt_lexeme] == "|")
         new->end_type = 1; //define 으로 PIPE = 1 해주기
-    else if (av[new->cnt_word] == ";")
+    else if (av[new->cnt_lexeme] == ";")
         new->end_type = 2; // 마찬가지 define 으로 semi_col = 2;
     else
         new->end_type = 0; // 아무것도 없을 때 define 뭘로하지
@@ -333,7 +333,7 @@ int parse_cmd(t_cmd **cmd, char **av) // malloc 은 내일...
     new->prev = NULL;
     new->next = NULL;
     ft_lst_add_back(cmd, new); //cmd 에 넣어줌
-    return (new->cnt_word);
+    return (new->cnt_lexeme);
 }
 
 int main(int ac, char **av, char **env)

@@ -68,10 +68,10 @@ char	*assign_non_quote(char *line, int *i, int *quote_info, t_quote_type *type)
 	return (result);
 }
 
-void	clear_words(t_word **lst, void (*del)(void *))
+void	clear_lexemes(t_lexeme **lst, void (*del)(void *))
 {
-	t_word	*current;
-	t_word	*next;
+	t_lexeme	*current;
+	t_lexeme	*next;
 
 	if (lst == 0)
 		return ;
@@ -89,11 +89,11 @@ void	clear_words(t_word **lst, void (*del)(void *))
 	*lst = 0;
 }
 
-t_word	*new_word(char *str, t_quote_type type)
+t_lexeme	*new_lexeme(char *str, t_quote_type type)
 {
-	t_word *new;
+	t_lexeme *new;
 	
-	new = (t_word *)ft_calloc(1, sizeof (t_word));
+	new = (t_lexeme *)ft_calloc(1, sizeof (t_lexeme));
 	if (new == NULL)
 		return (NULL);
 	new->str = str;
@@ -103,17 +103,17 @@ t_word	*new_word(char *str, t_quote_type type)
 	return (new);
 }
 
-int	append_word(t_word **words, t_word *new)
+int	append_lexeme(t_lexeme **lexemes, t_lexeme *new)
 {
-	t_word	*current;
+	t_lexeme	*current;
 
 	if (new == 0)
 		return (-1);
-	if (*words == 0)
-		*words = new;
+	if (*lexemes == 0)
+		*lexemes = new;
  	else
 	{
-		current = *words;
+		current = *lexemes;
 		while (current->next)
 			current = current->next;
 		current->next = new;
@@ -121,7 +121,7 @@ int	append_word(t_word **words, t_word *new)
 	return (0);
 }
 
-void	read_words(t_word *current)
+void	read_lexemes(t_lexeme *current)
 {
 	int		i;
 	
@@ -140,13 +140,13 @@ void	read_words(t_word *current)
 	}
 }
 
-void	split_expansions(t_word *words)
+void	split_expansions(t_lexeme *lexemes)
 {
-	t_word	*current;
-	t_word	*next;
+	t_lexeme	*current;
+	t_lexeme	*next;
 	int		i;
 
-	current = words;
+	current = lexemes;
 	while (current)
 	{
 		next = current->next;
@@ -163,7 +163,7 @@ void	split_expansions(t_word *words)
 				i++;
 			if (current->str[i] == '$')
 			{
-				current->next = new_word(ft_strdup(&(current->str[i])), current->type);
+				current->next = new_lexeme(ft_strdup(&(current->str[i])), current->type);
 				//protect the malloc
 				current->next->next = next;
 				current->next->exp = TRUE;
@@ -174,11 +174,11 @@ void	split_expansions(t_word *words)
 	}
 }
 
-t_word	*split_words(char *str)
+t_lexeme	*split_lexemes(char *str)
 {
 	int				i;
 	char			*newstr;
-	t_word			*result;
+	t_lexeme			*result;
 	t_quote_type	type;
 	int				*quote_info;
 
@@ -195,7 +195,7 @@ t_word	*split_words(char *str)
 			newstr = assign_double_quote(str, &i, quote_info, &type);
 		else if (str[i] && quote_info[i] == 0)
 			newstr = assign_non_quote(str, &i, quote_info, &type);
-		append_word(&result, new_word(newstr, type));
+		append_lexeme(&result, new_lexeme(newstr, type));
 	}
 	split_expansions(result);
 	return (free(quote_info), result);
@@ -203,12 +203,12 @@ t_word	*split_words(char *str)
 
 
 
-void	replace_params(t_word *words, char **envp)
+void	replace_params(t_lexeme *lexemes, char **envp)
 {
-	t_word	*current;
+	t_lexeme	*current;
 	char	*newstr;
 
-	current = words;
+	current = lexemes;
 	while (current)
 	{
 		ft_printf("%s\n", current->str);
@@ -227,15 +227,15 @@ void	replace_params(t_word *words, char **envp)
 	}
 }
 
-int	wordlen(t_word *words)
+int	lexemelen(t_lexeme *lexemes)
 {
-	t_word	*current;
-	int		*word;
+	t_lexeme	*current;
+	int		*lexeme;
 	int		i;
 	int		count;
 
 	count = 0;
-	current = words;
+	current = lexemes;
 	while (current)
 	{
 		i = 0;
@@ -260,7 +260,7 @@ bool	is_ifs(char c)
 		return (0);
 }
 
-t_token	*new_expanded_token(int *word, int start, int len)
+t_token	*new_expanded_token(int *lexeme, int start, int len)
 {
 	t_token *new;
 	int		i;
@@ -277,25 +277,25 @@ t_token	*new_expanded_token(int *word, int start, int len)
 		return (free(new), NULL);
 	i = 0;
 	while (i < len)
-		new->str[i++] = (char)word[start++];
+		new->str[i++] = (char)lexeme[start++];
 	return (new);
 }
 /*returns an int array in which IFS will be translated into -1,
 and used as separator to perform field splitting.
 if not IFS, each element is stored as ascii value of the original character.
 the returned array is NULL-terminated.*/
-int	*words_to_int(t_word *words)
+int	*lexemes_to_int(t_lexeme *lexemes)
 {
-	t_word	*current;
-	int		*word;
+	t_lexeme	*current;
+	int		*lexeme;
 	int		i;
 	int		j;
 
 	j = 0;
-	word = (int *)ft_calloc(wordlen(words) + 1, sizeof(int));
-	if (word == 0)
+	lexeme = (int *)ft_calloc(lexemelen(lexemes) + 1, sizeof(int));
+	if (lexeme == 0)
 		return (NULL);
-	current = words;
+	current = lexemes;
 	while (current)
 	{
 		while (current->exp == TRUE && current->p_found == FALSE)
@@ -307,14 +307,14 @@ int	*words_to_int(t_word *words)
 		{
 			ft_printf("beh");
 			if (is_ifs(current->str[i]) && current->type == 0)
-				word[j++] = -1;
+				lexeme[j++] = -1;
 			else
-				word[j++] = current->str[i];
+				lexeme[j++] = current->str[i];
 			i++;
 		}
 		current = current->next;
 	}
-	return (word);
+	return (lexeme);
 }
 /*lets use this structure*/
 /*
@@ -335,7 +335,7 @@ int	line_to_token(t_token **tokens, int *quote_info, char *line)
 			if (is_op(line[start]) && !quote_info[start])
 				len = token_op_len(line, start, quote_info);
 			else
-				len = token_word_len(line, start, &type, quote_info);
+				len = token_lexeme_len(line, start, &type, quote_info);
 			if (append_token(tokens, new_token(line, start, len, type)) == -1)
 				return (clear_tokens(tokens, free), (free(quote_info), -1));
 			start += len;
@@ -345,7 +345,7 @@ int	line_to_token(t_token **tokens, int *quote_info, char *line)
 }
 */
 
-t_token	*word_to_tokens(int *word)
+t_token	*lexeme_to_tokens(int *lexeme)
 {
 	t_token	*result;
 	int		start;
@@ -353,28 +353,28 @@ t_token	*word_to_tokens(int *word)
 
 	result = 0;
 	start = 0;
-	while (word[start])
+	while (lexeme[start])
 	{
-		while(word[start] == -1)
+		while(lexeme[start] == -1)
 			start++;
 		len = 0;
-		while (word[start + len] && word[start + len] != -1)
+		while (lexeme[start + len] && lexeme[start + len] != -1)
 			len++;
-		if (append_token(&result, new_expanded_token(word, start, len)) == -1)
-			return (clear_tokens(result, free), (free(word), -1));
+		if (append_token(&result, new_expanded_token(lexeme, start, len)) == -1)
+			return (clear_tokens(result, free), (free(lexeme), -1));
 		start += len;
 	}
 	return (result);
 }
 
 /*expansion module tests*/
-/* int	main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
-	t_word	*words;
+	t_lexeme	*lexemes;
 	t_token	*newtok;
 	char	*line;
 	int		*info;
-	int		*word;
+	int		*lexeme;
 	char	*tok;
 	int		i;
 
@@ -382,18 +382,18 @@ t_token	*word_to_tokens(int *word)
 	{
 		line = readline("%");
 		ft_printf("line : %s\n", line);
-		words = split_words(line);
-		read_words(words);
-		replace_params(words, envp);
+		lexemes = split_lexemes(line);
+		read_lexemes(lexemes);
+		replace_params(lexemes, envp);
 		ft_printf("after expansion\n");
-		read_words(words);
-		word = words_to_int(words);
+		read_lexemes(lexemes);
+		lexeme = lexemes_to_int(lexemes);
 		i = 0;
-		while (word[i])
-			printf("%d\n", word[i++]);
-		ft_printf("%d\n", wordlen(words));
-		newtok = word_to_tokens(word);
+		while (lexeme[i])
+			printf("%d\n", lexeme[i++]);
+		ft_printf("%d\n", lexemelen(lexemes));
+		newtok = lexeme_to_tokens(lexeme);
 		read_tokens(newtok);
 	}
 	return (0);
-} */
+}

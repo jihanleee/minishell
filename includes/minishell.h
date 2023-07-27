@@ -38,7 +38,7 @@ typedef struct s_lexeme
 	char			*str;
 	bool			exp;
 	bool			p_found;
-	struct s_word	*next;
+	struct s_lexeme	*next;
 }				t_lexeme;
 
 typedef struct s_token
