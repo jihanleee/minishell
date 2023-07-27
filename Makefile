@@ -13,7 +13,10 @@ INCLUDES	= -I ${I_PATH} -I ${L_PATH}
 
 SRCS		= ./srcs/tokenizer.c \
 				./srcs/parser.c \
-				./srcs/main.c # change or add files if needed
+				./srcs/main.c \
+				./srcs/find_param.c \
+				./srcs/expander.c \
+				# change or add files if needed
 OBJS		= ${SRCS:.c=.o}
 
 all: ${NAME}

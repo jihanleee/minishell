@@ -52,6 +52,7 @@ typedef struct s_token
 char	*find_param(char *p_name, char **envp);
 
 /*tokenizer.c*/
+void	read_tokens(t_token *current);
 int		*create_quote_info(char *line);
 t_token	*create_tokens(char *line);
 int		*create_quote_info(char *line);
