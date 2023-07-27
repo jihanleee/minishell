@@ -55,6 +55,7 @@ t_token	*parse_tokens(t_token **lst, void (*del)(void *))
 	if (current->type != 0) //&& current->type != 5
 	{
 		temp = current;
+		current->next->type = current->type;
 		current = current->next;
 		result = result->next;
 		temp->next = NULL;
@@ -110,7 +111,7 @@ int	check_tokens(t_token *tokens)
 		//	if (tokens->next->type != word)
 		//		result = 1;
 		//}
-		if (tokens->type == pipe_op && tokens->next->type == pipe_op)
+		if (tokens->type == pipe_op && tokens->next && tokens->next->type == pipe_op)
 			result = 1;
 		tokens = tokens->next;
 	}
