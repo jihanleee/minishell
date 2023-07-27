@@ -9,6 +9,7 @@
 # include <stdlib.h>
 # include <curses.h>
 # include <term.h>
+# include <signal.h>
 # include "libft.h"
 
 typedef enum e_quote_type
@@ -48,6 +49,16 @@ typedef struct s_token
 	struct s_token	*next;
 }			t_token;
 
+typedef struct s_pipe
+{
+	int				in;	//0(stdin), 1(infile), 2(heredoc)
+	int				out; //0(stdout), 1(outfile), 3(append)
+	char 			*cmd;
+	char			**arg;
+	char			**files;
+	struct s_pipe	*next;
+}				t_pipe;
+
 /*find_param.c*/
 char	*find_param(char *p_name, char **envp);
 
@@ -63,6 +74,11 @@ void	temp_read_tokens(t_token **lst);
 int		check_tokens(t_token *tokens);
 void	exit_error(char *message, t_token **temp);
 t_token	*parse_tokens(t_token **lst, void (*del)(void *));
+
+/*signal.c*/
+void	new_prompt(void);
+void 	sig_handler(int signum, siginfo_t *info, void *context);
+int 	sigaction_set(void);
 
 /*main.c*/
 void	clear_tokens(t_token **lst, void (*del)(void *));
