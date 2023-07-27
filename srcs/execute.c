@@ -279,6 +279,11 @@ int    exec_cmd(t_cmd *cmd, char **env)
 
 void ft_execute(t_cmd *cmd, char **env)
 {
+	//what about changing the return type to a string (char *)
+	//then when we go into builtin functions, when there's an error, we will
+	//get the error message as a string
+		//if the error message is NULL (as in return NULL), we'll know that
+		//there was no error
     t_cmd *temp;
 
     temp = cmd;
@@ -293,10 +298,10 @@ void ft_execute(t_cmd *cmd, char **env)
 
         // } 
 
-        //else                                      //// 이 외 함수
-        exec_cmd(temp, env);
-        temp = temp->next;
-    }
+		else//// 이 외 함수
+			exec_cmd(temp, env);
+		temp = temp->next;
+	}
 }
 
 int parse_cmd(t_cmd **cmd, char **av) // malloc 은 내일...
