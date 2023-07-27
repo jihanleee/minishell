@@ -32,6 +32,9 @@ int	main(int argc, char **argv, char **envp)
 	//int		i;
 	//char	*tok;
 
+	if (!sigaction_set())
+		printf("\n Error: sigaction_set_failed\n");
+
 	while (1)
 	{	//temp = &tokens;
 		line = readline("%");
