@@ -225,7 +225,7 @@ void	replace_params(t_lexeme *lexemes, char **envp)
 	}
 }
 
-int	lexemelen(t_lexeme *lexemes)
+int	lexemelen(t_lexeme *lexemes, t_token_type type)
 {
 	t_lexeme	*current;
 	int		*lexeme;
@@ -239,7 +239,7 @@ int	lexemelen(t_lexeme *lexemes)
 		i = 0;
 		while (current->str[i])
 		{
-			if (current->exp == TRUE && current->p_found == FALSE)
+			if (current->exp == TRUE && current->p_found == FALSE && type != heredoc)
 				break;
 			i++;
 			count++;
@@ -278,11 +278,12 @@ t_token	*new_expanded_token(int *lexeme, int start, int len)
 		new->str[i++] = (char)lexeme[start++];
 	return (new);
 }
+
 /*returns an int array in which IFS will be translated into -1,
 and used as separator to perform field splitting.
 if not IFS, each element is stored as ascii value of the original character.
 the returned array is NULL-terminated.*/
-int	*lexemes_to_int(t_lexeme *lexemes)
+int	*lexemes_to_int(t_lexeme *lexemes, t_token_type type)
 {
 	t_lexeme	*current;
 	int		*lexeme;
@@ -290,14 +291,14 @@ int	*lexemes_to_int(t_lexeme *lexemes)
 	int		j;
 
 	j = 0;
-	lexeme = (int *)ft_calloc(lexemelen(lexemes) + 1, sizeof(int));
+	lexeme = (int *)ft_calloc(lexemelen(lexemes, type) + 1, sizeof(int));
 	if (lexeme == 0)
 		return (NULL);
 	current = lexemes;
 	while (current)
 	{
 		ft_printf("lexems_to_int_while\n");
-		while (current && current->exp == TRUE && current->p_found == FALSE)
+		while (current && current->exp == TRUE && current->p_found == FALSE && type != heredoc)
 			current = current->next;
 		if (current == 0)
 			break ;
@@ -363,15 +364,34 @@ t_token	*iword_to_tokens(int *lexeme)
 	return (result);
 }
 
-t_token	*token_to_newtoken(t_token *old, char **envp)
+t_token	*token_to_etoken(t_token *old, char **envp)
 {
 	t_lexeme	*lexemes;
+	t_token		*result;
 	int			*iword;
+	bool		allexp;
 
 	lexemes = word_to_lexemes(old->str);
-	replace_params(lexemes, envp);
-	iword = lexemes_to_int(lexemes);
-	return (iword_to_tokens(iword));
+	read_lexemes(lexemes);
+	if (old->type != heredoc)
+		replace_params(lexemes, envp);
+	iword = lexemes_to_int(lexemes, old->type);
+	allexp = TRUE;
+	while (lexemes)
+	{
+		if (lexemes->exp == FALSE)
+			allexp = FALSE;
+		lexemes = lexemes->next;
+	}
+	result = iword_to_tokens(iword);
+	if (allexp == FALSE && !result)
+	{
+		result = (t_token *)ft_calloc(1, sizeof (t_token));
+		//protect memory alloc
+		result->str = ft_strdup("");
+	}
+	//free lexemes
+	return (result);
 }
 
 void	expansion(t_token **tokens, char **envp)
@@ -386,11 +406,19 @@ void	expansion(t_token **tokens, char **envp)
 	while (current)
 	{
 		next = current->next;
-		expanded = token_to_newtoken(current, envp);
+		expanded = token_to_etoken(current, envp);
 		read_tokens(expanded);
+
 		if (expanded)
 			expanded->type = current->type;
-		if (prev == 0)
+		if (expanded == 0 && current->type == 1 || \
+			current->type == 3 || current->type == 4)
+		{
+			current->type = amb_redir;
+			prev = current;
+			current = next;
+		}
+		else if (prev == 0 && current->type != amb_redir)
 		{
 			if (expanded == NULL)
 				*tokens = next;
@@ -403,7 +431,7 @@ void	expansion(t_token **tokens, char **envp)
 				prev = expanded;
 			}
 		}
-		else
+		else if (current->type != amb_redir)
 		{
 			if (expanded == NULL)
 				prev->next = next;
@@ -421,7 +449,7 @@ void	expansion(t_token **tokens, char **envp)
 	}
 }
 
-int	main(int argc, char **argv, char **envp)
+/* int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
 	//t_token	*temp;
@@ -437,7 +465,6 @@ int	main(int argc, char **argv, char **envp)
 		tokens = create_tokens(line);
 		printf("\n-----tokenize done-----\n");
 		printf("\n-----parsing starts-----\n");
-		temp_read_tokens(&tokens);
 		if (check_tokens(tokens) != 0)
 		{
 			exit_error("bash: syntax error\n", &tokens);
@@ -453,12 +480,11 @@ int	main(int argc, char **argv, char **envp)
 		expansion(&tokens, envp);
 		temp_read_tokens(&tokens);
 		clear_tokens(&tokens, free);
-
 			//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함
 			//main 정확히 짤 때는 두번 콜되지 않게 조심하기
 	}
 	return (0);
-}
+} */
 
 /*expansion module tests*/
 /* int	main(int argc, char **argv, char **envp)

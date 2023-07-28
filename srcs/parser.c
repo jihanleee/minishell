@@ -45,9 +45,7 @@ t_token	*parse_tokens(t_token **lst, void (*del)(void *))
 	t_token	*temp;
 	t_token	*next;
 
-	if (lst == 0)
-		return (NULL);
-	if (del == 0)
+	if (lst == 0 || del == 0 || *lst == 0)
 		return (NULL);
 	result = *lst;
 	current = *lst;
@@ -91,6 +89,8 @@ int	check_tokens(t_token *tokens)
 	int	result;
 
 	result = 0;
+	if (!result)
+		return (0);
 	printf("\n\nin check tokens function\n");//
 	if (tokens->type == 5)	//if the first token is a type
 	{

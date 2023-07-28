@@ -28,9 +28,7 @@ typedef enum e_token_type
 	append,
 	pipe_op,
 	in_file,
-	hdoc_delim,
-	out_file,
-	app_file
+	amb_redir
 }			t_token_type;
 
 typedef struct s_lexeme

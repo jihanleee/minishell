@@ -120,7 +120,8 @@ int	token_word_len(char *line, int start, t_token_type *type, int *quote_info)
 void	read_tokens(t_token *current)
 {
 	int		i;
-	
+
+	ft_printf("reading current expanded token\n");
 	if (current == NULL)
 		ft_printf("(NULL)\n");
 	i = 0;
