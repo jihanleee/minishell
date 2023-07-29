@@ -50,10 +50,11 @@ typedef struct s_token
 typedef struct s_pipe
 {
 	int				in;	//0(stdin), 1(infile), 2(heredoc)
-	int				out; //0(stdout), 1(outfile), 3(append)
+	int				out; //0(stdout), 1(outfile), 2(append)
 	char 			*cmd;
 	char			**arg;
-	char			**files;
+	char			*infile;
+	char			*outfile;
 	struct s_pipe	*next;
 }				t_pipe;
 

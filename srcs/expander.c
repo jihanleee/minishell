@@ -315,31 +315,6 @@ int	*lexemes_to_int(t_lexeme *lexemes, t_token_type type)
 	}
 	return (lexeme);
 }
-/*lets use this structure*/
-/*
-int	line_to_token(t_token **tokens, int *quote_info, char *line)
-{
-	int				len;
-	int				start;
-	t_token_type	type;
-
-	start = 0;
- 	*tokens = 0;
-	while (line[start])
-	{
-		if (is_blank(line[start]) && !quote_info[start])
-			start++;
-		else
-		{
-			if (is_op(line[start]) && !quote_info[start])
-				len = token_op_len(line, start, quote_info);new_expanded_token()
-				return (clear_tokens(tokens, free), (free(quote_info), -1));
-			start += len;
-		}
-	}
-	return (0);
-}
-*/
 
 t_token	*iword_to_tokens(int *lexeme)
 {
@@ -400,23 +375,25 @@ void	expansion(t_token **tokens, char **envp)
 	t_token	*next;
 	t_token	*prev;
 	t_token	*expanded;
+	int		i;
 
+	i = 0;
 	prev = 0;
 	current = *tokens;
 	while (current)
 	{
+		ft_printf("index %d\n", i++);
 		next = current->next;
 		expanded = token_to_etoken(current, envp);
-		read_tokens(expanded);
-
 		if (expanded)
 			expanded->type = current->type;
-		if (expanded == 0 && current->type == 1 || \
-			current->type == 3 || current->type == 4)
+		if (expanded == 0 && (current->type == 1 || \
+			current->type == 3 || current->type == 4))
 		{
 			current->type = amb_redir;
 			prev = current;
 			current = next;
+			continue ;
 		}
 		else if (prev == 0 && current->type != amb_redir)
 		{
@@ -449,9 +426,144 @@ void	expansion(t_token **tokens, char **envp)
 	}
 }
 
+void	read_pipes(t_pipe *pipes)
+{
+	int	i;
+
+	while (pipes)
+	{
+		ft_printf("--------------------\n");
+		ft_printf("intype\t%d\n", pipes->in);
+		ft_printf("outtype\t%d\n", pipes->out);
+		if (pipes->cmd)
+			ft_printf("cmd\t%s\n", pipes->cmd);
+		i = 0;
+		if (pipes->arg)
+		{
+			while (pipes->arg[i])
+			{
+				ft_printf("\targ[%d]\t%s\n", i, pipes->arg[i]);
+				i++;
+			}
+		}
+		if (pipes->infile)
+			ft_printf("infile\t%s\n", pipes->infile);
+		if (pipes->outfile)
+			ft_printf("outfile\t%s\n", pipes->outfile);
+		ft_printf("--------------------\n");
+		pipes = pipes->next;
+	}
+}
+
+char	**extract_arg(t_token **tokens)
+{
+	char		**result;
+	int			size_result;
+	t_token		*current;
+	int			i;
+
+	size_result = 0;
+	current = *tokens;
+	while (current && current->type != pipe_op)
+	{
+		if (current->type == word)
+			size_result++;
+		current = current->next;
+	}
+	ft_printf("size:%d\n", size_result);
+	result = (char **)ft_calloc(size_result + 1, sizeof (char *));
+	if (result == NULL)
+		return (NULL);
+	i = 0;
+	while (*tokens && (*tokens)->type != pipe_op)
+	{
+		ft_printf("%d\n",i);
+		if ((*tokens)->type == word)
+			result[i++] = ft_strdup((*tokens)->str);
+		*tokens = (*tokens)->next;
+	}
+	result[i] = 0;
+	return (result);
+}
+
+t_pipe	*extract_pipes(t_token *tokens)
+{
+	t_pipe	*result;
+	t_pipe	*cur_result;
+	t_token	*current;
+	bool	cmd_found;
+
+	if (tokens == NULL)
+		return (NULL);
+	result = (t_pipe *)calloc(1, sizeof(t_pipe));
+	cur_result = result;
+	current = tokens;
+	while (current)
+	{
+		if (current->type == pipe_op)
+		{
+			cur_result->next = (t_pipe *)ft_calloc(1, sizeof (t_pipe));
+			cur_result = cur_result->next;
+		}
+		else if (current->type == in)
+		{
+			if (cur_result->infile)
+				free(cur_result->infile);
+			cur_result->infile = ft_strdup(current->str);
+			cur_result->in = 1;
+		}
+		else if (current->type == out || current->type == append)
+		{
+			if (cur_result->outfile)
+				free(cur_result->outfile);
+			cur_result->outfile = ft_strdup(current->str);
+			if (current->type == out)
+				cur_result->out = 1;
+			else if (current->type == append)
+				cur_result->out = 2;
+		}
+		if (current->type == amb_redir)
+		{
+			cur_result->in = -1;
+			cur_result->out = -1;
+		}
+		current = current->next;
+	}
+	read_pipes(result);
+	current = tokens;
+	cur_result = result;
+	int	i = 0;
+	while (current && cur_result)
+	{
+		while (current && current->type != pipe_op && current->type != word)
+			current = current->next;
+		if (current == 0)
+			break ;
+		if (current->type == pipe_op)
+		{
+			ft_printf("index %d\n", i++);
+			cur_result = cur_result->next;
+			current = current->next;
+		}
+		else if (current->type == word)
+		{
+			ft_printf("str:%s\n", current->str);
+			if (cur_result->cmd == 0)
+			{
+				cur_result->cmd = ft_strdup(current->str);
+				current = current->next;
+			}
+			else
+				cur_result->arg = extract_arg(&current);
+		}
+	}
+	return (result);
+}
+
 /* int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
+	t_pipe	*pipes;
 	//t_token	*temp;
 	char	*line;
 	//int		*info;
@@ -463,8 +575,6 @@ void	expansion(t_token **tokens, char **envp)
 		line = readline("%");
 		ft_printf("line : %s\n", line);
 		tokens = create_tokens(line);
-		printf("\n-----tokenize done-----\n");
-		printf("\n-----parsing starts-----\n");
 		if (check_tokens(tokens) != 0)
 		{
 			exit_error("bash: syntax error\n", &tokens);
@@ -472,13 +582,14 @@ void	expansion(t_token **tokens, char **envp)
 		else
 		{
 			tokens = parse_tokens(&tokens, free);
-			printf("\ntokens after parsing\n");
-			temp_read_tokens(&tokens); //
 		}
 		//expansion
 		//execution
 		expansion(&tokens, envp);
 		temp_read_tokens(&tokens);
+		read_tokens(tokens);
+		pipes = extract_pipes(tokens);
+		read_pipes(pipes);
 		clear_tokens(&tokens, free);
 			//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함
 			//main 정확히 짤 때는 두번 콜되지 않게 조심하기
