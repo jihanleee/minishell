@@ -4,6 +4,7 @@
 # include <stdio.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+# include <sys/stat.h>
 # include <fcntl.h>
 # include <unistd.h>
 # include <stdlib.h>
@@ -50,7 +51,7 @@ typedef struct s_token
 typedef struct s_pipe
 {
 	int				in;	//0(stdin), 1(infile), 2(heredoc)
-	int				out; //0(stdout), 1(outfile), 2(append)
+	int				out; //0(stdout), 3(outfile), 4(append)
 	char 			*cmd;
 	char			**arg;
 	char			*infile;
