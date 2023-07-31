@@ -455,24 +455,6 @@ void	read_pipes(t_pipe *pipes)
 	}
 }
 
-void	open_file_redir(t_token *token)
-{
-	t_token	*current;
-	int		fd;
-
-	current = token;
-	while (current)
-	{
-		if (current->type == in)
-		{
-			fd = open(current->str, O_RDONLY);
-			if (fd == -1)
-				perror(strerror(errno));
-		}
-		current->next;
-	}
-}
-
 char	**extract_arg(t_token **tokens)
 {
 	char		**result;
@@ -488,34 +470,18 @@ char	**extract_arg(t_token **tokens)
 			size_result++;
 		current = current->next;
 	}
-	ft_printf("size:%d\n", size_result);
 	result = (char **)ft_calloc(size_result + 1, sizeof (char *));
 	if (result == NULL)
 		return (NULL);
 	i = 0;
 	while (*tokens && (*tokens)->type != pipe_op)
 	{
-		ft_printf("%d\n",i);
 		if ((*tokens)->type == word)
 			result[i++] = ft_strdup((*tokens)->str);
 		*tokens = (*tokens)->next;
 	}
 	result[i] = 0;
 	return (result);
-}
-
-int	static	ft_strcmp(char *s1, char *s2)
-{
-	int	i;
-
-	i = 0;
-	while (s1[i] || s2[i])
-	{
-		if (s1[i] != s2[i])
-			return (s1[i] - s2[i]);
-		i++;
-	}
-	return (0);
 }
 
 void	create_heredoc(const char *delim, bool is_quoted)
@@ -526,6 +492,7 @@ void	create_heredoc(const char *delim, bool is_quoted)
 	fd = open("heredoc.tmp", O_RDWR | O_CREAT | O_TRUNC, 0777);
 	while (1)
 	{
+		ft_printf("heredoc>");
 		line = get_next_line(0);
 		if (line == 0 || line[ft_strlen(line) - 1] != '\n')
 		{
@@ -535,7 +502,7 @@ void	create_heredoc(const char *delim, bool is_quoted)
 			break ;
 		}
 		else if (ft_strncmp(line, delim, ft_strlen(line) - 1) == 0 \
-		&& ft_strlen(line) - 1 == ft_strlen(delim))
+		&& (ft_strlen(line) - 1 == ft_strlen(delim)))
 		{
 			free(line);
 			break ;
@@ -543,15 +510,44 @@ void	create_heredoc(const char *delim, bool is_quoted)
 		write(fd, line, ft_strlen(line));
 		free(line);
 	}
-/* 	close(fd);
-	fd = open("heredoc.tmp", O_RDWR);
-	while (1)
+	close(fd);
+}
+
+void	open_file_redir(t_token *token)
+{
+	t_token	*current;
+	int		fd;
+
+	current = token;
+	while (current)
 	{
-		line = get_next_line(fd);
-		ft_printf("%s",line);
-		if (line == 0)
-			return (0);
-	}*/
+		fd = 0;
+		if (current->type == in)
+			fd = open(current->str, O_RDONLY);
+		else if (current->type == out || current->type == append)
+			fd = open(current->str, O_WRONLY | O_CREAT | \
+			O_TRUNC * (current->type != append), 0777);
+		else if (current->type == heredoc)
+		{
+			create_heredoc(current->str, 1);
+			free(current->str);
+			current->str = ft_strdup("heredoc.tmp");
+		}
+		else if (current->type == amb_redir)
+			perror("ambiguous redirection");
+		if (fd == -1)
+			perror(current->str);
+		if (fd == -1 || current->type == amb_redir)
+		{
+			while (current && current->type != pipe_op)
+			{
+				current->type = amb_redir;
+				current = current->next;
+			}
+		}
+		if (current)
+			current = current->next;
+	}
 }
 
 t_pipe	*extract_pipes(t_token *tokens)
@@ -573,7 +569,7 @@ t_pipe	*extract_pipes(t_token *tokens)
 			cur_result->next = (t_pipe *)ft_calloc(1, sizeof (t_pipe));
 			cur_result = cur_result->next;
 		}
-		else if (current->type != in)
+		else if (current->type == in || current->type == heredoc)
 		{
 			if (cur_result->infile)
 				free(cur_result->infile);
@@ -591,10 +587,11 @@ t_pipe	*extract_pipes(t_token *tokens)
 		{
 			cur_result->in = -1;
 			cur_result->out = -1;
+			while (current->next && current->next->type != pipe_op)
+				current = current->next;
 		}
 		current = current->next;
 	}
-	read_pipes(result);
 	current = tokens;
 	cur_result = result;
 	int	i = 0;
@@ -612,9 +609,9 @@ t_pipe	*extract_pipes(t_token *tokens)
 		}
 		else if (current->type == word)
 		{
-			ft_printf("str:%s\n", current->str);
 			if (cur_result->cmd == 0)
 			{
+				ft_printf("str:%s\n", current->str);
 				cur_result->cmd = ft_strdup(current->str);
 				current = current->next;
 			}
@@ -625,7 +622,7 @@ t_pipe	*extract_pipes(t_token *tokens)
 	return (result);
 }
 
-int	main(int argc, char **argv, char **envp)
+/* int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
 	t_pipe	*pipes;
@@ -643,25 +640,23 @@ int	main(int argc, char **argv, char **envp)
 		if (check_tokens(tokens) != 0)
 		{
 			exit_error("bash: syntax error\n", &tokens);
+			continue ;
 		}
 		else
 		{
 			tokens = parse_tokens(&tokens, free);
 		}
-		//expansion
-		//execution
 		expansion(&tokens, envp);
-		temp_read_tokens(&tokens);
 		read_tokens(tokens);
+		open_file_redir(tokens);
 		pipes = extract_pipes(tokens);
 		read_pipes(pipes);
 		clear_tokens(&tokens, free);
 			//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함
 			//main 정확히 짤 때는 두번 콜되지 않게 조심하기
 	}
-	create_heredoc("delim", 1);
 	return (0);
-}
+} */
 
 /*expansion module tests*/
 /* int	main(int argc, char **argv, char **envp)
