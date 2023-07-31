@@ -387,7 +387,7 @@ void	expansion(t_token **tokens, char **envp)
 		expanded = token_to_etoken(current, envp);
 		if (expanded)
 			expanded->type = current->type;
-		if (expanded == 0 && (current->type == 1 || \
+		if (expanded == NULL && (current->type == 1 || \
 			current->type == 3 || current->type == 4))
 		{
 			current->type = amb_redir;
@@ -504,6 +504,56 @@ char	**extract_arg(t_token **tokens)
 	return (result);
 }
 
+int	static	ft_strcmp(char *s1, char *s2)
+{
+	int	i;
+
+	i = 0;
+	while (s1[i] || s2[i])
+	{
+		if (s1[i] != s2[i])
+			return (s1[i] - s2[i]);
+		i++;
+	}
+	return (0);
+}
+
+void	create_heredoc(const char *delim, bool is_quoted)
+{
+	int	fd;
+	char	*line;
+
+	fd = open("heredoc.tmp", O_RDWR | O_CREAT | O_TRUNC, 0777);
+	while (1)
+	{
+		line = get_next_line(0);
+		if (line == 0 || line[ft_strlen(line) - 1] != '\n')
+		{
+			if (line)
+				free(line);
+			ft_printf("ERRRRORROR\n");//error
+			break ;
+		}
+		else if (ft_strncmp(line, delim, ft_strlen(line) - 1) == 0 \
+		&& ft_strlen(line) - 1 == ft_strlen(delim))
+		{
+			free(line);
+			break ;
+		}
+		write(fd, line, ft_strlen(line));
+		free(line);
+	}
+/* 	close(fd);
+	fd = open("heredoc.tmp", O_RDWR);
+	while (1)
+	{
+		line = get_next_line(fd);
+		ft_printf("%s",line);
+		if (line == 0)
+			return (0);
+	}*/
+}
+
 t_pipe	*extract_pipes(t_token *tokens)
 {
 	t_pipe	*result;
@@ -523,22 +573,19 @@ t_pipe	*extract_pipes(t_token *tokens)
 			cur_result->next = (t_pipe *)ft_calloc(1, sizeof (t_pipe));
 			cur_result = cur_result->next;
 		}
-		else if (current->type == in)
+		else if (current->type != in)
 		{
 			if (cur_result->infile)
 				free(cur_result->infile);
 			cur_result->infile = ft_strdup(current->str);
-			cur_result->in = 1;
+			cur_result->in = in;
 		}
 		else if (current->type == out || current->type == append)
 		{
 			if (cur_result->outfile)
 				free(cur_result->outfile);
 			cur_result->outfile = ft_strdup(current->str);
-			if (current->type == out)
-				cur_result->out = 1;
-			else if (current->type == append)
-				cur_result->out = 2;
+			cur_result->out = current->type;
 		}
 		if (current->type == amb_redir)
 		{
@@ -612,6 +659,7 @@ int	main(int argc, char **argv, char **envp)
 			//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함
 			//main 정확히 짤 때는 두번 콜되지 않게 조심하기
 	}
+	create_heredoc("delim", 1);
 	return (0);
 }
 
