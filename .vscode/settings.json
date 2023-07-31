@@ -1,6 +1,7 @@
 {
 	"files.associations": {
 		"functional": "c",
-		"curses.h": "c"
+		"curses.h": "c",
+		"cerrno": "c"
 	}
 }

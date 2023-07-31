@@ -10,6 +10,7 @@
 # include <curses.h>
 # include <term.h>
 # include <signal.h>
+# include <errno.h>
 # include "libft.h"
 
 typedef enum e_quote_type

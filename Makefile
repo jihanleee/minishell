@@ -17,7 +17,6 @@ SRCS		= ./srcs/tokenizer.c \
 				./srcs/find_param.c \
 				./srcs/expander.c \
 				./srcs/signal.c \
-				./srcs/pwd.c
 				# change or add files if needed
 OBJS		= ${SRCS:.c=.o}
 

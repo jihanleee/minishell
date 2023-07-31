@@ -455,6 +455,24 @@ void	read_pipes(t_pipe *pipes)
 	}
 }
 
+void	open_file_redir(t_token *token)
+{
+	t_token	*current;
+	int		fd;
+
+	current = token;
+	while (current)
+	{
+		if (current->type == in)
+		{
+			fd = open(current->str, O_RDONLY);
+			if (fd == -1)
+				perror(strerror(errno));
+		}
+		current->next;
+	}
+}
+
 char	**extract_arg(t_token **tokens)
 {
 	char		**result;
@@ -560,7 +578,7 @@ t_pipe	*extract_pipes(t_token *tokens)
 	return (result);
 }
 
-/* int	main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
 	t_pipe	*pipes;
@@ -595,7 +613,7 @@ t_pipe	*extract_pipes(t_token *tokens)
 			//main 정확히 짤 때는 두번 콜되지 않게 조심하기
 	}
 	return (0);
-} */
+}
 
 /*expansion module tests*/
 /* int	main(int argc, char **argv, char **envp)
