@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -166,18 +165,18 @@ char	*ft_cmd(char **path, char *cmd)
     return (NULL);
 }
 
-char	**trim_path(char **envp)
+char	**trim_path(char **env)
 {
     int		i;
     char	**path;
 
     i = -1;
-    while (envp[++i])
+    while (env[++i])
     {
-        if (ft_strncmp("PATH", envp[i], 4) == 0)
+        if (ft_strncmp("PATH", env[i], 4) == 0)
             break ;
     }
-    path = ft_split(envp[i] + 5, ':');
+    path = ft_split(env[i] + 5, ':');
     return (path);
 }
 
@@ -197,6 +196,7 @@ char *get_full_path(char **env, char *cmd)
 
     return (full_path);
 }
+
 
 int redirect_fd(int old_fd, int new_fd) 
 {
@@ -247,24 +247,23 @@ void    apply_pipe(t_cmd *cmd)
     if (cmd->end_type == 1) 
     {
         // 파이프를 사용하는 경우 파이프로 리다이렉션
-        redirect_fd(cmd->end[0], STDIN_FILENO);
-        close(cmd->end[1]);
+        redirect_fd(cmd->end[1], STDOUT_FILENO);
+        close(cmd->end[0]);
     }
 
     if (cmd->prev && cmd->prev->end_type == 1) 
     {
         // 이전 명령어가 파이프를 사용하는 경우 파이프로 리다이렉션
-        redirect_fd(cmd->prev->end[1], STDOUT_FILENO);
-        close(cmd->prev->end[0]);
+        redirect_fd(cmd->prev->end[0], STDIN_FILENO);
+        close(cmd->prev->end[1]);
     }
-}
+}	
 
 
 void handle_child_process(t_cmd *cmd, char **env, int in_fd) 
 {
     char *full_path;
 
-    apply_redirection(cmd);
     apply_pipe(cmd);
     if (in_fd != STDIN_FILENO) 
 	{
@@ -304,7 +303,6 @@ void	ft_putstr_fd(char const *s, int fd)
 		write(fd, s++, 1);
 }
 
-
 int	ft_pwd(int fd)
 {
 	char		*str;
@@ -334,15 +332,12 @@ int execute_builtin_with_pipe(t_cmd *cmd, int (*builtin_func)(int), int fd)
     return (0);
 }
 
-
 int execute_builtin(t_cmd *cmd, char ***env) 
 {
     int fd = STDOUT_FILENO;
     int res;
-    // 입력 리다이렉션 처리
-    apply_redirection(cmd);
-        // 내장 함수 실행
-    if (ft_strncmp("pwd", cmd->av[0], 4) == 0)
+    apply_redirection(cmd);     // 입력 리다이렉션 처리
+    if (ft_strncmp("pwd", cmd->av[0], 4) == 0)         // 내장 함수 실행
         res = execute_builtin_with_pipe(cmd, ft_pwd, fd);
     // else if (ft_strncmp("export", cmd->av[0], 7) == 0)
     //     res = execute_builtin_with_pipe(cmd, ft_export, fd);
@@ -350,7 +345,7 @@ int execute_builtin(t_cmd *cmd, char ***env)
     else
         res = -1;
     return (res);
-    }
+}
 
 int exec_cmd(t_cmd *cmd, char **env) 
 {
@@ -402,18 +397,29 @@ void ft_execute(t_cmd *cmd, char **env)
 	}
 }
 
-int main()
+int main(int ac, char **av, char **env)
 {
-    t_cmd cmd;
-    char *env[] = {NULL};
-    cmd.av = (char *[]){"pwd", NULL};
-    cmd.end_type = 0; 
-    cmd.redirect_input = 0;
-    cmd.redirect_output = "outfile";
-    cmd.append_flag = 0;
-    cmd.prev = NULL;
-    cmd.next = NULL;
+    (void)ac;
+    (void)av;
+    t_cmd *first_cmd = (t_cmd *)malloc(sizeof(t_cmd));
+    first_cmd->av = (char *[]){"pwd", NULL};
+    first_cmd->redirect_output = "outfile";
+    first_cmd->end_type = 0;
+    first_cmd->next = NULL;
 
-    ft_execute(&cmd, env);
+    // t_cmd *sec_cmd = (t_cmd *)malloc(sizeof(t_cmd));
+    // sec_cmd->av = (char *[]){"ls", NULL};
+    // sec_cmd->end_type = 0;
+    // sec_cmd->redirect_output = "outfile";
+    // sec_cmd->prev = pwd_cmd;
+    // sec_cmd->next = NULL;
+
+    // pwd_cmd->next = sec_cmd;
+
+    ft_execute(first_cmd, env);
+
+    free(first_cmd);
+    // free(sec_cmd);
+
     return (0);
 }
