@@ -1,34 +1,61 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-
-//av 로 받은 인자들을 "|" 나 ";" 으로 끊어서 struct 에 넣고 연결 리스트로 이어붙힘.
-// av 돌면서 "|" ";"
-
-
+#include <fcntl.h>
 
 typedef struct s_cmd
 {
-    int     cnt_lexeme; // 명령어 묶음 개수
-    char    **av; //파이프랑  ; 전 까지 끊어서 저장해두고 execve 에 통째로 넣어줌.
+    char    **av;               
     int     end_type;
     int     end[2];
-    struct  s_cmd *prev; // 파이프 중간에 있는지 확인해야하니까
+    char    *redirect_input;
+    char    *redirect_output;
+    int     append_flag;
+    struct  s_cmd *prev;
     struct  s_cmd *next;
-}   t_cmd;
+} t_cmd;
 
-
-void	ft_putstr_fd(char const *s, int fd)
+int ft_strlen(char *s)
 {
-	if (s == 0)
-		return ;
+	int len = 0;
+	if (!s)
+		return (0);
 	while (*s)
-		write(fd, s++, 1);
+	{
+		len++;
+		s++;
+	}
+	return (len);
 }
 
+char	*ft_strjoin(char *s1, char *s2)
+{
+	char	*str;
+	int		s1_len;
+	int		s2_len;
+	int		i;
+	int		j;
+
+	i = -1;
+	j = -1;
+	if (s1 == 0 || s2 == 0)
+		return (0);
+	s1_len = ft_strlen(s1);
+	s2_len = ft_strlen(s2);
+	str = (char *)malloc(sizeof(char) * (s1_len + s2_len + 1));
+	if (!str)
+		return (0);
+	while (++i < s1_len)
+		str[i] = s1[i];
+	while (++j < s2_len)
+		str[i++] = s2[j];
+	str[i] = 0;
+	return (str);
+}
 
 int	ft_lexeme_count(char const *s, char c)
 {
@@ -106,44 +133,6 @@ char	**ft_split(char const *s, char c)
 	return (result);
 }
 
-int ft_strlen(char *s)
-{
-	int len = 0;
-	if (!s)
-		return (0);
-	while (*s)
-	{
-		len++;
-		s++;
-	}
-	return (len);
-}
-
-char	*ft_strjoin(char *s1, char *s2)
-{
-	char	*str;
-	int		s1_len;
-	int		s2_len;
-	int		i;
-	int		j;
-
-	i = -1;
-	j = -1;
-	if (s1 == 0 || s2 == 0)
-		return (0);
-	s1_len = ft_strlen(s1);
-	s2_len = ft_strlen(s2);
-	str = (char *)malloc(sizeof(char) * (s1_len + s2_len + 1));
-	if (!str)
-		return (0);
-	while (++i < s1_len)
-		str[i] = s1[i];
-	while (++j < s2_len)
-		str[i++] = s2[j];
-	str[i] = 0;
-	return (str);
-}
-
 int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
 	unsigned int	i;
@@ -155,38 +144,6 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 		i++;
 	return (s1[i] - s2[i]);
 }
-
-char *ft_strdup(char *s)
-{
-	int len = ft_strlen(s);
-	char *new;
-
-	if (!s)
-		return (NULL);
-	if (!(new = (char *)malloc(sizeof(char) * (len + 1))))
-		return (NULL);
-	new[len] = '\0';
-	while (--len >= 0)
-		new[len] = s[len];
-	return (new);
-}
-
-void    ft_lst_add_back(t_cmd **cmd, t_cmd *new)
-{
-	t_cmd	*temp;
-
-	if (!(*cmd))
-		*cmd = new;
-	else
-	{
-		temp = *cmd;
-		while (temp->next)
-			temp = temp->next;
-		temp->next = new;
-		new->prev = temp;
-	}
-}
-
 
 char	*ft_cmd(char **path, char *cmd)
 {
@@ -241,16 +198,74 @@ char *get_full_path(char **env, char *cmd)
     return (full_path);
 }
 
+int redirect_fd(int old_fd, int new_fd) 
+{
+    if (old_fd != new_fd) 
+    {
+        if (dup2(old_fd, new_fd) == -1) 
+        {
+            perror("Error duplicating file descriptor");
+            exit(1);
+        }
+        close(old_fd);
+    }
+    return new_fd;
+}
+
+void apply_redirection(t_cmd *cmd) 
+{
+    if (cmd->redirect_input) 
+    {
+        int input_fd = open(cmd->redirect_input, O_RDONLY);
+        if (input_fd < 0) 
+        {
+            perror("Error opening input file");
+            exit(1);
+        }
+        redirect_fd(input_fd, STDIN_FILENO);
+    }
+
+    if (cmd->redirect_output) 
+    {
+        int flags = O_WRONLY | O_CREAT;
+        if (cmd->append_flag) 
+            flags |= O_APPEND;
+        else 
+            flags |= O_TRUNC;
+        int output_fd = open(cmd->redirect_output, flags, 0644);
+        if (output_fd < 0) 
+        {
+            perror("Error opening output file");
+            exit(1);
+        }
+        redirect_fd(output_fd, STDOUT_FILENO);
+    }
+}
+
+void    apply_pipe(t_cmd *cmd)
+{
+    if (cmd->end_type == 1) 
+    {
+        // 파이프를 사용하는 경우 파이프로 리다이렉션
+        redirect_fd(cmd->end[0], STDIN_FILENO);
+        close(cmd->end[1]);
+    }
+
+    if (cmd->prev && cmd->prev->end_type == 1) 
+    {
+        // 이전 명령어가 파이프를 사용하는 경우 파이프로 리다이렉션
+        redirect_fd(cmd->prev->end[1], STDOUT_FILENO);
+        close(cmd->prev->end[0]);
+    }
+}
+
+
 void handle_child_process(t_cmd *cmd, char **env, int in_fd) 
 {
     char *full_path;
 
-    // 입출력 리다이렉션 처리
-    if (cmd->prev && cmd->prev->end_type == 1 && dup2(cmd->prev->end[0], STDIN_FILENO) < 0) 
-	{
-        perror("Error duplicating file descriptor");
-        exit(1);
-    }
+    apply_redirection(cmd);
+    apply_pipe(cmd);
     if (in_fd != STDIN_FILENO) 
 	{
         if (dup2(in_fd, STDIN_FILENO) < 0) {
@@ -258,15 +273,9 @@ void handle_child_process(t_cmd *cmd, char **env, int in_fd)
             exit(1);
         }
     }
-    if (cmd->end_type == 1 && dup2(cmd->end[1], STDOUT_FILENO) < 0)
-    {
-        perror("Error duplicating file descriptor");
-        exit(1);
-    }
     full_path = get_full_path(env, cmd->av[0]);
     cmd->av[0] = full_path;
-    if (execve(cmd->av[0], cmd->av, env) < 0) 
-	{
+    if (execve(cmd->av[0], cmd->av, env) < 0) {
         perror("Error executing command");
         exit(1);
     }
@@ -286,6 +295,15 @@ void	handle_parent_process(t_cmd *cmd, int pid, int has_pipe)
 			close(cmd->prev->end[0]);
 	}
 }
+
+void	ft_putstr_fd(char const *s, int fd)
+{
+	if (s == 0)
+		return ;
+	while (*s)
+		write(fd, s++, 1);
+}
+
 
 int	ft_pwd(int fd)
 {
@@ -313,29 +331,27 @@ int execute_builtin_with_pipe(t_cmd *cmd, int (*builtin_func)(int), int fd)
         close(pipefd[1]); // 파이프 쓰기 닫음
         return pipefd[0]; // 파이프 읽기 파일 디스크립터 반환
     }
-    return (-1);
+    return (0);
 }
 
-int execute_builtin(t_cmd *cmd, char ***env) {
+
+int execute_builtin(t_cmd *cmd, char ***env) 
+{
     int fd = STDOUT_FILENO;
     int res;
-
+    // 입력 리다이렉션 처리
+    apply_redirection(cmd);
+        // 내장 함수 실행
     if (ft_strncmp("pwd", cmd->av[0], 4) == 0)
         res = execute_builtin_with_pipe(cmd, ft_pwd, fd);
-    // else if (ft_strncmp("cd", cmd->av[0], 3) == 0)
-    //     res = execute_builtin_with_pipe(cmd, ft_cd, fd);
     // else if (ft_strncmp("export", cmd->av[0], 7) == 0)
     //     res = execute_builtin_with_pipe(cmd, ft_export, fd);
-    // else if (ft_strncmp("env", cmd->av[0], 4) == 0)
-    //     res = execute_builtin_with_pipe(cmd, ft_env, fd);
-    // else if (ft_strncmp("unset", cmd->av[0], 6) == 0)
-    //     res = execute_builtin_with_pipe(cmd, ft_unset, fd);
+    // 다른 내장 함수들 추가
     else
         res = -1;
-return (res);
-}
+    return (res);
+    }
 
-// exec_cmd 함수에서 외부 명령어 실행 부분
 int exec_cmd(t_cmd *cmd, char **env) 
 {
     int pid;
@@ -386,58 +402,18 @@ void ft_execute(t_cmd *cmd, char **env)
 	}
 }
 
-int parse_cmd(t_cmd **cmd, char **av)
+int main()
 {
-	t_cmd	*new;
-	int		cnt_lexeme;
+    t_cmd cmd;
+    char *env[] = {NULL};
+    cmd.av = (char *[]){"pwd", NULL};
+    cmd.end_type = 0; 
+    cmd.redirect_input = 0;
+    cmd.redirect_output = "outfile";
+    cmd.append_flag = 0;
+    cmd.prev = NULL;
+    cmd.next = NULL;
 
-	if (!(new = (t_cmd *)malloc(sizeof(t_cmd))))
-		return (0);
-////////////////struct 에 넣을 인자 갯수 확인/////////////////
-	int i = 0;
-	while (av[i] && strcmp(av[i], ";") != 0 && strcmp(av[i], "|") != 0)
-		i++;
-////////////////////cnt_lexeme 초기화, av 끝에 null ///////////////////
-    if (!(new->av = (char **)malloc(sizeof(char *) * (i + 1))))
-		return (0);
-	new->cnt_lexeme= i;
-	new->av[cnt_lexeme] = NULL;
-//////////////////struct 에 "|" , ";" 전까지 나온 인자 strdup///////////
-	while (--i >= 0)
-		new->av[i] = strdup(av[i]);
-////////////////////// 뒤에 파이프인제 세미콜론인지 확인////////////////
-	if (!av[new->cnt_lexeme])
-		new->end_type = 0; 
-	else if (strcmp(av[new->cnt_lexeme],"|") == 0)
-		new->end_type = 1; //define 으로 PIPE = 1 해주기
-	else if (strcmp(av[new->cnt_lexeme],";") == 0)
-		new->end_type = 2; // 마찬가지 define 으로 semi_col = 2;
-
-//////////////////////prev, next//////////////////////////////////////
-	new->prev = NULL;
-	new->next = NULL;
-	ft_lst_add_back(cmd, new); //cmd 에 넣어줌
-	return (new->cnt_lexeme);
-}
-
-int main(int ac, char **av, char **env)
-{
-	t_cmd *cmd;
-	int i;
-
-	if (ac < 1)
-		return (0); // 에러 메세지 출력하기
-	i = 1;
-	cmd = NULL;
-	while (av[i])
-	{
-		i += parse_cmd(&cmd, &av[i]); // 파싱해서 cmd 에 저장
-		if (!av[i]) // 다음 인자 없으면 여기서 파싱 끝
-			break;
-		i++;
-	}
-	if (cmd)
-		ft_execute(cmd, env);
-    //ft_free(cmd); 나중에
-	return (0);
+    ft_execute(&cmd, env);
+    return (0);
 }
