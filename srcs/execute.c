@@ -347,8 +347,6 @@ void exec(t_cmd *cmd, char **env)
     	return ;
     pipe(end);
     exec_function(cmd, &env, end);
-    // dup2(1000, STDOUT_FILENO);
-    // dup2(1001, STDIN_FILENO);
     if (cmd->end_type == 1)
     {
         if ((pid = fork() < 0))
@@ -405,8 +403,6 @@ int main(int ac, char **av, char **env)
 {
     (void)ac;
     (void)av;
-    // dup2(STDOUT_FILENO, 1000);
-    // dup2(STDIN_FILENO, 1001);
 
     char *ls_cmd[] = {"ls", NULL};
     t_cmd *first_cmd = new_cmd(ls_cmd, 1, 0, 3, NULL, "outfile_1");
