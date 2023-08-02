@@ -1,5 +1,28 @@
 #include "minishell.h"
 
+void	clear_tokens(t_token **lst, void (*del)(void *))
+{
+	t_token	*current;
+	t_token	*next;
+
+	if (lst == 0)
+		return ;
+	if (del == 0)
+		return ;
+	current = *lst;
+	ft_printf("currently in clear tokens function\n"); //
+	while (current)
+	{
+		ft_printf("\ttoken we are deleting is %s\n", current->str);//
+		next = current->next;
+		if (current->str)
+			del(current->str);
+		free(current);
+		current = next;
+	}
+	*lst = 0;
+}
+
 char	*assign_single_quote(char *line, int *i, int *quote_info, t_quote_type *type)
 {
 	int		start;
@@ -139,7 +162,7 @@ void	read_lexemes(t_lexeme *current)
 		i++;
 	}
 }
-
+/*
 void	split_expansions(t_lexeme *lexemes)
 {
 	t_lexeme	*current;
@@ -172,6 +195,55 @@ void	split_expansions(t_lexeme *lexemes)
 		}
 		current = current->next;
 	}
+}
+*/int    len_lvname(char *str)
+{
+    int    i;
+
+    if (ft_isdigit(str[1]))
+        return (2);
+    i = 1;
+    while (ft_isalnum(str[i]) || str[i] == '_')
+        i++;
+    return (i);
+}
+
+void    split_expansions(t_lexeme *lexemes)
+{
+    t_lexeme    *current;
+    t_lexeme    *next;
+    int            i;
+    int            len;
+
+    current = lexemes;
+    while (current)
+    {
+        next = current->next;
+        //split them!
+        i = 0;
+        while (current->type != 1 && current->str[i])
+        {
+            if (current->str[i] == '$' && current->type != 1)
+                i += len_lvname(&(current->str[i]));
+            else
+                while (current->str[i] && current->str[i] != '$')
+                    i++;
+            if (current->str[i])
+            {
+                current->next = new_lexeme(ft_strdup(&(current->str[i])), current->type);
+                //protect the malloc
+                current->next->next = next;
+                current->str[i] = '\0';
+            }
+        }
+        current = current->next;
+    }
+    while (lexemes)
+    {
+        if (lexemes->str[0] == '$' && lexemes->str[1] != '\0' && lexemes->type != 1)
+            lexemes->exp = TRUE;
+        lexemes = lexemes->next;
+    }
 }
 
 t_lexeme	*word_to_lexemes(char *str)
@@ -228,7 +300,7 @@ void	replace_params(t_lexeme *lexemes, char **envp)
 int	lexemelen(t_lexeme *lexemes, t_token_type type)
 {
 	t_lexeme	*current;
-	int		*lexeme;
+	//int		*lexeme;
 	int		i;
 	int		count;
 
@@ -297,7 +369,7 @@ int	*lexemes_to_int(t_lexeme *lexemes, t_token_type type)
 	current = lexemes;
 	while (current)
 	{
-		ft_printf("lexems_to_int_while\n");
+		ft_printf("\tlexems_to_int_while\n");
 		while (current && current->exp == TRUE && current->p_found == FALSE && type != heredoc)
 			current = current->next;
 		if (current == 0)
@@ -332,10 +404,11 @@ t_token	*iword_to_tokens(int *lexeme)
 		while (lexeme[start + len] && lexeme[start + len] != -1)
 			len++;
 		if (append_token(&result, new_expanded_token(lexeme, start, len)) == -1)
-			return (clear_tokens(result, free), (free(lexeme), -1));
+			//return (clear_tokens(result, free), (free(lexeme), -1));
+			return (clear_tokens(result, free), (free(lexeme), NULL));
 		start += len;
 	}
-	ft_printf("exiting iword_to_tokens\n");
+	ft_printf("\texiting iword_to_tokens\n");
 	return (result);
 }
 
@@ -442,7 +515,7 @@ void	read_pipes(t_pipe *pipes)
 		{
 			while (pipes->arg[i])
 			{
-				ft_printf("\targ[%d]\t%s\n", i, pipes->arg[i]);
+				ft_printf("arg[%d]\t%s\n", i, pipes->arg[i]);
 				i++;
 			}
 		}
@@ -622,20 +695,25 @@ t_pipe	*extract_pipes(t_token *tokens)
 	return (result);
 }
 
-/* int	main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
 	t_pipe	*pipes;
+	//t_list *history;
+	//t_list new;
 	//t_token	*temp;
 	char	*line;
 	//int		*info;
 	//int		i;
 	//char	*tok;
 
+	(void)argc;
+	(void)argv;
 	while (1)
 	{	//temp = &tokens;
 		line = readline("%");
 		ft_printf("line : %s\n", line);
+		//add_history(line);
 		tokens = create_tokens(line);
 		if (check_tokens(tokens) != 0)
 		{
@@ -651,15 +729,19 @@ t_pipe	*extract_pipes(t_token *tokens)
 		open_file_redir(tokens);
 		pipes = extract_pipes(tokens);
 		read_pipes(pipes);
+		test_execute(pipes, envp, 1);
 		clear_tokens(&tokens, free);
 			//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함
 			//main 정확히 짤 때는 두번 콜되지 않게 조심하기
+		//free_history()	
 	}
+	//rl_clear_history();
 	return (0);
-} */
+}
 
 /*expansion module tests*/
-/* int	main(int argc, char **argv, char **envp)
+//OLD - DO NOT USE
+/*int	main(int argc, char **argv, char **envp)
 {
 	t_lexeme	*lexemes;
 	t_token	*newtok;
@@ -687,4 +769,5 @@ t_pipe	*extract_pipes(t_token *tokens)
 		read_tokens(newtok);
 	}
 	return (0);
-} */
+}
+*/
