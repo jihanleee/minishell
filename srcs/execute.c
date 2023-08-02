@@ -1,5 +1,4 @@
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -185,141 +184,141 @@ char    **trim_path(char **env)
 
 char *get_full_path(char **env, char *cmd)
 {
-    char **path = trim_path(env);
-    char *full_path = ft_cmd(path, cmd);
+	char **path;
+	char *full_path;
 
-    if (!full_path)
-    {
-        while (*path)
-            free(*path++);
-        free(path);
-        perror("Command error");
-        exit(1);
-    }
-
-    return (full_path);
+	path = trim_path(env);
+	full_path = ft_cmd(path, cmd);
+	if (!full_path)
+	{
+		while (*path)
+			free(*path++);
+		free(path);
+		perror("Command error");
+		exit(1);
+	}
+	return (full_path);
 }
 
 int non_builtin(t_cmd *cmd, char **env, int fds[]) 
 {
-    char *full_path = get_full_path(env, cmd->av[0]);
-    cmd->av[0] = full_path;
+	char *full_path = get_full_path(env, cmd->av[0]);
+	cmd->av[0] = full_path;
 
-    int status;
-    pid_t pid = fork();
+	int	status;
+	pid_t pid = fork();
 
-    if (pid < -1) {
-        perror("Error forking");
-        exit(1);
-    }
-
-    if (pid == 0) 
-    {
-        if (cmd->end_type == 1 && cmd->out == 0)
-            dup2(fds[1], 1);
-        
-        if (execve(cmd->av[0], cmd->av, env) == -1) 
-        {
-            perror("Error executing command");
-            exit(1);
-        }
-    }
-    else
-        waitpid(pid, &status, 0);
+	if (pid < -1)
+	{
+		perror("Error forking");
+		exit(1);
+	}
+	if (pid == 0) 
+	{
+		if (cmd->end_type == 1 && cmd->out == 0)
+			dup2(fds[1], 1);
+		if (execve(cmd->av[0], cmd->av, env) == -1) 
+		{
+			perror("Error executing command");
+			exit(1);
+		}
+	}
+	else
+		waitpid(pid, &status, 0);
 }
 
-int redirect_fd(int old_fd, int new_fd) 
+int	redirect_fd(int old_fd, int new_fd)
 {
-    if (old_fd != new_fd) 
-    {
-        if (dup2(old_fd, new_fd) == -1) 
-        {
-            perror("Error duplicating file descriptor");
-            exit(1);
-        }
-        close(old_fd);
-    }
-    return (new_fd);
+	if (old_fd != new_fd)
+	{
+		if (dup2(old_fd, new_fd) == -1)
+		{
+			perror("Error duplicating file descriptor");
+			exit(1);
+		}
+		close(old_fd);
+	}
+	return (new_fd);
 }
 
 void right_redir(t_cmd *cmd)
 {
-    if (cmd->out == 3 && cmd->outfile) 
-    {
-        int flags = O_WRONLY | O_CREAT | O_TRUNC;
-        int output_fd = open(cmd->outfile, flags, 0744);
-        if (output_fd < 0) 
-        {
-            perror("Error opening output file");
-            exit(1);
-        }
-        redirect_fd(output_fd, STDOUT_FILENO);
-    }
-    if (cmd->out == 4 && cmd->outfile) 
-    {
-        int flags = O_WRONLY | O_CREAT | O_APPEND;
-        int output_fd = open(cmd->outfile, flags, 0744);
-        if (output_fd < 0) 
-        {
-            perror("Error opening output file");
-            exit(1);
-        }
-        redirect_fd(output_fd, STDOUT_FILENO);
-    }
+	if (cmd->out == 3 && cmd->outfile) 
+	{
+		int flags = O_WRONLY | O_CREAT | O_TRUNC;
+		int output_fd = open(cmd->outfile, flags, 0744);
+		if (output_fd < 0)
+		{
+			perror("Error opening output file");
+			exit(1);
+		}
+		redirect_fd(output_fd, STDOUT_FILENO);
+	}
+	else if (cmd->out == 4 && cmd->outfile) 
+	{
+		int flags = O_WRONLY | O_CREAT | O_APPEND;
+		int output_fd = open(cmd->outfile, flags, 0744);
+		if (output_fd < 0) 
+		{
+			perror("Error opening output file");
+			exit(1);
+		}
+		redirect_fd(output_fd, STDOUT_FILENO);
+	}
 }
 
 void left_redir(t_cmd *cmd)
 {
-    if (cmd->in == 1 && cmd->infile) 
-    {
-        int input_fd = open(cmd->infile, O_RDONLY);
-        if (input_fd < 0) 
-        {
-            perror("Error opening input file");
-            exit(1);
-        }
-        redirect_fd(input_fd, STDIN_FILENO);
-    }
+	if (cmd->in == 1 && cmd->infile) 
+	{
+		int input_fd = open(cmd->infile, O_RDONLY);
+		if (input_fd < 0) 
+		{
+			perror("Error opening input file");
+			exit(1);
+		}
+		redirect_fd(input_fd, STDIN_FILENO);
+	}
 }
 
-void apply_redir(t_cmd *cmd) 
+void	apply_redir(t_cmd *cmd)
 {
-    left_redir(cmd);
-    right_redir(cmd);
+	left_redir(cmd);
+	right_redir(cmd);
 }
 
-void    ft_putstr_fd(char const *s, int fd)
+void	ft_putstr_fd(char const *s, int fd)
 {
-    if (s == 0)
-        return ;
-    while (*s)
-        write(fd, s++, 1);
+	if (s == 0)
+		return ;
+	while (*s)
+		write(fd, s++, 1);
 }
 
 int ft_pwd(int fd)
 {
-    char        *str;
+	char	*str;
 
-    str = getcwd(NULL, 0);
-    ft_putstr_fd(str, fd);
-    write(fd, "\n", 1);
-    free(str);
-    return (1);
+	str = getcwd(NULL, 0);
+	ft_putstr_fd(str, fd);
+	write(fd, "\n", 1);
+	free(str);
+	return (1);
 }
 
 int exec_function(t_cmd *cmd, char ***env, int end[])
 {
-    int fd;
+	int fd;
 	if (cmd == NULL)
-        return (-1);
-    if (cmd->end_type == 1 && cmd->in != 0 || cmd->out != 0)
-        apply_redir(cmd);
-    if (cmd->end_type == 1 && cmd->in == 0 && cmd->out == 0)
-        fd = end[1]; //output of the first cmd!!!!!!
-    else
-        fd = 1;
-    if (ft_strncmp("pwd", cmd->av[0], 4) == 0)
-        return (ft_pwd(fd));
+		return (-1);
+	if (cmd->in != 0 || cmd->out != 0)
+		apply_redir(cmd);
+	if (cmd->end_type == 1 && cmd->in == 0 && cmd->out == 0)
+		fd = end[1];
+	if (cmd->end_type != 1)
+		fd = STDOUT_FILENO;
+	if (ft_strncmp("pwd", cmd->av[0], 4) == 0)
+		return (ft_pwd(fd));
     // else if (ft_strncmp("cd", cmd->av[0], 3) == 0)
     //     return (ft_cd(cmd));
     // else if (ft_strncmp("exit", cmd->av[0] 5) == 0)
@@ -332,96 +331,94 @@ int exec_function(t_cmd *cmd, char ***env, int end[])
     //     return (ft_echo(cmd, fd));
     // else if (ft_strncmp("unset", cmd->av[0], 6) == 0)
     //     return (ft_unset(cmd, *env));
-    else if (!non_builtin(cmd, *env, end)) 
-        return (-1);
-    return (0);
+	else if (!non_builtin(cmd, *env, end)) 
+		return (-1);
+	return (0);
 }
 
 void exec(t_cmd *cmd, char **env)
 {
-    int     end[2];
-    int     status;
-    pid_t   pid;
-    int     tmp;
-    if(cmd == NULL)
-    	return ;
-    pipe(end);
-    exec_function(cmd, &env, end);
-    if (cmd->end_type == 1)
-    {
-        if ((pid = fork() < 0))
-            perror("Error forking process");
-    }
-    if (pid == 0)
-    {
-        dup2(end[0], 0);
-        close(end[1]);
-        exec(cmd->next, env);
-    }
-    else
-    {
-        close(end[1]);
-        close(end[0]);
-        waitpid(pid, &status, 0);
-    }
-
+	int		end[2];
+	int		status;
+	pid_t	pid;
+	int		tmp;
+	if (cmd == NULL)
+		return ;
+	pipe(end);
+	exec_function(cmd, &env, end);
+	if (cmd->end_type == 1)
+	{
+		if ((pid = fork() < 0))
+			perror("Error forking process");
+	}
+	if (pid == 0)
+	{
+		dup2(end[0], 0);
+		close(end[1]);
+		exec(cmd->next, env);
+	}
+	else
+	{
+		close(end[1]);
+		close(end[0]);
+		waitpid(pid, &status, 0);
+	}
 }
 
 void exec_command_line(t_cmd *cmd, char **env)
 {
-    t_cmd   *temp;
+	t_cmd	*temp;
 
-    temp = cmd;
-    while (temp)
-    {
-        exec(temp, env);
-        temp = temp->next;
-    }
+	temp = cmd;
+	while (temp)
+	{
+		exec(temp, env);
+		temp = temp->next;
+	}
 }
 
-
-t_cmd *new_cmd(char **av, int end_type, int in, int out, char *infile, char *outfile) {
-    t_cmd *cmd = (t_cmd *)malloc(sizeof(t_cmd));
-    if (cmd == NULL) 
-    {
-        perror("Error allocating memory for t_cmd");
-        exit(1);
-    }
-    cmd->av = av;
-    cmd->end_type = end_type;
-    cmd->in = in;
-    cmd->out = out;
-    cmd->infile = infile;
-    cmd->outfile = outfile;
-    cmd->prev = NULL;
-    cmd->next = NULL;
-    return (cmd);
+t_cmd *new_cmd(char **av, int end_type, int in, int out, char *infile, char *outfile) 
+{
+	t_cmd *cmd = (t_cmd *)malloc(sizeof(t_cmd));
+	if (cmd == NULL)
+	{
+		perror("Error allocating memory for t_cmd");
+		exit(1);
+	}
+	cmd->av = av;
+	cmd->end_type = end_type;
+	cmd->in = in;
+	cmd->out = out;
+	cmd->infile = infile;
+	cmd->outfile = outfile;
+	cmd->prev = NULL;
+	cmd->next = NULL;
+	return (cmd);
 }
 
 
 int main(int ac, char **av, char **env)
 {
-    (void)ac;
-    (void)av;
+	(void)ac;
+	(void)av;
 
-    char *ls_cmd[] = {"ls", NULL};
-    t_cmd *first_cmd = new_cmd(ls_cmd, 1, 0, 3, NULL, "outfile_1");
+	char *ls_cmd[] = {"ls", NULL};
+	t_cmd *first_cmd = new_cmd(ls_cmd, 1, 0, 0, NULL, NULL);
 
-    char *pwd_cmd[] = {"pwd", NULL};
-    t_cmd *second_cmd = new_cmd(pwd_cmd, 0, 0, 3, NULL, "outfile_2");
+	char *pwd_cmd[] = {"wc", NULL};
+	t_cmd *second_cmd = new_cmd(pwd_cmd, 0, 0, 3, NULL, "outfile");
 
-    first_cmd->next = second_cmd;
-    second_cmd->prev = first_cmd;
+	first_cmd->next = second_cmd;
+	second_cmd->prev = first_cmd;
 
-    exec_command_line(first_cmd, env);
+	exec_command_line(first_cmd, env);
 
-    t_cmd *temp;
-    while (first_cmd)
-    {
-        temp = first_cmd;
-        first_cmd = first_cmd->next;
-        free(temp);
-    }
-
+	t_cmd *temp;
+	while (first_cmd)
+	{
+		temp = first_cmd;
+		first_cmd = first_cmd->next;
+		free(temp);
+	}
     return (0);
 }
