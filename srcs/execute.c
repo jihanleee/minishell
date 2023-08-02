@@ -1,3 +1,5 @@
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -6,149 +8,150 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
+
 typedef struct s_cmd
 {
     char    **av;               
     int     end_type;
-    int     end[2];
-    char    *redirect_input;
-    char    *redirect_output;
-    int     append_flag;
+    int     in; //0(stdin), 1(infile), 2(heredoc)
+    int     out; //0(stdout), 3(outfile), 4(append)
+    char    *infile;
+    char    *outfile;
     struct  s_cmd *prev;
     struct  s_cmd *next;
 } t_cmd;
 
 int ft_strlen(char *s)
 {
-	int len = 0;
-	if (!s)
-		return (0);
-	while (*s)
-	{
-		len++;
-		s++;
-	}
-	return (len);
+    int len = 0;
+    if (!s)
+        return (0);
+    while (*s)
+    {
+        len++;
+        s++;
+    }
+    return (len);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+char    *ft_strjoin(char *s1, char *s2)
 {
-	char	*str;
-	int		s1_len;
-	int		s2_len;
-	int		i;
-	int		j;
+    char    *str;
+    int     s1_len;
+    int     s2_len;
+    int     i;
+    int     j;
 
-	i = -1;
-	j = -1;
-	if (s1 == 0 || s2 == 0)
-		return (0);
-	s1_len = ft_strlen(s1);
-	s2_len = ft_strlen(s2);
-	str = (char *)malloc(sizeof(char) * (s1_len + s2_len + 1));
-	if (!str)
-		return (0);
-	while (++i < s1_len)
-		str[i] = s1[i];
-	while (++j < s2_len)
-		str[i++] = s2[j];
-	str[i] = 0;
-	return (str);
+    i = -1;
+    j = -1;
+    if (s1 == 0 || s2 == 0)
+        return (0);
+    s1_len = ft_strlen(s1);
+    s2_len = ft_strlen(s2);
+    str = (char *)malloc(sizeof(char) * (s1_len + s2_len + 1));
+    if (!str)
+        return (0);
+    while (++i < s1_len)
+        str[i] = s1[i];
+    while (++j < s2_len)
+        str[i++] = s2[j];
+    str[i] = 0;
+    return (str);
 }
 
-int	ft_lexeme_count(char const *s, char c)
+int ft_lexeme_count(char const *s, char c)
 {
-	int	i;
-	int	cnt;
+    int i;
+    int cnt;
 
-	i = 0;
-	cnt = 0;
-	while (s[i])
-	{
-		if (s[i] == c)
-			i++;
-		else
-		{
-			cnt++;
-			while (s[i] && s[i] != c)
-				i++;
-		}
-	}
-	return (cnt);
+    i = 0;
+    cnt = 0;
+    while (s[i])
+    {
+        if (s[i] == c)
+            i++;
+        else
+        {
+            cnt++;
+            while (s[i] && s[i] != c)
+                i++;
+        }
+    }
+    return (cnt);
 }
 
-char	*ft_lexeme_make(char *lexeme, char const *s, int k, int lexeme_len)
+char    *ft_lexeme_make(char *lexeme, char const *s, int k, int lexeme_len)
 {
-	int		i;
+    int     i;
 
-	i = 0;
-	while (lexeme_len > 0)
-		lexeme[i++] = s[k - lexeme_len--];
-	lexeme[i] = '\0';
-	return (lexeme);
+    i = 0;
+    while (lexeme_len > 0)
+        lexeme[i++] = s[k - lexeme_len--];
+    lexeme[i] = '\0';
+    return (lexeme);
 }
 
-char	**ft_split2(char **result, char const *s, char c, int lexeme_num)
+char    **ft_split2(char **result, char const *s, char c, int lexeme_num)
 {
-	int		i;
-	int		k;
-	int		lexeme_len;
+    int     i;
+    int     k;
+    int     lexeme_len;
 
-	i = 0;
-	k = 0;
-	lexeme_len = 0;
-	while (s[k] && i < lexeme_num)
-	{
-		while (s[k] && s[k] == c)
-			k++;
-		while (s[k] && s[k] != c)
-		{
-			k++;
-			lexeme_len++;
-		}
-		result[i] = (char *)malloc(sizeof(char) * (lexeme_len + 1));
-		if (!(result[i]))
-			return (NULL);
-		ft_lexeme_make(result[i], s, k, lexeme_len);
-		lexeme_len = 0;
-		i++;
-	}
-	result[i] = 0;
-	return (result);
+    i = 0;
+    k = 0;
+    lexeme_len = 0;
+    while (s[k] && i < lexeme_num)
+    {
+        while (s[k] && s[k] == c)
+            k++;
+        while (s[k] && s[k] != c)
+        {
+            k++;
+            lexeme_len++;
+        }
+        result[i] = (char *)malloc(sizeof(char) * (lexeme_len + 1));
+        if (!(result[i]))
+            return (NULL);
+        ft_lexeme_make(result[i], s, k, lexeme_len);
+        lexeme_len = 0;
+        i++;
+    }
+    result[i] = 0;
+    return (result);
 }
 
-char	**ft_split(char const *s, char c)
+char    **ft_split(char const *s, char c)
 {
-	int		lexeme_num;
-	char	**result;
+    int     lexeme_num;
+    char    **result;
 
-	if (s == 0)
-		return (NULL);
-	lexeme_num = ft_lexeme_count(s, c);
-	result = (char **)malloc(sizeof(char *) * (lexeme_num + 1));
-	if (!(result))
-		return (NULL);
-	ft_split2(result, s, c, lexeme_num);
-	return (result);
+    if (s == 0)
+        return (NULL);
+    lexeme_num = ft_lexeme_count(s, c);
+    result = (char **)malloc(sizeof(char *) * (lexeme_num + 1));
+    if (!(result))
+        return (NULL);
+    ft_split2(result, s, c, lexeme_num);
+    return (result);
 }
 
-int	ft_strncmp(const char *s1, const char *s2, size_t n)
+int ft_strncmp(const char *s1, const char *s2, size_t n)
 {
-	unsigned int	i;
+    unsigned int    i;
 
-	i = 0;
-	if (n == 0 || !s1)
-		return (0);
-	while (s1[i] == s2[i] && s1[i] != '\0' && s2[i] != '\0' && i < n - 1)
-		i++;
-	return (s1[i] - s2[i]);
+    i = 0;
+    if (n == 0 || !s1)
+        return (0);
+    while (s1[i] == s2[i] && s1[i] != '\0' && s2[i] != '\0' && i < n - 1)
+        i++;
+    return (s1[i] - s2[i]);
 }
 
-char	*ft_cmd(char **path, char *cmd)
+char    *ft_cmd(char **path, char *cmd)
 {
-    int		i;
-    char	*path_cmd;
-    char	*temp;
+    int     i;
+    char    *path_cmd;
+    char    *temp;
 
     if (access(cmd, X_OK) == 0)
         return (cmd);
@@ -165,10 +168,10 @@ char	*ft_cmd(char **path, char *cmd)
     return (NULL);
 }
 
-char	**trim_path(char **env)
+char    **trim_path(char **env)
 {
-    int		i;
-    char	**path;
+    int     i;
+    char    **path;
 
     i = -1;
     while (env[++i])
@@ -197,6 +200,33 @@ char *get_full_path(char **env, char *cmd)
     return (full_path);
 }
 
+int non_builtin(t_cmd *cmd, char **env, int fds[]) 
+{
+    char *full_path = get_full_path(env, cmd->av[0]);
+    cmd->av[0] = full_path;
+
+    int status;
+    pid_t pid = fork();
+
+    if (pid < -1) {
+        perror("Error forking");
+        exit(1);
+    }
+
+    if (pid == 0) 
+    {
+        if (cmd->end_type == 1 && cmd->out == 0)
+            dup2(fds[1], 1);
+        
+        if (execve(cmd->av[0], cmd->av, env) == -1) 
+        {
+            perror("Error executing command");
+            exit(1);
+        }
+    }
+    else
+        waitpid(pid, &status, 0);
+}
 
 int redirect_fd(int old_fd, int new_fd) 
 {
@@ -209,30 +239,26 @@ int redirect_fd(int old_fd, int new_fd)
         }
         close(old_fd);
     }
-    return new_fd;
+    return (new_fd);
 }
 
-void apply_redirection(t_cmd *cmd) 
+void right_redir(t_cmd *cmd)
 {
-    if (cmd->redirect_input) 
+    if (cmd->out == 3 && cmd->outfile) 
     {
-        int input_fd = open(cmd->redirect_input, O_RDONLY);
-        if (input_fd < 0) 
+        int flags = O_WRONLY | O_CREAT | O_TRUNC;
+        int output_fd = open(cmd->outfile, flags, 0744);
+        if (output_fd < 0) 
         {
-            perror("Error opening input file");
+            perror("Error opening output file");
             exit(1);
         }
-        redirect_fd(input_fd, STDIN_FILENO);
+        redirect_fd(output_fd, STDOUT_FILENO);
     }
-
-    if (cmd->redirect_output) 
+    if (cmd->out == 4 && cmd->outfile) 
     {
-        int flags = O_WRONLY | O_CREAT;
-        if (cmd->append_flag) 
-            flags |= O_APPEND;
-        else 
-            flags |= O_TRUNC;
-        int output_fd = open(cmd->redirect_output, flags, 0644);
+        int flags = O_WRONLY | O_CREAT | O_APPEND;
+        int output_fd = open(cmd->outfile, flags, 0744);
         if (output_fd < 0) 
         {
             perror("Error opening output file");
@@ -242,184 +268,164 @@ void apply_redirection(t_cmd *cmd)
     }
 }
 
-void    apply_pipe(t_cmd *cmd)
+void left_redir(t_cmd *cmd)
 {
-    if (cmd->end_type == 1) 
+    if (cmd->in == 1 && cmd->infile) 
     {
-        // 파이프를 사용하는 경우 파이프로 리다이렉션
-        redirect_fd(cmd->end[1], STDOUT_FILENO);
-        close(cmd->end[0]);
-    }
-
-    if (cmd->prev && cmd->prev->end_type == 1) 
-    {
-        // 이전 명령어가 파이프를 사용하는 경우 파이프로 리다이렉션
-        redirect_fd(cmd->prev->end[0], STDIN_FILENO);
-        close(cmd->prev->end[1]);
-    }
-}	
-
-
-void handle_child_process(t_cmd *cmd, char **env, int in_fd) 
-{
-    char *full_path;
-
-    apply_pipe(cmd);
-    if (in_fd != STDIN_FILENO) 
-	{
-        if (dup2(in_fd, STDIN_FILENO) < 0) {
-            perror("Error duplicating file descriptor");
+        int input_fd = open(cmd->infile, O_RDONLY);
+        if (input_fd < 0) 
+        {
+            perror("Error opening input file");
             exit(1);
         }
-    }
-    full_path = get_full_path(env, cmd->av[0]);
-    cmd->av[0] = full_path;
-    if (execve(cmd->av[0], cmd->av, env) < 0) {
-        perror("Error executing command");
-        exit(1);
+        redirect_fd(input_fd, STDIN_FILENO);
     }
 }
 
-void	handle_parent_process(t_cmd *cmd, int pid, int has_pipe)
+void apply_redir(t_cmd *cmd) 
 {
-	int	status;
-
-	waitpid(pid, &status, 0);
-	if (has_pipe)
-	{
-		close(cmd->end[1]);
-		if (!cmd->next || cmd->end_type != 1)
-			close(cmd->prev->end[0]);
-		if (cmd->prev && cmd->prev->end_type == 1)
-			close(cmd->prev->end[0]);
-	}
+    left_redir(cmd);
+    right_redir(cmd);
 }
 
-void	ft_putstr_fd(char const *s, int fd)
+void    ft_putstr_fd(char const *s, int fd)
 {
-	if (s == 0)
-		return ;
-	while (*s)
-		write(fd, s++, 1);
+    if (s == 0)
+        return ;
+    while (*s)
+        write(fd, s++, 1);
 }
 
-int	ft_pwd(int fd)
+int ft_pwd(int fd)
 {
-	char		*str;
+    char        *str;
 
-	str = getcwd(NULL, 0);
-	ft_putstr_fd(str, fd);
-	write(fd, "\n", 1);
-	free(str);
-	return (1);
-}
-
-int execute_builtin_with_pipe(t_cmd *cmd, int (*builtin_func)(int), int fd) 
-{
-    int pipefd[2];
-
-    if (cmd->end_type == 1) 
-	{ // 파이프 뒤에 명령어가 있을 경우
-        pipe(pipefd);
-        fd = pipefd[1]; // 파이프에 쓰기 위한 파일 디스크립터로 변경
-    }
-    builtin_func(fd);
-    if (cmd->end_type == 1) 
-	{
-        close(pipefd[1]); // 파이프 쓰기 닫음
-        return pipefd[0]; // 파이프 읽기 파일 디스크립터 반환
-    }
-    return (0);
-}
-
-int execute_builtin(t_cmd *cmd, char ***env) 
-{
-    int fd = STDOUT_FILENO;
-    int res;
-    apply_redirection(cmd);     // 입력 리다이렉션 처리
-    if (ft_strncmp("pwd", cmd->av[0], 4) == 0)         // 내장 함수 실행
-        res = execute_builtin_with_pipe(cmd, ft_pwd, fd);
-    // else if (ft_strncmp("export", cmd->av[0], 7) == 0)
-    //     res = execute_builtin_with_pipe(cmd, ft_export, fd);
-    // 다른 내장 함수들 추가
-    else
-        res = -1;
-    return (res);
-}
-
-int exec_cmd(t_cmd *cmd, char **env) 
-{
-    int pid;
-    int has_pipe;
-    int builtin_res;
-    int in_fd = STDIN_FILENO;
-
-    has_pipe = 0;
-    builtin_res = execute_builtin(cmd, &env);
-    if (builtin_res == -1) 
-	{ // 외부 명령어인 경우
-        if ((cmd->prev && cmd->prev->end_type == 1) || cmd->end_type == 1) 
-		{
-            pipe(cmd->end);
-            has_pipe = 1;
-            if (cmd->prev && cmd->prev->end_type == 1) // 이전 명령어가 존재, 이전 명령어 끝에 파이프 존재, 그 명령어가 내장함수일때
-			{
-				builtin_res = execute_builtin(cmd->prev, &env);
-				if (builtin_res != -1)
-					in_fd = builtin_res;
-				else
-					in_fd = cmd->prev->end[0];
-			}
-        }
-        pid = fork();
-        if (pid < 0) 
-		{	
-            perror("Error forking process");
-            return 0;
-        } 
-		else if (pid == 0) 
-            handle_child_process(cmd, env, in_fd);
-        else 
-			handle_parent_process(cmd, pid, has_pipe);
-    }
+    str = getcwd(NULL, 0);
+    ft_putstr_fd(str, fd);
+    write(fd, "\n", 1);
+    free(str);
     return (1);
 }
 
-void ft_execute(t_cmd *cmd, char **env)
+int exec_function(t_cmd *cmd, char ***env, int end[])
 {
-	t_cmd	*temp;
-
-	temp = cmd;
-	while (temp)
-	{
-		exec_cmd(temp, env);
-		temp = temp->next;
-	}
+    int fd;
+	if (cmd == NULL)
+        return (-1);
+    if (cmd->end_type == 1 && cmd->in != 0 || cmd->out != 0)
+        apply_redir(cmd);
+    if (cmd->end_type == 1 && cmd->in == 0 && cmd->out == 0)
+        fd = end[1]; //output of the first cmd!!!!!!
+    else
+        fd = 1;
+    if (ft_strncmp("pwd", cmd->av[0], 4) == 0)
+        return (ft_pwd(fd));
+    // else if (ft_strncmp("cd", cmd->av[0], 3) == 0)
+    //     return (ft_cd(cmd));
+    // else if (ft_strncmp("exit", cmd->av[0] 5) == 0)
+    //     return (ft_exit(cmd));
+    // else if (ft_strncmp("env", cmd->av[0], 4) == 0)
+    //     return (ft_env(*env, fd));
+    // else if (ft_strncmp("export", cmd->av[0], 7) == 0)
+    //     return (ft_export(cmd, env, fd));
+    // else if (ft_strncmp("echo", cmd->av[0], 5) == 0)
+    //     return (ft_echo(cmd, fd));
+    // else if (ft_strncmp("unset", cmd->av[0], 6) == 0)
+    //     return (ft_unset(cmd, *env));
+    else if (!non_builtin(cmd, *env, end)) 
+        return (-1);
+    return (0);
 }
+
+void exec(t_cmd *cmd, char **env)
+{
+    int     end[2];
+    int     status;
+    pid_t   pid;
+    int     tmp;
+    if(cmd == NULL)
+    	return ;
+    pipe(end);
+    exec_function(cmd, &env, end);
+    // dup2(1000, STDOUT_FILENO);
+    // dup2(1001, STDIN_FILENO);
+    if (cmd->end_type == 1)
+    {
+        if ((pid = fork() < 0))
+            perror("Error forking process");
+    }
+    if (pid == 0)
+    {
+        dup2(end[0], 0);
+        close(end[1]);
+        exec(cmd->next, env);
+    }
+    else
+    {
+        close(end[1]);
+        close(end[0]);
+        waitpid(pid, &status, 0);
+    }
+
+}
+
+void exec_command_line(t_cmd *cmd, char **env)
+{
+    t_cmd   *temp;
+
+    temp = cmd;
+    while (temp)
+    {
+        exec(temp, env);
+        temp = temp->next;
+    }
+}
+
+
+t_cmd *new_cmd(char **av, int end_type, int in, int out, char *infile, char *outfile) {
+    t_cmd *cmd = (t_cmd *)malloc(sizeof(t_cmd));
+    if (cmd == NULL) 
+    {
+        perror("Error allocating memory for t_cmd");
+        exit(1);
+    }
+    cmd->av = av;
+    cmd->end_type = end_type;
+    cmd->in = in;
+    cmd->out = out;
+    cmd->infile = infile;
+    cmd->outfile = outfile;
+    cmd->prev = NULL;
+    cmd->next = NULL;
+    return (cmd);
+}
+
 
 int main(int ac, char **av, char **env)
 {
     (void)ac;
     (void)av;
-    t_cmd *first_cmd = (t_cmd *)malloc(sizeof(t_cmd));
-    first_cmd->av = (char *[]){"pwd", NULL};
-    first_cmd->redirect_output = "outfile";
-    first_cmd->end_type = 0;
-    first_cmd->next = NULL;
+    // dup2(STDOUT_FILENO, 1000);
+    // dup2(STDIN_FILENO, 1001);
 
-    // t_cmd *sec_cmd = (t_cmd *)malloc(sizeof(t_cmd));
-    // sec_cmd->av = (char *[]){"ls", NULL};
-    // sec_cmd->end_type = 0;
-    // sec_cmd->redirect_output = "outfile";
-    // sec_cmd->prev = pwd_cmd;
-    // sec_cmd->next = NULL;
+    char *ls_cmd[] = {"ls", NULL};
+    t_cmd *first_cmd = new_cmd(ls_cmd, 1, 0, 3, NULL, "outfile_1");
 
-    // pwd_cmd->next = sec_cmd;
+    char *pwd_cmd[] = {"pwd", NULL};
+    t_cmd *second_cmd = new_cmd(pwd_cmd, 0, 0, 3, NULL, "outfile_2");
 
-    ft_execute(first_cmd, env);
+    first_cmd->next = second_cmd;
+    second_cmd->prev = first_cmd;
 
-    free(first_cmd);
-    // free(sec_cmd);
+    exec_command_line(first_cmd, env);
+
+    t_cmd *temp;
+    while (first_cmd)
+    {
+        temp = first_cmd;
+        first_cmd = first_cmd->next;
+        free(temp);
+    }
 
     return (0);
 }
