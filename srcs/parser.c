@@ -92,10 +92,12 @@ int	check_tokens(t_token *tokens)
 	if (!result)
 		return (0);
 	printf("\n\nin check tokens function\n");//
-	if (tokens->type == 5)	//if the first token is a type
+	printf("\ttype right now is %d\n", tokens->type);
+	if (tokens->type == 5)	//if the first token is a pipe
 	{
-		result = 1;
-		tokens = tokens->next;
+		//result = 1;
+		return (1);
+		//tokens = tokens->next;
 	}
 	while (tokens && tokens->str)
 	{
@@ -104,7 +106,8 @@ int	check_tokens(t_token *tokens)
 		{
 			if (tokens->next == NULL || tokens->next->type != 0)
 				//when line ends with <, <<, >, >>
-				result = 1;
+				//result = 1;
+				return (1);
 		}
 		//if (tokens->type == in || tokens->type == out)
 		//{
@@ -112,9 +115,11 @@ int	check_tokens(t_token *tokens)
 		//		result = 1;
 		//}
 		if (tokens->type == pipe_op && tokens->next && tokens->next->type == pipe_op)
-			result = 1;
+			//result = 1;
+			return (1);
 		tokens = tokens->next;
 	}
-	printf("result is %d\n", result);
-	return (result);
+	//printf("result is %d\n", result);
+	//return (result);
+	return (0);
 }

@@ -60,6 +60,15 @@ typedef struct s_pipe
 	struct s_pipe	*next;
 }				t_pipe;
 
+/*
+typedef struct s_list
+{
+	char	*line;
+	s_list	*next;
+	//s_list	*prev;
+}				t_list;
+*/
+
 /*find_param.c*/
 char	*find_param(char *p_name, char **envp);
 
@@ -69,6 +78,7 @@ int		*create_quote_info(char *line);
 t_token	*create_tokens(char *line);
 int		*create_quote_info(char *line);
 char	*find_param(char *p_name, char **envp);
+int		append_token(t_token **tokens, t_token *new);
 
 /*parser.c*/
 void	temp_read_tokens(t_token **lst);
@@ -81,7 +91,41 @@ void	new_prompt(void);
 void 	sig_handler(int signum, siginfo_t *info, void *context);
 int 	sigaction_set(void);
 
+//---------------------------------------------------------------
+/* cd.c */
+int	ft_cd(t_pipe **lst, char **env, int fd);
+
+/* echo.c */
+int		get_length(char *str);
+void	ft_echo(t_pipe **lst, char **env, int fd);
+
+/* env.c */
+void	ft_env(t_pipe **lst, char **env, int fd);
+
+/* exit.c */
+int		check_int(char *arg);
+int		ft_exit(t_pipe **lst, char **env, int fd);
+
+/* export.c */
+int	first_is_valid(char c);
+void	export_combined(char **combine);
+int		get_block_count(t_pipe **lst);
+int		fill_blocks(char **combine, t_pipe **lst);
+int		ft_export(t_pipe **lst, char **env, int fd);
+
+/* pwd.c */
+void	ft_pwd(t_pipe **lst, char **env, int fd);
+
+/* unset.c */
+//void	delete_line(char **env, char *string);
+void	ft_unset(t_pipe **lst, char **env, int fd);
+
+/* temp_execute.c */
+void	test_execute(t_pipe *pipes, char **env, int fd);
+
+
 /*main.c*/
 void	clear_tokens(t_token **lst, void (*del)(void *));
+//moved to expander.c for now
 
 #endif

@@ -12,7 +12,8 @@
 #include "libft.h"
 #include <stdlib.h>
 
-t_list	*ft_lstnew(void *content)
+/*
+t_list	*ft_lstnew(char *content)
 {
 	t_list	*new;
 
@@ -20,6 +21,19 @@ t_list	*ft_lstnew(void *content)
 	if (new == 0)
 		return (NULL);
 	new->next = 0;
-	new->content = content;
+	new->line = content;
 	return (new);
+}
+*/
+
+t_list *ft_lstnew(void *content)
+{
+	t_list *list;
+
+	list = malloc(sizeof(t_list));
+	if (!list)
+		return (NULL);
+	list->content = content;
+	list->next = NULL;
+	return (list);
 }

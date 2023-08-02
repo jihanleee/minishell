@@ -52,6 +52,8 @@ int	middle_is_valid(char c)
 	//1 = problem
 	if (c == '=' || c == '_' || c == '-' || c == '\\' || c == ' ' || c == '|')
 		return (0);
+	else if (c == '(' || c == ')')
+		return (0);
 	else if (c >= 'a' && c <= 'z')
 		return (0);
 	else if (c >= 'A' && c <= 'Z')

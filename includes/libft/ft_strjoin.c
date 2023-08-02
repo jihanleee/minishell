@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include <stdlib.h>
+#include <stdio.h>
 
 static int	ft_strlen(char const *str)
 {
@@ -29,6 +30,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	int		len;
 	char	*result;
 
+	printf("\tinside strjoin\n");
 	if (!s1 || !s2)
 		return (0);
 	len = ft_strlen(s1) + ft_strlen(s2);

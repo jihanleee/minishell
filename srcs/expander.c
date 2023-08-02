@@ -695,50 +695,6 @@ t_pipe	*extract_pipes(t_token *tokens)
 	return (result);
 }
 
-int	main(int argc, char **argv, char **envp)
-{
-	t_token	*tokens;
-	t_pipe	*pipes;
-	//t_list *history;
-	//t_list new;
-	//t_token	*temp;
-	char	*line;
-	//int		*info;
-	//int		i;
-	//char	*tok;
-
-	(void)argc;
-	(void)argv;
-	while (1)
-	{	//temp = &tokens;
-		line = readline("%");
-		ft_printf("line : %s\n", line);
-		//add_history(line);
-		tokens = create_tokens(line);
-		if (check_tokens(tokens) != 0)
-		{
-			exit_error("bash: syntax error\n", &tokens);
-			continue ;
-		}
-		else
-		{
-			tokens = parse_tokens(&tokens, free);
-		}
-		expansion(&tokens, envp);
-		read_tokens(tokens);
-		open_file_redir(tokens);
-		pipes = extract_pipes(tokens);
-		read_pipes(pipes);
-		test_execute(pipes, envp, 1);
-		clear_tokens(&tokens, free);
-			//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함
-			//main 정확히 짤 때는 두번 콜되지 않게 조심하기
-		//free_history()	
-	}
-	//rl_clear_history();
-	return (0);
-}
-
 /*expansion module tests*/
 //OLD - DO NOT USE
 /*int	main(int argc, char **argv, char **envp)

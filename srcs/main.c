@@ -1,5 +1,54 @@
 #include "minishell.h"
 
+
+int	main(int argc, char **argv, char **envp)
+{
+	t_token	*tokens;
+	t_pipe	*pipes;
+	//t_list *history;
+	//t_list new;
+	//t_token	*temp;
+	char	*line;
+	//int		*info;
+	//int		i;
+	//char	*tok;
+
+	(void)argc;
+	(void)argv;
+	while (1)
+	{	//temp = &tokens;
+		line = readline("%");
+		ft_printf("line : %s\n", line);
+		add_history(line);
+		tokens = create_tokens(line);
+		printf("check tokens result is %d\n", check_tokens(tokens));
+		if (check_tokens(tokens) != 0)
+		{
+			//exit_error("bash: syntax error\n", &tokens);
+			printf("bash: syntax error\n");
+			clear_tokens(&tokens, free);
+			return (1);	//error
+		}
+		else
+		{
+			tokens = parse_tokens(&tokens, free);
+		}
+		expansion(&tokens, envp);
+		read_tokens(tokens);
+		open_file_redir(tokens);
+		pipes = extract_pipes(tokens);
+		read_pipes(pipes);
+		//test_execute(pipes, envp, 1);
+		//exec_command_line(t_pipe *pipe, char **env)
+		clear_tokens(&tokens, free);
+			//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함
+			//main 정확히 짤 때는 두번 콜되지 않게 조심하기
+	}
+	rl_clear_history();
+	return (0);
+}
+
+/*
 void	clear_tokens(t_token **lst, void (*del)(void *))
 {
 	t_token	*current;
@@ -22,7 +71,9 @@ void	clear_tokens(t_token **lst, void (*del)(void *))
 	}
 	*lst = 0;
 }
+*/
 
+/*
 int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
@@ -62,6 +113,8 @@ int	main(int argc, char **argv, char **envp)
 	}
 	return (0);
 }
+*/
+
 
 //token type
 //0: word

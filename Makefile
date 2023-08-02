@@ -13,10 +13,19 @@ INCLUDES	= -I ${I_PATH} -I ${L_PATH}
 
 SRCS		= ./srcs/tokenizer.c \
 				./srcs/parser.c \
-				./srcs/main.c \
 				./srcs/find_param.c \
 				./srcs/expander.c \
 				./srcs/signal.c \
+				./srcs/echo.c \
+				./srcs/env.c \
+				./srcs/exit.c \
+				./srcs/export.c \
+				./srcs/pwd.c \
+				./srcs/unset.c \
+				./srcs/cd.c \
+				#./srcs/temp_execute.c
+				#./srcs/builtin/cd.c \
+				#./srcs/main.c \
 				# change or add files if needed
 OBJS		= ${SRCS:.c=.o}
 
@@ -35,21 +44,9 @@ clean:
 	${RM} ./*/*.o
 	${RM} ./*/*/*.o
 
-#혹시 위의 clean이 안되면 이 아래에 있는거 사용하세요
-#둘 다 안되면... 연락 주세요..
-#clean:
-#	${RM} ${OBJS}
-#	@${MAKE} -C ${L_PATH} clean
-
 fclean: clean
 	${RM} ${NAME}
 	${RM} ./includes/libft/libft.a
-
-#혹시 위의 fclean이 안되면 이 아래에 있는거 사용하세요
-#둘 다 안되면... 연락 주세요..
-#fclean: clean
-#	${RM} ${NAME}
-#	${RM} ${L_PATH} fclean
 
 re: clean all
 
