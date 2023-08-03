@@ -18,6 +18,8 @@ typedef struct s_pipe
     struct  s_pipe *next;
 } t_pipe;
 
+
+/*
 int ft_strlen(char *s)
 {
     int len = 0;
@@ -165,6 +167,7 @@ int ft_strncmp(const char *s1, const char *s2, size_t n)
         i++;
     return (s1[i] - s2[i]);
 }
+*/
 
 char    *ft_cmd(char **path, char *cmd)
 {
@@ -352,6 +355,7 @@ void	ft_putstr_fd(char const *s, int fd)
 		write(fd, s++, 1);
 }
 
+/*
 int ft_pwd(int fd)
 {
 	char	*pwd;
@@ -362,6 +366,7 @@ int ft_pwd(int fd)
 	free(pwd);
 	return (1);
 }
+*/
 
 int exec_function(t_pipe *cmd_line, char ***env, int end[])
 {
@@ -424,6 +429,7 @@ void exec(t_pipe *cmd_line, char **env)
 	}
 }
 
+/*
 void exec_command_line(t_pipe *cmd_line, char **env)
 {
 	t_pipe	*temp;
@@ -480,3 +486,4 @@ int main(int ac, char **av, char **env)
 	}
     return (0);
 }
+*/
