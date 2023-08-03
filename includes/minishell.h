@@ -12,6 +12,9 @@
 # include <term.h>
 # include <signal.h>
 # include <errno.h>
+# include <string.h>
+# include <sys/types.h>
+# include <sys/wait.h>
 # include "libft.h"
 
 typedef enum e_quote_type
@@ -69,6 +72,16 @@ typedef struct s_list
 }				t_list;
 */
 
+
+/*exec*/
+int 	non_builtin(t_pipe *cmd_line, char **env, int fds[]);
+void	apply_redir(t_pipe *cmd_line);
+int		exec_function(t_pipe *cmd_line, char ***env, int end[]);
+void 	exec(t_pipe *cmd_line, char **env);
+void 	exec_command_line(t_pipe *cmd_line, char **env);
+
+
+
 /*find_param.c*/
 char	*find_param(char *p_name, char **envp);
 
@@ -93,14 +106,14 @@ int 	sigaction_set(void);
 
 //---------------------------------------------------------------
 /* cd.c */
-int	ft_cd(t_pipe **lst, char **env, int fd);
+int		ft_cd(t_pipe **lst, char **env, int fd);
 
 /* echo.c */
 int		get_length(char *str);
-void	ft_echo(t_pipe **lst, char **env, int fd);
+int		ft_echo(t_pipe **lst, char **env, int fd);
 
 /* env.c */
-void	ft_env(t_pipe **lst, char **env, int fd);
+int		ft_env(t_pipe **lst, char **env, int fd);
 
 /* exit.c */
 int		check_int(char *arg);
@@ -114,11 +127,11 @@ int		fill_blocks(char **combine, t_pipe **lst);
 int		ft_export(t_pipe **lst, char **env, int fd);
 
 /* pwd.c */
-void	ft_pwd(t_pipe **lst, char **env, int fd);
+int		ft_pwd(t_pipe **lst, char **env, int fd);
 
 /* unset.c */
 //void	delete_line(char **env, char *string);
-void	ft_unset(t_pipe **lst, char **env, int fd);
+int		ft_unset(t_pipe **lst, char **env, int fd);
 
 /* temp_execute.c */
 void	test_execute(t_pipe *pipes, char **env, int fd);

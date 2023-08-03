@@ -23,7 +23,7 @@ SRCS		= ./srcs/tokenizer.c \
 				./srcs/pwd.c \
 				./srcs/unset.c \
 				./srcs/cd.c \
-				#./srcs/temp_execute.c
+				./srcs/exec.c
 				#./srcs/builtin/cd.c \
 				#./srcs/main.c \
 				# change or add files if needed

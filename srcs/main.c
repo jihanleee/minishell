@@ -39,7 +39,7 @@ int	main(int argc, char **argv, char **envp)
 		pipes = extract_pipes(tokens);
 		read_pipes(pipes);
 		//test_execute(pipes, envp, 1);
-		//exec_command_line(t_pipe *pipe, char **env)
+		exec_command_line(t_pipe *pipe, char **env)
 		clear_tokens(&tokens, free);
 			//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함
 			//main 정확히 짤 때는 두번 콜되지 않게 조심하기

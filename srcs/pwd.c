@@ -14,7 +14,7 @@
 }
 */
 
-void	ft_pwd(t_pipe **lst, char **env, int fd)
+int	ft_pwd(t_pipe **lst, char **env, int fd)
 {
 	t_pipe	*current;
 	char	*print;

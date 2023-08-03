@@ -1,23 +1,5 @@
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <fcntl.h>
-
-typedef struct s_pipe
-{
-    char	*cmd;
-	char    **arg;
-    int     in; //0(stdin), 1(infile), 2(heredoc)
-    int     out; //0(stdout), 3(outfile), 4(append)
-    char    *infile;
-    char    *outfile;
-    struct  s_pipe *next;
-} t_pipe;
-
+#include "minishell.h"
 
 /*
 int ft_strlen(char *s)
@@ -285,6 +267,7 @@ int non_builtin(t_pipe *cmd_line, char **env, int fds[])
 	}
 	else
 		waitpid(pid, &status, 0);
+	return (0);
 }
 
 int	redirect_fd(int old_fd, int new_fd)
@@ -379,20 +362,22 @@ int exec_function(t_pipe *cmd_line, char ***env, int end[])
 		fd = end[1];
 	if (!cmd_line->next)
 		fd = STDOUT_FILENO;
+
+
 	if (ft_strncmp("pwd", cmd_line->cmd, 4) == 0)
-		return (ft_pwd(fd));
-    // else if (ft_strncmp("cd", cmd_line->cmd, 3) == 0)
-    //     return (ft_cd(cmd_line));
-    // else if (ft_strncmp("exit", cmd_line->cmd, 5) == 0)
-    //     return (ft_exit(cmd_line));
-    // else if (ft_strncmp("env", cmd_line->cmd, 4) == 0)
-    //     return (ft_env(*env, fd));
-    // else if (ft_strncmp("export", cmd_line->cmd, 7) == 0)
-    //     return (ft_export(cmd_line, env, fd));
-    // else if (ft_strncmp("echo", cmd_line->cmd, 5) == 0)
-    //     return (ft_echo(cmd_line, fd));
-    // else if (ft_strncmp("unset", cmd_line->cmd, 6) == 0)
-    //     return (ft_unset(cmd_line, *env));
+		return (ft_pwd(&cmd_line, *env, fd));
+    else if (ft_strncmp("cd", cmd_line->cmd, 3) == 0)
+        return (ft_cd(&cmd_line, *env, fd));
+    else if (ft_strncmp("exit", cmd_line->cmd, 5) == 0)
+        return (ft_exit(&cmd_line, *env, fd));
+    else if (ft_strncmp("env", cmd_line->cmd, 4) == 0)
+        return (ft_env(&cmd_line, *env, fd));
+    else if (ft_strncmp("export", cmd_line->cmd, 7) == 0)
+        return (ft_export(&cmd_line, *env, fd));
+    else if (ft_strncmp("echo", cmd_line->cmd, 5) == 0)
+        return (ft_echo(&cmd_line, *env, fd));
+    else if (ft_strncmp("unset", cmd_line->cmd, 6) == 0)
+        return (ft_unset(&cmd_line, *env, fd));
 	else if (!non_builtin(cmd_line, *env, end)) 
 		return (-1);
 	return (0);
@@ -403,7 +388,6 @@ void exec(t_pipe *cmd_line, char **env)
 	int		end[2];
 	int		status;
 	pid_t	pid;
-	int		tmp;
 
 	if (cmd_line == NULL)
 		return ;
@@ -429,7 +413,6 @@ void exec(t_pipe *cmd_line, char **env)
 	}
 }
 
-/*
 void exec_command_line(t_pipe *cmd_line, char **env)
 {
 	t_pipe	*temp;
@@ -438,6 +421,7 @@ void exec_command_line(t_pipe *cmd_line, char **env)
 	exec(temp, env);
 }
 
+/*
 t_pipe *new_cmd(char *cmd, char **arg, int in, int out, char *infile, char *outfile) 
 {
 	t_pipe *cmd_line = (t_pipe *)malloc(sizeof(t_pipe));

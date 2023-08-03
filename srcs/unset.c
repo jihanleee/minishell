@@ -36,7 +36,7 @@ int	check_middle_values(char *str)
 	return (0);
 }
 
-void	ft_unset(t_pipe **lst, char **env, int fd)
+int	ft_unset(t_pipe **lst, char **env, int fd)
 {
 	t_pipe	*current;
 	int		length;
