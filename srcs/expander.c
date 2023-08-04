@@ -416,11 +416,13 @@ t_token	*iword_to_tokens(int *lexeme)
 t_token	*token_to_etoken(t_token *old, char **envp)
 {
 	t_lexeme	*lexemes;
+	t_lexeme	*first;
 	t_token		*result;
 	int			*iword;
 	bool		allexp;
 
 	lexemes = word_to_lexemes(old->str);
+	first = lexemes;
 	read_lexemes(lexemes);
 	if (old->type != heredoc)
 		replace_params(lexemes, envp);
@@ -439,11 +441,11 @@ t_token	*token_to_etoken(t_token *old, char **envp)
 		//protect memory alloc
 		result->str = ft_strdup("");
 	}
-	//free lexemes
-	return (result);
+	clear_lexemes(&first, free);
+	return (free(iword), result);
 }
 
-void	expansion(t_token **tokens, char **envp)
+/* void	expansion(t_token **tokens, char **envp)
 {
 	t_token	*current;
 	t_token	*next;
@@ -496,6 +498,52 @@ void	expansion(t_token **tokens, char **envp)
 			}
 		}
 		free(current);
+		current = next;
+	}
+} */
+void	expansion(t_token **tokens, char **envp)
+{
+	t_token	*current;
+	t_token	*next;
+	t_token	*prev;
+	t_token	*expanded;
+	int		i;
+
+	i = 0;
+	prev = 0;
+	current = *tokens;
+	while (current)
+	{
+		printf("\tindex %d\n", i++);
+		next = current->next;
+		expanded = token_to_etoken(current, envp);
+		if (expanded)
+		{
+			expanded->type = current->type;
+			if (prev == 0 && current->type != amb_redir)
+				*tokens = expanded;
+			else if (current->type != amb_redir)
+				prev->next = expanded;
+			while (expanded->next)
+				expanded = expanded->next;
+			expanded->next = next;
+			prev = expanded;
+		}
+		else if (!expanded)
+		{
+			if (current->type == 1 || current->type == 3 || current->type == 4)
+			{
+				current->type = amb_redir;
+				prev = current;
+				current = next;
+				continue ;
+			}
+			else if (prev == 0 && current->type != amb_redir)
+				*tokens = next;
+			else if (current->type != amb_redir)
+				prev->next = next;
+		}
+		free((free(current->str), current));
 		current = next;
 	}
 }
@@ -706,6 +754,34 @@ t_pipe	*extract_pipes(t_token *tokens)
 	return (result);
 }
 
+void	clear_pipes(t_pipe **lst)
+{
+	t_pipe	*current;
+	t_pipe	*next;
+	int		i;
+
+	if (lst == 0)
+		return ;
+	current = *lst;
+	while (current)
+	{
+		next = current->next;
+		if(current->cmd)
+			free(current->cmd);
+		if (current->outfile)
+			free(current->outfile);
+		if (current->arg)
+		{
+			i = 0;
+			while (current->arg[i])
+				free(current->arg[i++]);
+			free(current->arg);
+		}
+		free(current);
+		current = next;
+	}
+	*lst = 0;
+}
 /*expansion module tests*/
 //OLD - DO NOT USE
 /*int	main(int argc, char **argv, char **envp)
