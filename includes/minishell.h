@@ -152,7 +152,7 @@ void	ft_env(t_pipe **lst, char **env, int fd);
 
 /* exit.c */
 int		check_int(char *arg);
-int		get_exit_num(t_pipe current)
+int		get_exit_num(t_pipe current);
 int		ft_exit(t_pipe **lst, char **env, int fd);
 
 /* export.c */
