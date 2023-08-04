@@ -121,6 +121,8 @@ void	read_tokens(t_token *current)
 {
 	int		i;
 
+	printf("\n---------------------------------------\n");
+	printf("currently in read tokens function\n");
 	if (current == NULL)
 		ft_printf("(NULL)\n");
 	i = 0;

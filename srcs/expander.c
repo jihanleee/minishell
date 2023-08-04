@@ -10,10 +10,11 @@ void	clear_tokens(t_token **lst, void (*del)(void *))
 	if (del == 0)
 		return ;
 	current = *lst;
-	ft_printf("currently in clear tokens function\n"); //
+	printf("\n-----------------------------------\n");
+	printf("currently in clear tokens function\n"); //
 	while (current)
 	{
-		ft_printf("\ttoken we are deleting is %s\n", current->str);//
+		printf("\ttoken we are deleting is %s\n", current->str);//
 		next = current->next;
 		if (current->str)
 			del(current->str);
@@ -151,13 +152,13 @@ void	read_lexemes(t_lexeme *current)
 	i = 0;
 	while (current)
 	{
-		ft_printf("index:\t%d\n", i);
-		ft_printf("str:\t%s\n", current->str);
-		ft_printf("type:\t%d\n", current->type);
+		ft_printf("\tindex:\t%d\n", i);
+		ft_printf("\tstr:\t%s\n", current->str);
+		ft_printf("\ttype:\t%d\n", current->type);
 		if (current->exp == 1)
-			ft_printf("exp:\tTRUE\n");
+			ft_printf("\texp:\tTRUE\n");
 		else
-			ft_printf("exp:\tFALSE\n");
+			ft_printf("\texp:\tFALSE\n");
 		current = current->next;
 		i++;
 	}
@@ -369,7 +370,7 @@ int	*lexemes_to_int(t_lexeme *lexemes, t_token_type type)
 	current = lexemes;
 	while (current)
 	{
-		ft_printf("\tlexems_to_int_while\n");
+		//printf("\tlexems_to_int_while\n");
 		while (current && current->exp == TRUE && current->p_found == FALSE && type != heredoc)
 			current = current->next;
 		if (current == 0)
@@ -408,7 +409,7 @@ t_token	*iword_to_tokens(int *lexeme)
 			return (clear_tokens(result, free), (free(lexeme), NULL));
 		start += len;
 	}
-	ft_printf("\texiting iword_to_tokens\n");
+	//printf("\texiting iword_to_tokens\n");
 	return (result);
 }
 
@@ -455,7 +456,7 @@ void	expansion(t_token **tokens, char **envp)
 	current = *tokens;
 	while (current)
 	{
-		ft_printf("index %d\n", i++);
+		printf("\tindex %d\n", i++);
 		next = current->next;
 		expanded = token_to_etoken(current, envp);
 		if (expanded)
@@ -505,26 +506,36 @@ void	read_pipes(t_pipe *pipes)
 
 	while (pipes)
 	{
-		ft_printf("--------------------\n");
-		ft_printf("intype\t%d\n", pipes->in);
-		ft_printf("outtype\t%d\n", pipes->out);
+		printf("--------------------\n");
+		printf("in read pipes function, expander\n");
+		printf("\tcurrent pipe has command\n", pipes->cmd);
+		ft_printf("\tintype\t%d\n", pipes->in);
+		ft_printf("\touttype\t%d\n", pipes->out);
 		if (pipes->cmd)
-			ft_printf("cmd\t%s\n", pipes->cmd);
+			ft_printf("\tcmd\t%s\n", pipes->cmd);
 		i = 0;
 		if (pipes->arg)
 		{
 			while (pipes->arg[i])
 			{
-				ft_printf("arg[%d]\t%s\n", i, pipes->arg[i]);
+				ft_printf("\targ[%d]\t%s\n", i, pipes->arg[i]);
 				i++;
 			}
 		}
+		printf("before in/outfile\n");
 		if (pipes->infile)
-			ft_printf("infile\t%s\n", pipes->infile);
+			ft_printf("\tinfile\t%s\n", pipes->infile);
+		printf("after infile + before outfile\n");
 		if (pipes->outfile)
-			ft_printf("outfile\t%s\n", pipes->outfile);
+		{
+			printf("inside outfile\n");
+			ft_printf("\toutfile\t%s\n", pipes->outfile);
+		}
 		ft_printf("--------------------\n");
-		pipes = pipes->next;
+		if (pipes->next != NULL)
+			pipes = pipes->next;
+		else
+			return ;
 	}
 }
 

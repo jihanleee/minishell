@@ -238,7 +238,7 @@ char	**get_full_cmd(t_pipe *cmd_line)
 	return (full);
 }
 
-int non_builtin(t_pipe *cmd_line, char **env, int fds[]) 
+int non_builtin(t_pipe *cmd_line, char **env, int fds[])
 {
 	char *full_path;
 	char **full_cmd;
@@ -354,6 +354,11 @@ int ft_pwd(int fd)
 int exec_function(t_pipe *cmd_line, char ***env, int end[])
 {
 	int fd;
+	printf("inside exec function\n");
+	printf("current command is %s\n", cmd_line->cmd);
+	if (cmd_line->arg[0])
+		printf("command's arg is %s\n", cmd_line->arg[0]);	
+	printf("after printing arg\n");
 	if (cmd_line == NULL)
 		return (-1);
 	if (cmd_line->in != 0 || cmd_line->out != 0)
@@ -362,8 +367,7 @@ int exec_function(t_pipe *cmd_line, char ***env, int end[])
 		fd = end[1];
 	if (!cmd_line->next)
 		fd = STDOUT_FILENO;
-
-
+	printf("recognized builtin\n");
 	if (ft_strncmp("pwd", cmd_line->cmd, 4) == 0)
 		return (ft_pwd(&cmd_line, *env, fd));
     else if (ft_strncmp("cd", cmd_line->cmd, 3) == 0)
@@ -371,12 +375,14 @@ int exec_function(t_pipe *cmd_line, char ***env, int end[])
     else if (ft_strncmp("exit", cmd_line->cmd, 5) == 0)
         return (ft_exit(&cmd_line, *env, fd));
     else if (ft_strncmp("env", cmd_line->cmd, 4) == 0)
-        return (ft_env(&cmd_line, *env, fd));
-    else if (ft_strncmp("export", cmd_line->cmd, 7) == 0)
+        //return (ft_env(&cmd_line, *env, fd));
+		ft_env(&cmd_line, *env, fd);
+	else if (ft_strncmp("export", cmd_line->cmd, 7) == 0)
         return (ft_export(&cmd_line, *env, fd));
     else if (ft_strncmp("echo", cmd_line->cmd, 5) == 0)
-        return (ft_echo(&cmd_line, *env, fd));
-    else if (ft_strncmp("unset", cmd_line->cmd, 6) == 0)
+        //return (ft_echo(&cmd_line, *env, fd));
+		ft_echo(&cmd_line, *env, fd);
+	else if (ft_strncmp("unset", cmd_line->cmd, 6) == 0)
         return (ft_unset(&cmd_line, *env, fd));
 	else if (!non_builtin(cmd_line, *env, end)) 
 		return (-1);
@@ -389,6 +395,7 @@ void exec(t_pipe *cmd_line, char **env)
 	int		status;
 	pid_t	pid;
 
+	printf("inside exec\n");
 	if (cmd_line == NULL)
 		return ;
 	pipe(end);
@@ -399,24 +406,28 @@ void exec(t_pipe *cmd_line, char **env)
 		if (pid < 0)
 			perror("Error forking process");
 	}
+	printf("after if one\n");
 	if (pid == 0)
 	{
 		dup2(end[0], 0);
 		close(end[1]);
 		exec(cmd_line->next, env);
 	}
+	//printf("after if two\n");
 	else
 	{
 		close(end[1]);
 		close(end[0]);
 		waitpid(pid, &status, 0);
 	}
+	printf("exiting exec\n");
 }
 
 void exec_command_line(t_pipe *cmd_line, char **env)
 {
 	t_pipe	*temp;
 
+	printf("inside exec commnad line\n");
 	temp = cmd_line;
 	exec(temp, env);
 }

@@ -18,10 +18,11 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{	//temp = &tokens;
 		line = readline("%");
-		ft_printf("line : %s\n", line);
+		printf("----------------------------------\n");
+		printf("line : %s\n", line);
 		add_history(line);
 		tokens = create_tokens(line);
-		printf("check tokens result is %d\n", check_tokens(tokens));
+		//printf("check tokens result is %d\n", check_tokens(tokens));
 		if (check_tokens(tokens) != 0)
 		{
 			//exit_error("bash: syntax error\n", &tokens);
@@ -35,11 +36,14 @@ int	main(int argc, char **argv, char **envp)
 		}
 		expansion(&tokens, envp);
 		read_tokens(tokens);
+		printf("read tokens done\n");
 		open_file_redir(tokens);
 		pipes = extract_pipes(tokens);
 		read_pipes(pipes);
+		printf("read pipes done\n");
 		//test_execute(pipes, envp, 1);
-		exec_command_line(t_pipe *pipe, char **env)
+		//exec_command_line(t_pipe *pipe, char **env);
+		exec_command_line(&pipes, envp);
 		clear_tokens(&tokens, free);
 			//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함
 			//main 정확히 짤 때는 두번 콜되지 않게 조심하기

@@ -21,7 +21,7 @@ void	ft_echo(t_pipe **lst, char **env, int fd)
 
 	flag = 0;
 	current = *lst;
-	//printf("\tcurrently in echo function\n");
+	printf("\tcurrently in echo function\n");
 	//printf("\tArg 1: %s\n", current->arg[0]);
 	//printf("\tArg 2: %s\n", current->arg[1]);
 	//printf("before everything\n");
