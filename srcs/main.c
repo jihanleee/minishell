@@ -36,13 +36,17 @@ int	main(int argc, char **argv, char **envp)
 		}
 		expansion(&tokens, envp);
 		read_tokens(tokens);
-		printf("read tokens done\n");
+		//printf("read tokens done\n");
 		open_file_redir(tokens);
 		pipes = extract_pipes(tokens);
 		read_pipes(pipes);
-		printf("read pipes done\n");
+		//printf("----------------------\n");
+		//printf("read pipes done\n");
+		printf("----------------------\n");
 		//test_execute(pipes, envp, 1);
 		//exec_command_line(t_pipe *pipe, char **env);
+		//printf("\t\tcommand: %s\n", pipes->cmd);
+		//printf("\t\targ: %s\n", pipes->arg[0]);
 		exec_command_line(&pipes, envp);
 		clear_tokens(&tokens, free);
 			//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함

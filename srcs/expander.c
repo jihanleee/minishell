@@ -508,7 +508,7 @@ void	read_pipes(t_pipe *pipes)
 	{
 		printf("--------------------\n");
 		printf("in read pipes function, expander\n");
-		printf("\tcurrent pipe has command\n", pipes->cmd);
+		//ft_printf("\tcurrent pipe has command\n", pipes->cmd);
 		ft_printf("\tintype\t%d\n", pipes->in);
 		ft_printf("\touttype\t%d\n", pipes->out);
 		if (pipes->cmd)
@@ -522,13 +522,13 @@ void	read_pipes(t_pipe *pipes)
 				i++;
 			}
 		}
-		printf("before in/outfile\n");
+		//printf("before in/outfile\n");
 		if (pipes->infile)
 			ft_printf("\tinfile\t%s\n", pipes->infile);
-		printf("after infile + before outfile\n");
+		//printf("after infile + before outfile\n");
 		if (pipes->outfile)
 		{
-			printf("inside outfile\n");
+			//printf("inside outfile\n");
 			ft_printf("\toutfile\t%s\n", pipes->outfile);
 		}
 		ft_printf("--------------------\n");

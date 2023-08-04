@@ -49,7 +49,8 @@ t_token	*parse_tokens(t_token **lst, void (*del)(void *))
 		return (NULL);
 	result = *lst;
 	current = *lst;
-	printf("\n\ncurrently in parse tokens function\n"); //
+	printf("-------------------------------------\n");
+	printf("\ncurrently in parse tokens function\n"); //
 	if (current->type != 0) //&& current->type != 5
 	{
 		temp = current;
@@ -91,8 +92,8 @@ int	check_tokens(t_token *tokens)
 	result = 0;
 	if (!result)
 		return (0);
-	printf("\n\nin check tokens function\n");//
-	printf("\ttype right now is %d\n", tokens->type);
+	printf("\nin check tokens function\n");//
+	//printf("\ttype right now is %d\n", tokens->type);
 	if (tokens->type == 5)	//if the first token is a pipe
 	{
 		//result = 1;

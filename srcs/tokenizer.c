@@ -121,16 +121,16 @@ void	read_tokens(t_token *current)
 {
 	int		i;
 
-	printf("\n---------------------------------------\n");
+	printf("---------------------------------------\n");
 	printf("currently in read tokens function\n");
 	if (current == NULL)
-		ft_printf("(NULL)\n");
+		printf("\t(NULL)\n");
 	i = 0;
 	while (current)
 	{
-		ft_printf("index:\t%d\n", i);
-		ft_printf("str:\t%s\n", current->str);
-		ft_printf("type:\t%d\n", current->type);
+		printf("\tindex:\t%d\n", i);
+		printf("\tstr:\t%s\n", current->str);
+		printf("\ttype:\t%d\n", current->type);
 		current = current->next;
 		i++;
 	}
