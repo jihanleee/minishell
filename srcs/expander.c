@@ -201,7 +201,7 @@ void	split_expansions(t_lexeme *lexemes)
 {
     int    i;
 
-    if (ft_isdigit(str[1]))
+    if (ft_isdigit(str[1]) || str[1] == '?')
         return (2);
     i = 1;
     while (ft_isalnum(str[i]) || str[i] == '_')
