@@ -14,6 +14,8 @@
 # include <errno.h>
 # include "libft.h"
 
+# define GREEN "\033[32m"
+
 typedef enum e_quote_type
 {
 	uq,

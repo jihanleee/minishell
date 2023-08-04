@@ -17,7 +17,12 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 	while (1)
 	{	//temp = &tokens;
-		line = readline("%");
+		line = readline(GREEN "MINISHELL>");
+		if (line == NULL)
+		{
+			free(line);
+			return (0);
+		}
 		printf("----------------------------------\n");
 		printf("line : %s\n", line);
 		add_history(line);
