@@ -127,8 +127,9 @@ void right_redir(t_pipe *cmd_line);
 void left_redir(t_pipe *cmd_line);
 void	apply_redir(t_pipe *cmd_line);
 void	ft_putstr_fd(char const *s, int fd);
-int exec_function(t_pipe *cmd_line, char ***env, int end[]);
-void exec(t_pipe *cmd_line, char **env);
+int		exec_function(t_pipe *cmd_line, char ***env, int end[]);
+int		exec(t_pipe *cmd_line, char **env);
+//void exec(t_pipe *cmd_line, char **env);
 //void exec_command_line(t_pipe *cmd_line, char **env);
 //void	exec_command_line(t_pipe **cmd_line, char **env);
 void exec_command_line(t_pipe *temp, char **env);
@@ -151,6 +152,7 @@ void	ft_env(t_pipe **lst, char **env, int fd);
 
 /* exit.c */
 int		check_int(char *arg);
+int		get_exit_num(t_pipe current)
 int		ft_exit(t_pipe **lst, char **env, int fd);
 
 /* export.c */

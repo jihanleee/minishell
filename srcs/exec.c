@@ -1,6 +1,7 @@
 
 #include "minishell.h"
 
+int	g_status = 0;
 /*
 int ft_strlen(char *s)
 {

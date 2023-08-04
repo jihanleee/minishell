@@ -382,6 +382,7 @@ int	ft_export(t_pipe **lst, char **env, int fd)
 			printf("malloc combine lines done\n");
 			if (fill_blocks(combine, lst) == 1)
 			{
+				printf("fill blocks gave error\n");
 				while (count > 0)
 					free(combine[count--]);
 				free(combine);

@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+// int	g_status;
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
@@ -54,9 +56,11 @@ int	main(int argc, char **argv, char **envp)
 			//printf("\t\tcommand: %s\n", pipes->cmd);
 			//printf("\t\targ: %s\n", pipes->arg[0]);
 			exec_command_line(pipes, envp);
+			printf("coming out of exec\n");
 			clear_tokens(&tokens, free);
 				//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함
 				//main 정확히 짤 때는 두번 콜되지 않게 조심하기
+			printf("everything done\n");
 		}
 	}
 	rl_clear_history();
