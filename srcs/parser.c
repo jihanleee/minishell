@@ -76,7 +76,7 @@ t_token	*parse_tokens(t_token **lst, void (*del)(void *))
 	return (result);
 }
 
-
+/*
 void	exit_error(char *message, t_token **lst)
 {
 	write(STDERR_FILENO, message, ft_strlen(message));
@@ -84,31 +84,79 @@ void	exit_error(char *message, t_token **lst)
 	//parse_clear_tokens(temp, free);
 	clear_tokens(lst, free);
 }
+*/
+
+
+
+//token type
+//0: word
+//1: <
+//2: heredoc
+//3: >
+//4: append
+//5: pipe
+
+void	print_parse_error(t_token **input)
+{
+	t_token	*current;
+
+	current = *input;
+	//printf("current string is %s\n", current->str);
+	write(STDERR_FILENO, "bash: syntax error near unexpected token \'", 42);
+	//if (current->type == 1 || current->type == 2 || current->type == 3 || current->type == 4)
+	if (current->type >= 1 && current->type <= 4)
+	{
+		//printf("\n\there\n");
+		if (!current->next)
+			write(STDERR_FILENO, "newline", 7);
+	}
+	else
+		write(STDERR_FILENO, current->str, get_length(current->str));
+	if (ft_strncmp(current->str, "|", 1) == 0 && current->next)
+	{
+		current = current->next;
+		//printf("\n\tnext string is %s\n", current->str);
+		if (ft_strncmp(current->str, "|", 1) == 0)
+			write(STDERR_FILENO, "|", 1);
+	}
+	write(STDERR_FILENO, "\'", 1);
+	write(STDERR_FILENO, "\n", 1);
+}
+
 
 int	check_tokens(t_token *tokens)
 {
 	int	result;
 
 	result = 0;
-	if (!result)
+	if (!tokens)
 		return (0);
 	printf("\nin check tokens function\n");//
 	//printf("\ttype right now is %d\n", tokens->type);
 	if (tokens->type == 5)	//if the first token is a pipe
 	{
 		//result = 1;
+		print_parse_error(&tokens);
 		return (1);
 		//tokens = tokens->next;
 	}
 	while (tokens && tokens->str)
 	{
 		printf("\tcurrent token is %s\n", tokens->str);//
+		if (tokens->type == 5 && tokens->next && tokens->next->type == 5)
+		{
+			print_parse_error(&tokens);
+			return (1);
+		}
 		if (tokens->type != 0 && tokens->type != 5)
 		{
 			if (tokens->next == NULL || tokens->next->type != 0)
+			{
 				//when line ends with <, <<, >, >>
-				//result = 1;
+				//printf("\t\tcalled here\n");
+				print_parse_error(&tokens);
 				return (1);
+			}
 		}
 		//if (tokens->type == in || tokens->type == out)
 		//{
@@ -116,8 +164,10 @@ int	check_tokens(t_token *tokens)
 		//		result = 1;
 		//}
 		if (tokens->type == pipe_op && tokens->next && tokens->next->type == pipe_op)
-			//result = 1;
+		{
+			print_parse_error(&tokens);
 			return (1);
+		}
 		tokens = tokens->next;
 	}
 	//printf("result is %d\n", result);

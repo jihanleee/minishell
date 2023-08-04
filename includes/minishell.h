@@ -86,6 +86,7 @@ int		append_token(t_token **tokens, t_token *new);
 void	temp_read_tokens(t_token **lst);
 int		check_tokens(t_token *tokens);
 void	exit_error(char *message, t_token **temp);
+void	print_parse_error(t_token **input);
 t_token	*parse_tokens(t_token **lst, void (*del)(void *));
 
 /*expander.c*/

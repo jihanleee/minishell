@@ -743,7 +743,7 @@ t_pipe	*extract_pipes(t_token *tokens)
 		{
 			if (cur_result->cmd == 0)
 			{
-				ft_printf("str:%s\n", current->str);
+				//ft_printf("str:%s\n", current->str);
 				cur_result->cmd = ft_strdup(current->str);
 				current = current->next;
 			}
