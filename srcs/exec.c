@@ -244,39 +244,33 @@ char	**get_full_cmd(t_pipe *cmd_line)
 	return (full);
 }
 
-int non_builtin(t_pipe *cmd_line, char **env, int fds[])
+int	non_builtin(t_pipe *cmd_line, char **env, int fds[])
 {
-	char *full_path;
-	char **full_cmd;
+	char	*full_path;
+	char	**full_cmd;
+	int		status;
+	pid_t	pid;
 
-	//printf("in non builtin function\n");
-	full_cmd = get_full_cmd(cmd_line);//
+	full_cmd = get_full_cmd(cmd_line);
 	full_path = get_full_path(env, cmd_line->cmd);
 	cmd_line->cmd = full_path;
-	//printf("after getting fulls\n");
-	int	status;
-	pid_t pid = fork();
-
+	pid = fork();
 	if (pid < 0)
-	{
-		perror("Error forking");
-		exit(1);
-	}
+		return (-1);
 	if (pid == 0)
 	{
 		if (cmd_line->next && cmd_line->out == 0)
 			dup2(fds[1], 1);
-		if (execve(cmd_line->cmd, full_cmd, env) == -1) 
-		{
-			perror("Error executing command");
-			exit(1);
-		}
+		if (execve(cmd_line->cmd, full_cmd, env) == -1)
+			return (-1);
 	}
 	else
+	{
 		waitpid(pid, &status, 0);
+		g_status = status >> 8;
+	}
 	return (0);
 }
-
 int	redirect_fd(int old_fd, int new_fd)
 {
 	if (old_fd != new_fd)
@@ -398,46 +392,51 @@ int exec_function(t_pipe *cmd_line, char ***env, int end[])
 	return (0);
 }
 
-void exec(t_pipe *cmd_line, char **env)
+int	exec(t_pipe *cmd_line, char **env)
 {
 	int		end[2];
 	int		status;
 	pid_t	pid;
+	int		tmp;
+	int		res;
 
-	//printf("inside exec\n");
-	//printf("current string: %s\n", cmd_line->cmd);
 	if (cmd_line == NULL)
-		return ;
+		return (g_status);
 	pipe(end);
 	exec_function(cmd_line, &env, end);
-	//printf("after exec function\n");
-	//printf("before everything\n");
-	//pid = ? //
+	res = exec_function(cmd_line, &env, end);
+	if (res == -1)
+		return (-1);
+	else
+		g_status = 0;
 	if (cmd_line->next)
 	{
 		pid = fork();
 		if (pid < 0)
+		{
 			perror("Error forking process");
+			return (g_status);
+		}
 	}
 	else
-		return (-1);	//change to global value
-	//printf("after if one\n");
+		return (g_status);
 	if (pid == 0)
 	{
 		dup2(end[0], 0);
 		close(end[1]);
-		exec(cmd_line->next, env);
+		g_status = exec(cmd_line->next, env);
+		exit(g_status);
 	}
-	//printf("after if two\n");
 	else
 	{
-		//printf("in else\n");
 		close(end[1]);
 		close(end[0]);
 		waitpid(pid, &status, 0);
+		g_status = status >> 8;
+		return (g_status);
 	}
-	//printf("exiting exec\n");
 }
+
 
 void exec_command_line(t_pipe *temp, char **env)
 {
