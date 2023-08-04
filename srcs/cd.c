@@ -80,7 +80,8 @@ static void	cd_export(char **env, char *arg, char *path)
 	while(env[i])
 		i++;
 	printf("\tafter env loop\n");
-	env[i] = malloc(sizeof(char *) * (length + 1));
+	//env[i] = malloc(sizeof(char *) * (length + 1));
+	env[i] = (char*)ft_calloc(length + 1, sizeof(char));
 	if (!env[i])
 		return ;
 	j = 0;

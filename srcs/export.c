@@ -123,8 +123,11 @@ int	malloc_combine_lines(char **combine, t_pipe **lst)
 			flag = 0;
 			//printf("\ttwo: new block break at %c\n", current->arg[i][j - 1]);
 			printf("\tcreating combine line #%d with length of %d\n", count + 1, length);
-			combine[count] = (char *)malloc(sizeof(char) * length + 1);
-			if (!combine[count++])
+			//combine[count] = (char *)malloc(sizeof(char) * (length + 1));
+			combine[count] = (char*) calloc(length + 1, sizeof(char));
+			//if (!combine[count++])
+			//if (!combine[count + 1])
+			if (!combine[count])
 				return (-1);
 			length = 0;
 		}
@@ -230,7 +233,8 @@ static char	*get_command(char *line, int end)
 	int i;
 
 	i = 0;
-	result = (char *)malloc(sizeof(char) * end + 1);
+	//result = (char *)malloc(sizeof(char) * end + 1);
+	result = (char*)ft_calloc(end + 1, sizeof(char));
 	if (!result)
 		return (NULL);
 	while(i < end)
@@ -273,18 +277,24 @@ void	read_blocks(char **combine, char **env)
 
 	i = 0;
 	end = 0;
+	//if (!combine)
+	//	return ;
 	while (combine[i])
 	{
 		j = 0;
-		printf("block #%d:\n\t");
+		printf("block #%d:\n", i + 1);
 		while (combine[i][j])
 		{
-			//printf("%c", combine[i][j]);
+			printf("\tcombine has char %c\n", combine[i][j]);
 			if (combine[i][j] == '=')
+			{
+				printf("\t\tinside if statement\n");
 				end = j;
+			}
 			j++;
 		}
 		printf("\n");
+		printf("before get_command is called\n");
 		arg = get_command(combine[i], end);
 		//printf("looking for var %s in env\n", arg);
 		export_unset(env, arg);
@@ -316,7 +326,7 @@ int	add_blocks(char **combine, char **env)
 	while (combine[i])
 	{
 		printf("\tcombine[i] is %s\n", combine[i]);
-		env[x] = malloc(sizeof(char *) * (get_length(combine[i] + 1)));
+		env[x] = malloc(sizeof(char *) * (get_length(combine[i]) + 1));
 		if (!env[x])
 			return (-1);
 		env[x] = combine[i];
@@ -356,11 +366,11 @@ int	ft_export(t_pipe **lst, char **env, int fd)
 	printf("\tinside ft_export function\n");
 	current = *lst;
 	if (!current->arg)
-		return (0);
+		return (-1);
 	else if (current->arg == NULL)
 	{
 		printf("invalid identifier\n");
-		return (1);	//error
+		return (-1);	//error
 	}
 	if (current->arg[0] == NULL)
 		//call env function
@@ -373,8 +383,9 @@ int	ft_export(t_pipe **lst, char **env, int fd)
 		printf("\t# of blocks = %d\n", count);
 		if (count != 0)
 		{
-			combine = malloc(sizeof(char *) * (count + 1));
-			count = 0;
+			//combine = (char **)malloc(sizeof(char *) * (count + 1));
+			combine = (char **)ft_calloc(count + 1, sizeof(char *));
+			//count = 0;
 			if (!combine)
 				return (-1);
 			i = 0;
@@ -386,15 +397,19 @@ int	ft_export(t_pipe **lst, char **env, int fd)
 				while (count > 0)
 					free(combine[count--]);
 				free(combine);
-				return (1);	//error
+				return (-1);	//error
 			}
 			printf("fill blocks done\n");
-			printf("reading blocks below...\n");
 			printf("----------------------------------------\n");
+			printf("reading blocks below...\n");
 			read_blocks(combine, env);
 			printf("before add blocks\n");
 			add_blocks(combine, env);
 			printf("after add blocks\n");
+			while (count > 0)
+					free(combine[count--]);
+			free(combine);
+			return (1);
 			//printf("\n\n");
 			//ft_env(lst, env, fd);
 			//export_combined(combine);
