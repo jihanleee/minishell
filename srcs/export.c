@@ -1,51 +1,5 @@
 #include "minishell.h"
 
-/*
-void	export_combined(char **combine)
-{
-	int	start;
-	int	finish;
-	int	flag;	//0 means left of = (or no = found)
-	int	i;
-	int	j;
-
-	i = 0;
-	while (combine[i])
-	{
-		j = 0;
-		flag = 0;
-		while (combine[i][j])
-		{
-			start = 0;
-			finish = -1;
-			//get start and finish index
-			if (combine[i][j] == '=')
-			{
-				if (combine[i][j - 1] == ' ')
-					printf("export: invalid identifier\n");
-					//invalid identifier
-					//break
-				else
-				{
-					finish = j;
-					flag = 1;
-				}
-			}
-			if (finish != j - 1)
-				finish = j - 1;
-				
-				//when find finish, break
-			j++;
-		}
-		//if (finish != -1... needed?) && flag == 1
-			//add_to_env(combine[i], start, index)
-		//if flag == 0 (means no = sign found)
-			//ignore line
-		i++;
-	}
-}
-*/
-
 int	middle_is_valid(char c)
 {
 	//0 = no problem
@@ -215,7 +169,7 @@ int	fill_blocks(char **combine, t_pipe **lst)
 			if (flag == 0 && current->arg[i][j] == '=' && j == 0)
 				combine[count][index++] = ' ';
 			//printf("after if one\n");
-			printf("\tcurrent char is %c\n", current->arg[i][j]);
+			//printf("\tcurrent char is %c\n", current->arg[i][j]);
 			if (middle_is_valid(current->arg[i][j]) == 1)
 			{
 				printf("invalid identifier\n");
@@ -228,7 +182,7 @@ int	fill_blocks(char **combine, t_pipe **lst)
 			if (middle_is_valid(current->arg[i][j]) == 0)
 			{
 				//printf("after if one\n");
-				printf("added %c\n", current->arg[i][j]);
+				//printf("added %c\n", current->arg[i][j]);
 				combine[count][index] = current->arg[i][j];
 			}
 			//printf("\tcurrent temp string is %s\n", save);
@@ -269,45 +223,6 @@ int	fill_blocks(char **combine, t_pipe **lst)
 	return (0);
 
 }
-
-/*
-void	fill_blocks(char **combine, t_pipe **lst)
-{
-	t_pipe	*current;
-	int		flag;
-	int		i;
-	int		j;
-	int		a;
-	int		b;
-
-	a = 0;
-	b = 0;
-	flag = 0;
-	i = 0;
-	printf("\tinside fill_blocks\n");
-	printf("\tbefore fill_blocks while loop\n");
-	while (current->arg[i])
-	{
-		printf("\tinside fill_blocks while loop\n");
-		j = 0;
-		if (flag == 1 || (flag == 0 && current->arg[i][0] != '='))
-		{
-			combine[a++][b] = 0;
-			b = 0;
-		}
-		else if (flag == 0 && current->arg[i][0] == '=')
-			combine[a][b++] = ' ';
-		while (current->arg[i][j])
-		{
-			if (current->arg[i][j] == '=')
-				flag = 1;
-			combine[a][b] = current->arg[i][j];
-			j++;
-		}
-		i++;
-	}
-}
-*/
 
 static char	*get_command(char *line, int end)
 {
@@ -364,14 +279,14 @@ void	read_blocks(char **combine, char **env)
 		printf("block #%d:\n\t");
 		while (combine[i][j])
 		{
-			printf("%c", combine[i][j]);
+			//printf("%c", combine[i][j]);
 			if (combine[i][j] == '=')
 				end = j;
 			j++;
 		}
 		printf("\n");
 		arg = get_command(combine[i], end);
-		printf("looking for var %s in env\n", arg);
+		//printf("looking for var %s in env\n", arg);
 		export_unset(env, arg);
 		free(arg);
 		i++;

@@ -192,6 +192,7 @@ char *get_full_path(char **env, char *cmd)
 	char **path;
 	char *full_path;
 
+	printf("in get full cmd function\n");
 	path = trim_path(env);
 	full_path = ft_cmd(path, cmd);
 	if (!full_path)
@@ -223,11 +224,15 @@ char	**get_full_cmd(t_pipe *cmd_line)
 	int		len;
 	int		i;
 
+	//printf("in get full cmd function\n");
 	i = 0;
-	len = count_cmd(cmd_line->arg);
+	len = 0; //
+	if (cmd_line->arg)
+		len = count_cmd(cmd_line->arg);
 	full = (char **)malloc(sizeof(char *) * (len + 2));
 	if(!full)
 		return (NULL);
+	//printf("get full cmd here\n");
 	full[0] = ft_strdup(cmd_line->cmd);
 	while(i < len)
 	{
@@ -235,6 +240,7 @@ char	**get_full_cmd(t_pipe *cmd_line)
 		i++;
 	}
 	full[i + 1] = NULL;
+	//printf("get full cmd ending\n");
 	return (full);
 }
 
@@ -243,10 +249,11 @@ int non_builtin(t_pipe *cmd_line, char **env, int fds[])
 	char *full_path;
 	char **full_cmd;
 
-	full_cmd = get_full_cmd(cmd_line);
+	//printf("in non builtin function\n");
+	full_cmd = get_full_cmd(cmd_line);//
 	full_path = get_full_path(env, cmd_line->cmd);
 	cmd_line->cmd = full_path;
-
+	//printf("after getting fulls\n");
 	int	status;
 	pid_t pid = fork();
 
@@ -398,16 +405,22 @@ void exec(t_pipe *cmd_line, char **env)
 	pid_t	pid;
 
 	//printf("inside exec\n");
+	//printf("current string: %s\n", cmd_line->cmd);
 	if (cmd_line == NULL)
 		return ;
 	pipe(end);
 	exec_function(cmd_line, &env, end);
+	//printf("after exec function\n");
+	//printf("before everything\n");
+	//pid = ? //
 	if (cmd_line->next)
 	{
 		pid = fork();
 		if (pid < 0)
 			perror("Error forking process");
 	}
+	else
+		return (-1);	//change to global value
 	//printf("after if one\n");
 	if (pid == 0)
 	{
@@ -418,6 +431,7 @@ void exec(t_pipe *cmd_line, char **env)
 	//printf("after if two\n");
 	else
 	{
+		//printf("in else\n");
 		close(end[1]);
 		close(end[0]);
 		waitpid(pid, &status, 0);
@@ -425,11 +439,8 @@ void exec(t_pipe *cmd_line, char **env)
 	//printf("exiting exec\n");
 }
 
-void exec_command_line(t_pipe **cmd_line, char **env)
+void exec_command_line(t_pipe *temp, char **env)
 {
-	t_pipe	*temp;
-
-	temp = *cmd_line;
 	//printf("inside exec commnad line\n");
 	//printf("\tcommand: %s\n", temp->cmd);
 	//printf("\targ: %s\n", temp->arg[0]);

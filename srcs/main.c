@@ -1,6 +1,5 @@
 #include "minishell.h"
 
-
 int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
@@ -17,10 +16,11 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 	while (1)
 	{	//temp = &tokens;
-		line = readline(GREEN "MINISHELL>");
+		line = readline(GREEN "MINISHELL> ");
 		if (line == NULL)
 		{
 			free(line);
+			write(STDOUT_FILENO, "exit\n", 5);
 			return (0);
 		}
 		printf("----------------------------------\n");
@@ -31,31 +31,33 @@ int	main(int argc, char **argv, char **envp)
 		if (check_tokens(tokens) != 0)
 		{
 			//exit_error("bash: syntax error\n", &tokens);
-			printf("bash: syntax error\n");
+			//printf("bash: syntax error\n");
+			//print_error("syntax error\n");
 			clear_tokens(&tokens, free);
-			return (1);	//error
+			//return (1);	//error
 		}
 		else
 		{
 			tokens = parse_tokens(&tokens, free);
+		
+			expansion(&tokens, envp);
+			read_tokens(tokens);
+			//printf("read tokens done\n");
+			open_file_redir(tokens);
+			pipes = extract_pipes(tokens);
+			read_pipes(pipes);
+			//printf("----------------------\n");
+			//printf("read pipes done\n");
+			printf("----------------------\n");
+			//test_execute(pipes, envp, 1);
+			//exec_command_line(t_pipe *pipe, char **env);
+			//printf("\t\tcommand: %s\n", pipes->cmd);
+			//printf("\t\targ: %s\n", pipes->arg[0]);
+			exec_command_line(pipes, envp);
+			clear_tokens(&tokens, free);
+				//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함
+				//main 정확히 짤 때는 두번 콜되지 않게 조심하기
 		}
-		expansion(&tokens, envp);
-		read_tokens(tokens);
-		//printf("read tokens done\n");
-		open_file_redir(tokens);
-		pipes = extract_pipes(tokens);
-		read_pipes(pipes);
-		//printf("----------------------\n");
-		//printf("read pipes done\n");
-		printf("----------------------\n");
-		//test_execute(pipes, envp, 1);
-		//exec_command_line(t_pipe *pipe, char **env);
-		//printf("\t\tcommand: %s\n", pipes->cmd);
-		//printf("\t\targ: %s\n", pipes->arg[0]);
-		exec_command_line(&pipes, envp);
-		clear_tokens(&tokens, free);
-			//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함
-			//main 정확히 짤 때는 두번 콜되지 않게 조심하기
 	}
 	rl_clear_history();
 	return (0);

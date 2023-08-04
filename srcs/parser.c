@@ -29,10 +29,10 @@ void	temp_read_tokens(t_token **lst)
 	t_token	*current;
 
 	current = *lst;
-	printf("currently in temp read function\n"); //
+	//printf("currently in temp read function\n"); //
 	while (current)
 	{
-		printf("\tcurrent token has %s with type %d\n", current->str, current->type);
+		//printf("\tcurrent token has %s with type %d\n", current->str, current->type);
 		current = current->next;
 	}
 }
@@ -49,8 +49,8 @@ t_token	*parse_tokens(t_token **lst, void (*del)(void *))
 		return (NULL);
 	result = *lst;
 	current = *lst;
-	printf("-------------------------------------\n");
-	printf("\ncurrently in parse tokens function\n"); //
+	//printf("-------------------------------------\n");
+	//printf("\ncurrently in parse tokens function\n"); //
 	if (current->type != 0) //&& current->type != 5
 	{
 		temp = current;
@@ -62,7 +62,7 @@ t_token	*parse_tokens(t_token **lst, void (*del)(void *))
 	}
 	while (current && current->next)
 	{
-		printf("\tcurrent token is %s\n", current->str);//
+		//printf("\tcurrent token is %s\n", current->str);//
 		next = current->next;
 		if (next->type != 0 && next->type != 5)
 		{
@@ -131,7 +131,7 @@ int	check_tokens(t_token *tokens)
 	result = 0;
 	if (!tokens)
 		return (0);
-	printf("\nin check tokens function\n");//
+	//printf("\nin check tokens function\n");//
 	//printf("\ttype right now is %d\n", tokens->type);
 	if (tokens->type == 5)	//if the first token is a pipe
 	{
@@ -142,7 +142,7 @@ int	check_tokens(t_token *tokens)
 	}
 	while (tokens && tokens->str)
 	{
-		printf("\tcurrent token is %s\n", tokens->str);//
+		//printf("\tcurrent token is %s\n", tokens->str);//
 		if (tokens->type == 5 && tokens->next && tokens->next->type == 5)
 		{
 			print_parse_error(&tokens);

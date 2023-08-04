@@ -21,17 +21,22 @@ static int invalid_cd(char *path)
 	int i;
 
 	i = 0;
+	printf("inside invalid cd\n");
 	if (path[0] == '/' && path[1])	// '/' can only come in the first index if there's nothing afterwards
 	{
 		//printf("Something after /\n");
 		return (1);
 	}
+	printf("before while loop\n");
 	while (path[i])
 	{
 		if (i != 0 && i == '~')
 			return (1);
-		if (path[i - 1] == '/' && path[i] == '.' && path[i + 1] == '/')
-			return (1);
+		if (i != 0)
+		{
+			if (path[i - 1] == '/' && path[i] == '.' && path[i + 1] == '/')
+				return (1);
+		}
 		i++;
 	}
 }

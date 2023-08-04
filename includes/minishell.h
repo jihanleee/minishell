@@ -130,7 +130,8 @@ void	ft_putstr_fd(char const *s, int fd);
 int exec_function(t_pipe *cmd_line, char ***env, int end[]);
 void exec(t_pipe *cmd_line, char **env);
 //void exec_command_line(t_pipe *cmd_line, char **env);
-void	exec_command_line(t_pipe **cmd_line, char **env);
+//void	exec_command_line(t_pipe **cmd_line, char **env);
+void exec_command_line(t_pipe *temp, char **env);
 
 /*signal.c*/
 void	new_prompt(void);
