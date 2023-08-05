@@ -9,15 +9,15 @@
 void	new_prompt(void)
 {
  //printing ^C
- 	printf("^C");
+ 	write(STDOUT_FILENO, "^C\n", 3);
  //new prompt
  	rl_replace_line("", 1);
  	if (rl_on_new_line() != 0)
 		exit (1);
  	rl_redisplay();
-
 	/*TEST EXIT*/
-	exit (0);
+	//exit (0);
+	return ;
 }
 
 void sig_handler(int signum, siginfo_t *info, void *context)
