@@ -83,8 +83,6 @@ int	ft_exit(t_pipe **lst, char **env, int fd)
 		exit_num = ft_atoi(current->arg[0]) % 256;
 		write(fd, "exit\n", 5);
 		g_exit_stat = exit_num;
-		if (exit_num == 0)
-			return (0);	//only case where it's true
 		exit(exit_num);
 	}
 
