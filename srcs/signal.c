@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signal.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hesong <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/05 17:09:14 by hesong            #+#    #+#             */
+/*   Updated: 2023/08/05 17:09:27 by hesong           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <unistd.h>
 #include <sys/types.h>
 #include <signal.h>
@@ -45,7 +57,6 @@ int sigaction_set(void)
 	sig_struct.sa_sigaction = &sig_handler;
 	if (sigaction(SIGINT, &sig_struct, NULL) == -1) // Ctrl + C sends SIGINT(=2)
 		return (0);
-	else if (signal(SIGQUIT, SIG_IGN) == -1)
-		;
+	signal(SIGQUIT, SIG_IGN);
 	return (1);
 }
