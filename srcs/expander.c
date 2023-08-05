@@ -445,62 +445,6 @@ t_token	*token_to_etoken(t_token *old, char **envp)
 	return (free(iword), result);
 }
 
-/* void	expansion(t_token **tokens, char **envp)
-{
-	t_token	*current;
-	t_token	*next;
-	t_token	*prev;
-	t_token	*expanded;
-	int		i;
-
-	i = 0;
-	prev = 0;
-	current = *tokens;
-	while (current)
-	{
-		printf("\tindex %d\n", i++);
-		next = current->next;
-		expanded = token_to_etoken(current, envp);
-		if (expanded)
-			expanded->type = current->type;
-		if (expanded == NULL && (current->type == 1 || \
-			current->type == 3 || current->type == 4))
-		{
-			current->type = amb_redir;
-			prev = current;
-			current = next;
-			continue ;
-		}
-		else if (prev == 0 && current->type != amb_redir)
-		{
-			if (expanded == NULL)
-				*tokens = next;
-			else
-			{
-				*tokens = expanded;
-				while (expanded->next)
-					expanded = expanded->next;
-				expanded->next = next;
-				prev = expanded;
-			}
-		}
-		else if (current->type != amb_redir)
-		{
-			if (expanded == NULL)
-				prev->next = next;
-			else
-			{
-				prev->next = expanded;
-				while (expanded->next)
-					expanded = expanded->next;
-				expanded->next = next;
-				prev = expanded;
-			}
-		}
-		free(current);
-		current = next;
-	}
-} */
 void	expansion(t_token **tokens, char **envp)
 {
 	t_token	*current;
@@ -520,9 +464,9 @@ void	expansion(t_token **tokens, char **envp)
 		if (expanded)
 		{
 			expanded->type = current->type;
-			if (prev == 0 && current->type != amb_redir)
+			if (prev == 0)
 				*tokens = expanded;
-			else if (current->type != amb_redir)
+			else
 				prev->next = expanded;
 			while (expanded->next)
 				expanded = expanded->next;
@@ -538,9 +482,9 @@ void	expansion(t_token **tokens, char **envp)
 				current = next;
 				continue ;
 			}
-			else if (prev == 0 && current->type != amb_redir)
+			else if (prev == 0)
 				*tokens = next;
-			else if (current->type != amb_redir)
+			else
 				prev->next = next;
 		}
 		free((free(current->str), current));
