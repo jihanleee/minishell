@@ -5,7 +5,7 @@ bash shell 에서 exit 256 넘어가면 256의 나머지 값으로 exit status �
 256배수로 exit 해보면 exit status 0 으로 나옴
 exit 함수 조건문 약간 바꿈
 */
-
+int	g_exit_stat;
 
 int	check_int(char *arg)
 {
