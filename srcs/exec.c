@@ -404,7 +404,7 @@ int	exec(t_pipe *cmd_line, char **env)
 	if (cmd_line == NULL)
 		return (g_status);
 	pipe(end);
-	exec_function(cmd_line, &env, end);
+	// exec_function(cmd_line, &env, end);
 	res = exec_function(cmd_line, &env, end);
 	if (res == -1)
 		return (-1);
