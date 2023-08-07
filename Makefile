@@ -24,7 +24,8 @@ SRCS		= ./srcs/tokenizer.c \
 				./srcs/unset.c \
 				./srcs/cd.c \
 				./srcs/exec.c \
-				./srcs/main.c
+				./srcs/main.c \
+				./srcs/execution_jihan.c \
 				#./srcs/builtin/cd.c \
 				#./srcs/main.c \
 				# change or add files if needed

@@ -57,9 +57,11 @@ int	main(int argc, char **argv, char **envp)
 			//exec_command_line(t_job *pipe, char **env);
 			//printf("\t\tcommand: %s\n", jobs->cmd);
 			//printf("\t\targ: %s\n", jobs->arg[0]);
-			exec_command_line(jobs, envp);
+			execute_jobs(jobs, envp);
+			read_jobs(jobs);
+			/* exec_command_line(jobs, envp); */
 			printf("coming out of exec\n");
-			clear_tokens(&tokens, free);
+			/* clear_tokens(&tokens, free); */
 				//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함
 				//main 정확히 짤 때는 두번 콜되지 않게 조심하기
 			printf("everything done\n");

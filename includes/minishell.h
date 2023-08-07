@@ -57,6 +57,7 @@ typedef struct s_job
 	int				out; //0(stdout), 3(outfile), 4(append)
 	char 			*cmd;
 	char			**arg;
+	char			**argv;
 	char			*infile;
 	char			*outfile;
 	struct s_job	*next;
@@ -179,5 +180,6 @@ void	test_execute(t_job *jobs, char **env, int fd);
 
 /*main.c*/
 //moved to expander.c for now
+void	execute_jobs(t_job *jobs, char **envp);
 
 #endif
