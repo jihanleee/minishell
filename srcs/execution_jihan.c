@@ -90,13 +90,13 @@ void	exec_child(t_job *job, char **envp)
 	cpid = fork();
 	if (cpid == 0)
 	{
-		cmd_path = find_cmd_path(job->argv[0], envp);
+		cmd_path = find_cmd_path(job->cmd, envp);
 		close(job->pipefd[0]);
 		if (job->next && job->out == 0)
 			dup2(job->pipefd[1], 1);
 		if (job->prev && job->in == 0)
 			dup2(job->prev->pipefd[0], 0);
-		execve(cmd_path, job->argv, envp);
+		execve(cmd_path, get_argv(job), envp);
 	}
 	close(job->pipefd[1]);
 	if (job->prev)
@@ -113,7 +113,6 @@ void	execute_jobs(t_job *jobs, char **envp)
 	while (current)
 	{
 		i++;
-		current->argv = get_argv(current);
 		exec_child(current, envp);
 		current = current->next;
 	}
