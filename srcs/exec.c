@@ -1,46 +1,46 @@
 
 #include "minishell.h"
 
-char    *ft_job(char **path, char *cmd)
+char	*ft_job(char **path, char *cmd)
 {
-    int     i;
-    char    *path_cmd;
-    char    *temp;
+	int		i;
+	char	*path_cmd;
+	char	*temp;
 
-    if (access(cmd, X_OK) == 0)
-        return (cmd);
-    i = -1;
-    while (path[++i])
-    {
-        temp = ft_strjoin(path[i], "/");
-        path_cmd = ft_strjoin(temp, cmd);
-        free(temp);
-        if (access(path_cmd, X_OK) == 0)
-            return (path_cmd);
-        free(path_cmd);
-    }
-    return (NULL);
+	if (access(cmd, X_OK) == 0)
+		return (cmd);
+	i = -1;
+	while (path[++i])
+	{
+		temp = ft_strjoin(path[i], "/");
+		path_cmd = ft_strjoin(temp, cmd);
+		free(temp);
+		if (access(path_cmd, X_OK) == 0)
+			return (path_cmd);
+		free(path_cmd);
+	}
+	return (NULL);
 }
 
-char    **trim_path(char **env)
+char	**trim_path(char **env)
 {
-    int     i;
-    char    **path;
+	int		i;
+	char	**path;
 
-    i = -1;
-    while (env[++i])
-    {
-        if (ft_strncmp("PATH", env[i], 4) == 0)
-            break ;
-    }
-    path = ft_split(env[i] + 5, ':');
-    return (path);
+	i = -1;
+	while (env[++i])
+	{
+		if (ft_strncmp("PATH", env[i], 4) == 0)
+			break ;
+	}
+	path = ft_split(env[i] + 5, ':');
+	return (path);
 }
 
 char *get_full_path(char **env, char *cmd)
 {
-	char **path;
-	char *full_path;
+	char	**path;
+	char	*full_path;
 
 	// printf("in get full cmd function\n");
 	path = trim_path(env);
@@ -58,7 +58,7 @@ char *get_full_path(char **env, char *cmd)
 
 int	count_job(char **cmd)
 {
-	int 	cnt;
+	int		cnt;
 	char	**arg;
 
 	arg = cmd;
@@ -70,17 +70,16 @@ int	count_job(char **cmd)
 
 char	**get_full_cmd(t_job *cmd_line)
 {
-	char **full;
+	char	**full;
 	int		len;
 	int		i;
 
-	//printf("in get full cmd function\n");
 	i = 0;
-	len = 0; //
+	len = 0;
 	if (cmd_line->arg)
 		len = count_job(cmd_line->arg);
 	full = (char **)malloc(sizeof(char *) * (len + 2));
-	if(!full)
+	if (!full)
 		return (NULL);
 	//printf("get full cmd here\n");
 	full[0] = ft_strdup(cmd_line->cmd);
@@ -94,7 +93,7 @@ char	**get_full_cmd(t_job *cmd_line)
 	return (full);
 }
 
-void		exec_child_process(t_job *cmd_line, char *next_cmd, char **env)
+void		exec_child_process(t_job *cmd_line, char **env)
 {
 	int		ret;
 	char	*full_path;
@@ -114,7 +113,7 @@ void		exec_child_process(t_job *cmd_line, char *next_cmd, char **env)
 		dup2(cmd_line->pipefd[0], STDIN_FILENO);
 		close(cmd_line->pipefd[0]);
 	}
-	// if (check_builtin(cmd->cmdlines) == TRUE)
+	// if (check_builtin(cmd->cmdlines) == 1)
 	// 	exec_builtin(cmd, cmd->cmdlines);
 	// else
 		ret = execve(full_path, full_cmd, env);
@@ -123,54 +122,55 @@ void		exec_child_process(t_job *cmd_line, char *next_cmd, char **env)
 	exit(ret);
 }
 
-int	exec_cmd(t_job *cmd_line, char **env)
+int exec_cmd(t_job *cmd_line, char **env)
 {
-	pid_t	pid;
-	int		ret;
-	int		status;
-	char	*next_cmd;
+	pid_t pid;
+	int ret = EXIT_SUCCESS;
 
-	ret = EXIT_SUCCESS;
-	next_cmd = cmd_line->cmd;
 	if (cmd_line->next)
-	{
-		next_cmd = cmd_line->next->cmd;
 		pipe(cmd_line->next->pipefd);
-	}
+
 	pid = fork();
+	if (pid < 0)
+	{
+		perror("Error forking process");
+		return (ret);
+	}
 	if (pid == 0)
-		exec_child_process(cmd_line, next_cmd, env);
-	waitpid(pid, &status, 0);
+	{
+		exec_child_process(cmd_line, env);
+	}
+
+    // 	waitpid(pid, &status, 0); deleted!!!!
+
 	if (cmd_line->next)
 		close(cmd_line->next->pipefd[1]);
+
 	if (cmd_line->pipefd[0] != 0)
 		close(cmd_line->pipefd[0]);
+
 	return (ret);
 }
 
 void exec_command_line(t_job *cmd_line, char **env)
 {
-	t_job	*curr_job;
+    t_job *curr_job;
+    int status;
 
-	curr_job = cmd_line;
-	while (curr_job != NULL)
+    curr_job = cmd_line;
+    while (curr_job != NULL)
+    {
+        exec_cmd(curr_job, env);
+        curr_job = curr_job->next;
+    }
+
+    // wait for all child proce to complete.......jebal..
+	while (wait(&status) > 0)
 	{
-		if (cmd_line->cmd)
-		// if (strcmp("cd", temp->argv[0]) == 0)  /// 나중에 빌트인 함수 넣어서 진행
-        // {
 
-        // }
-        // if (strcmp("echo", temp->argv[0]) == 0)
-        // {
-
-        // } 
-
-		//else
-			exec_cmd(curr_job, env);
-		curr_job = curr_job->next;
 	}
-}
 
+}
 /*
 int parse_cmd(t_job **cmd, char **av)
 {
