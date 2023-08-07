@@ -5,6 +5,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <sys/stat.h>
+# include <sys/wait.h>
 # include <fcntl.h>
 # include <unistd.h>
 # include <stdlib.h>
@@ -118,19 +119,19 @@ void	open_file_redir(t_token *token);
 t_job	*extract_jobs(t_token *tokens);
 
 /*exec.c*/
-char    *ft_cmd(char **path, char *cmd);
-char    *ft_cmd(char **path, char *cmd);
-char *get_full_path(char **env, char *cmd);
-int	count_cmd(char **cmd);
-char	**get_full_cmd(t_job *cmd_line);
+// char    *ft_cmd(char **path, char *cmd);
+// char    *ft_cmd(char **path, char *cmd);
+// char *get_full_path(char **env, char *cmd);
+// int	count_cmd(char **cmd);
+// char	**get_full_cmd(t_job *cmd_line);
 //int non_builtin(t_job *cmd_line, char **env, int fds[]) 
-int	redirect_fd(int old_fd, int new_fd);
-void right_redir(t_job *cmd_line);
-void left_redir(t_job *cmd_line);
-void	apply_redir(t_job *cmd_line);
-void	ft_putstr_fd(char const *s, int fd);
-int		exec_function(t_job *cmd_line, char ***env, int end[]);
-int		exec(t_job *cmd_line, char **env);
+// int	redirect_fd(int old_fd, int new_fd);
+// void right_redir(t_job *cmd_line);
+// void left_redir(t_job *cmd_line);
+// void	apply_redir(t_job *cmd_line);
+// void	ft_putstr_fd(char const *s, int fd);
+// int		exec_function(t_job *cmd_line, char ***env, int end[]);
+// int		exec(t_job *cmd_line, char **env);
 //void exec(t_job *cmd_line, char **env);
 //void exec_command_line(t_job *cmd_line, char **env);
 //void	exec_command_line(t_job **cmd_line, char **env);
