@@ -105,11 +105,13 @@ void		exec_child_process(t_job *cmd_line, char **env)
 	cmd_line->cmd = full_path;
 	if (cmd_line->next)
 	{
+		close(cmd_line->next->pipefd[0]);
 		dup2(cmd_line->next->pipefd[1], STDOUT_FILENO);
 		close(cmd_line->next->pipefd[1]);
 	}
 	if (cmd_line->pipefd[0] != 0)
 	{
+		close(cmd_line->pipefd[1]);
 		dup2(cmd_line->pipefd[0], STDIN_FILENO);
 		close(cmd_line->pipefd[0]);
 	}
@@ -152,6 +154,21 @@ int exec_cmd(t_job *cmd_line, char **env)
 	return (ret);
 }
 
+void close_remaining_fds(t_job *cmd_line)
+{
+	t_job *curr_job = cmd_line;
+
+	while (curr_job != NULL)
+	{
+		if (curr_job->next)
+			close(curr_job->next->pipefd[1]); // Close write end of pipe
+		if (curr_job->pipefd[0] != 0)
+			close(curr_job->pipefd[0]); // Close read end of pipe
+
+		curr_job = curr_job->next;
+	}
+}
+
 void exec_command_line(t_job *cmd_line, char **env)
 {
     t_job *curr_job;
@@ -169,8 +186,9 @@ void exec_command_line(t_job *cmd_line, char **env)
 	{
 
 	}
-
+    close_remaining_fds(cmd_line);
 }
+
 /*
 int parse_cmd(t_job **cmd, char **av)
 {
