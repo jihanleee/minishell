@@ -14,9 +14,9 @@
 }
 */
 
-int	ft_pwd(t_pipe **lst, char **env, int fd)
+int	ft_pwd(t_job **lst, char **env, int fd)
 {
-	t_pipe	*current;
+	t_job	*current;
 	char	*print;
 	int		length;
 

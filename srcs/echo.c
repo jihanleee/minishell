@@ -10,14 +10,14 @@ int	get_length(char *str)
 	return (length);
 }
 
-void	ft_echo(t_pipe **lst, char **env, int fd)
+void	ft_echo(t_job **lst, char **env, int fd)
 {
 	int		i;
 	int		j;
 	int		length;
 	int		flag;
 	char	*temp;
-	t_pipe	*current;
+	t_job	*current;
 
 	flag = 0;
 	current = *lst;

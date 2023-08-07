@@ -1,10 +1,10 @@
 #include "minishell.h"
 
-void	ft_env(t_pipe **lst, char **env, int fd)
+void	ft_env(t_job **lst, char **env, int fd)
 {
 	int		i;
 	int		length;
-	t_pipe	*current;
+	t_job	*current;
 
 	current = *lst;
 	printf("inside env function\n\n");

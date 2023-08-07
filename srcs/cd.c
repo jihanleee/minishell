@@ -44,7 +44,7 @@ static int invalid_cd(char *path)
 
 static void	cd_unset(char **env, char *arg)
 {
-	//t_pipe	*current;
+	//t_job	*current;
 	//int		length;
 	int		i;
 
@@ -102,9 +102,9 @@ static void	cd_export(char **env, char *arg, char *path)
 	printf("\tafter path loop\n");
 }
 
-int	ft_cd(t_pipe **lst, char **env, int fd)
+int	ft_cd(t_job **lst, char **env, int fd)
 {
-	t_pipe	*current;
+	t_job	*current;
 	char	*new;
 	//int flag;
 	int i;

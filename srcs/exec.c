@@ -219,7 +219,7 @@ int	count_cmd(char **cmd)
 	return (cnt);
 }
 
-char	**get_full_cmd(t_pipe *cmd_line)
+char	**get_full_cmd(t_job *cmd_line)
 {
 	char **full;
 	int		len;
@@ -245,7 +245,7 @@ char	**get_full_cmd(t_pipe *cmd_line)
 	return (full);
 }
 
-int	non_builtin(t_pipe *cmd_line, char **env, int fds[])
+int	non_builtin(t_job *cmd_line, char **env, int fds[])
 {
 	char	*full_path;
 	char	**full_cmd;
@@ -286,7 +286,7 @@ int	redirect_fd(int old_fd, int new_fd)
 	return (new_fd);
 }
 
-void right_redir(t_pipe *cmd_line)
+void right_redir(t_job *cmd_line)
 {
 	if (cmd_line->out == 3 && cmd_line->outfile) 
 	{
@@ -312,7 +312,7 @@ void right_redir(t_pipe *cmd_line)
 	}
 }
 
-void left_redir(t_pipe *cmd_line)
+void left_redir(t_job *cmd_line)
 {
 	if (cmd_line->in == 1 && cmd_line->infile) 
 	{
@@ -326,7 +326,7 @@ void left_redir(t_pipe *cmd_line)
 	}
 }
 
-void	apply_redir(t_pipe *cmd_line)
+void	apply_redir(t_job *cmd_line)
 {
 	left_redir(cmd_line);
 	right_redir(cmd_line);
@@ -353,7 +353,7 @@ int ft_pwd(int fd)
 }
 */
 
-int exec_function(t_pipe *cmd_line, char ***env, int end[])
+int exec_function(t_job *cmd_line, char ***env, int end[])
 {
 	int fd;
 	//printf("inside exec function\n");
@@ -393,7 +393,7 @@ int exec_function(t_pipe *cmd_line, char ***env, int end[])
 	return (0);
 }
 
-int	exec(t_pipe *cmd_line, char **env)
+int	exec(t_job *cmd_line, char **env)
 {
 	int		end[2];
 	int		status;
@@ -439,7 +439,7 @@ int	exec(t_pipe *cmd_line, char **env)
 }
 
 
-void exec_command_line(t_pipe *temp, char **env)
+void exec_command_line(t_job *temp, char **env)
 {
 	//printf("inside exec commnad line\n");
 	//printf("\tcommand: %s\n", temp->cmd);
@@ -448,12 +448,12 @@ void exec_command_line(t_pipe *temp, char **env)
 }
 
 /*
-t_pipe *new_cmd(char *cmd, char **arg, int in, int out, char *infile, char *outfile) 
+t_job *new_cmd(char *cmd, char **arg, int in, int out, char *infile, char *outfile) 
 {
-	t_pipe *cmd_line = (t_pipe *)malloc(sizeof(t_pipe));
+	t_job *cmd_line = (t_job *)malloc(sizeof(t_job));
 	if (cmd_line == NULL)
 	{
-		perror("Error allocating memory for t_pipe");
+		perror("Error allocating memory for t_job");
 		exit(1);
 	}
 	cmd_line->cmd = cmd;
@@ -473,13 +473,13 @@ int main(int ac, char **av, char **env)
 	(void)av;
 
 	char *first_opt[] = {"-l", NULL};
-	t_pipe *first_cmd = new_cmd("ls", first_opt, 0, 0, NULL, NULL);
+	t_job *first_cmd = new_cmd("ls", first_opt, 0, 0, NULL, NULL);
 
 	char *opt1[] = {".c", NULL};
-	t_pipe *second_cmd = new_cmd("grep",opt1, 0, 0, NULL, NULL);
+	t_job *second_cmd = new_cmd("grep",opt1, 0, 0, NULL, NULL);
 
 	char *opt2[] = {"-l", NULL};
-	t_pipe *third_cmd = new_cmd("wc",opt2, 0, 3, NULL, "outfile");
+	t_job *third_cmd = new_cmd("wc",opt2, 0, 3, NULL, "outfile");
 
 	first_cmd->next = second_cmd;
 	second_cmd->next = third_cmd;
@@ -487,7 +487,7 @@ int main(int ac, char **av, char **env)
 
 	exec_command_line(first_cmd, env);
 
-	t_pipe *temp;
+	t_job *temp;
 	while (first_cmd)
 	{
 		temp = first_cmd;

@@ -36,9 +36,9 @@ int	check_middle_values(char *str)
 	return (0);
 }
 
-int	ft_unset(t_pipe **lst, char **env, int fd)
+int	ft_unset(t_job **lst, char **env, int fd)
 {
-	t_pipe	*current;
+	t_job	*current;
 	int		length;
 	int		i;
 	int		j;

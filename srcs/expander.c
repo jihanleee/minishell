@@ -214,7 +214,6 @@ void    split_expansions(t_lexeme *lexemes)
     t_lexeme    *current;
     t_lexeme    *next;
     int            i;
-    int            len;
 
     current = lexemes;
     while (current)
@@ -406,7 +405,7 @@ t_token	*iword_to_tokens(int *lexeme)
 			len++;
 		if (append_token(&result, new_expanded_token(lexeme, start, len)) == -1)
 			//return (clear_tokens(result, free), (free(lexeme), -1));
-			return (clear_tokens(result, free), (free(lexeme), NULL));
+			return (clear_tokens(&result, free), (free(lexeme), NULL));
 		start += len;
 	}
 	//printf("\texiting iword_to_tokens\n");
@@ -492,40 +491,40 @@ void	expansion(t_token **tokens, char **envp)
 	}
 }
 
-void	read_pipes(t_pipe *pipes)
+void	read_jobs(t_job *jobs)
 {
 	int	i;
 
-	while (pipes)
+	while (jobs)
 	{
 		printf("--------------------\n");
-		printf("in read pipes function, expander\n");
-		//ft_printf("\tcurrent pipe has command\n", pipes->cmd);
-		ft_printf("\tintype\t%d\n", pipes->in);
-		ft_printf("\touttype\t%d\n", pipes->out);
-		if (pipes->cmd)
-			ft_printf("\tcmd\t%s\n", pipes->cmd);
+		printf("in read jobs function, expander\n");
+		//ft_printf("\tcurrent pipe has command\n", jobs->cmd);
+		ft_printf("\tintype\t%d\n", jobs->in);
+		ft_printf("\touttype\t%d\n", jobs->out);
+		if (jobs->cmd)
+			ft_printf("\tcmd\t%s\n", jobs->cmd);
 		i = 0;
-		if (pipes->arg)
+		if (jobs->arg)
 		{
-			while (pipes->arg[i])
+			while (jobs->arg[i])
 			{
-				ft_printf("\targ[%d]\t%s\n", i, pipes->arg[i]);
+				ft_printf("\targ[%d]\t%s\n", i, jobs->arg[i]);
 				i++;
 			}
 		}
 		//printf("before in/outfile\n");
-		if (pipes->infile)
-			ft_printf("\tinfile\t%s\n", pipes->infile);
+		if (jobs->infile)
+			ft_printf("\tinfile\t%s\n", jobs->infile);
 		//printf("after infile + before outfile\n");
-		if (pipes->outfile)
+		if (jobs->outfile)
 		{
 			//printf("inside outfile\n");
-			ft_printf("\toutfile\t%s\n", pipes->outfile);
+			ft_printf("\toutfile\t%s\n", jobs->outfile);
 		}
 		ft_printf("--------------------\n");
-		if (pipes->next != NULL)
-			pipes = pipes->next;
+		if (jobs->next != NULL)
+			jobs = jobs->next;
 		else
 			return ;
 	}
@@ -626,23 +625,31 @@ void	open_file_redir(t_token *token)
 	}
 }
 
-t_pipe	*extract_pipes(t_token *tokens)
+void	point_prev_job(t_job *jobs)
 {
-	t_pipe	*result;
-	t_pipe	*cur_result;
+	while (jobs->next)
+	{
+		jobs->next->prev = jobs;
+		jobs = jobs->next;
+	}
+}
+
+t_job	*extract_jobs(t_token *tokens)
+{
+	t_job	*result;
+	t_job	*cur_result;
 	t_token	*current;
-	bool	cmd_found;
 
 	if (tokens == NULL)
 		return (NULL);
-	result = (t_pipe *)calloc(1, sizeof(t_pipe));
+	result = (t_job *)calloc(1, sizeof(t_job));
 	cur_result = result;
 	current = tokens;
 	while (current)
 	{
 		if (current->type == pipe_op)
 		{
-			cur_result->next = (t_pipe *)ft_calloc(1, sizeof (t_pipe));
+			cur_result->next = (t_job *)ft_calloc(1, sizeof (t_job));
 			cur_result = cur_result->next;
 		}
 		else if (current->type == in || current->type == heredoc)
@@ -695,13 +702,14 @@ t_pipe	*extract_pipes(t_token *tokens)
 				cur_result->arg = extract_arg(&current);
 		}
 	}
+	point_prev_job(result);
 	return (result);
 }
 
-void	clear_pipes(t_pipe **lst)
+void	clear_jobs(t_job **lst)
 {
-	t_pipe	*current;
-	t_pipe	*next;
+	t_job	*current;
+	t_job	*next;
 	int		i;
 
 	if (lst == 0)

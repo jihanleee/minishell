@@ -28,7 +28,7 @@ int	check_int(char *arg)
 	return (0);
 }
 
-int	cnt_arg(t_pipe *current)
+int	cnt_arg(t_job *current)
 {
 	int	cnt;
 
@@ -38,9 +38,9 @@ int	cnt_arg(t_pipe *current)
 	return (cnt);
 }
 
-int	ft_exit(t_pipe **lst, char **env, int fd)
+int	ft_exit(t_job **lst, char **env, int fd)
 {
-	t_pipe	*current;
+	t_job	*current;
 	int		exit_num;
 	int		arg_cnt;
 
@@ -84,9 +84,9 @@ int	ft_exit(t_pipe **lst, char **env, int fd)
 }
 
 /* 조건문 하나하나 다 쓴 코드
-int	ft_exit(t_pipe **lst, char **env, int fd)
+int	ft_exit(t_job **lst, char **env, int fd)
 {
-	t_pipe	*current;
+	t_job	*current;
 	int		exit_num;
 	int		arg_cnt;
 
@@ -166,7 +166,7 @@ int	check_int(char *arg)
 	return (0);
 }
 
-int	get_exit_num(t_pipe current)
+int	get_exit_num(t_job current)
 {
 	int	result;
 	int	i;
@@ -187,9 +187,9 @@ int	get_exit_num(t_pipe current)
 }
 
 
-int	ft_exit(t_pipe **lst, char **env, int fd)
+int	ft_exit(t_job **lst, char **env, int fd)
 {
-	t_pipe	*current;
+	t_job	*current;
 	int		exit_num;
 
 	(void)env;
@@ -220,9 +220,9 @@ int	ft_exit(t_pipe **lst, char **env, int fd)
 }
 
 /*
-static int	temp_exit(t_pipe **lst, char **env, int fd)
+static int	temp_exit(t_job **lst, char **env, int fd)
 {
-	t_pipe	*current;
+	t_job	*current;
 	int error_type;
 
 	current = *lst;

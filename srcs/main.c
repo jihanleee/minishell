@@ -5,7 +5,7 @@
 int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
-	t_pipe	*pipes;
+	t_job	*jobs;
 	//t_list *history;
 	//t_list new;
 	//t_token	*temp;
@@ -48,16 +48,16 @@ int	main(int argc, char **argv, char **envp)
 			read_tokens(tokens);
 			//printf("read tokens done\n");
 			open_file_redir(tokens);
-			pipes = extract_pipes(tokens);
-			read_pipes(pipes);
+			jobs = extract_jobs(tokens);
+			read_jobs(jobs);
 			//printf("----------------------\n");
-			//printf("read pipes done\n");
+			//printf("read jobs done\n");
 			printf("----------------------\n");
-			//test_execute(pipes, envp, 1);
-			//exec_command_line(t_pipe *pipe, char **env);
-			//printf("\t\tcommand: %s\n", pipes->cmd);
-			//printf("\t\targ: %s\n", pipes->arg[0]);
-			exec_command_line(pipes, envp);
+			//test_execute(jobs, envp, 1);
+			//exec_command_line(t_job *pipe, char **env);
+			//printf("\t\tcommand: %s\n", jobs->cmd);
+			//printf("\t\targ: %s\n", jobs->arg[0]);
+			exec_command_line(jobs, envp);
 			printf("coming out of exec\n");
 			clear_tokens(&tokens, free);
 				//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함

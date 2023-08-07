@@ -39,9 +39,9 @@ int	first_is_valid(char c)
 	*/
 }
 
-int	get_block_count(t_pipe **lst)
+int	get_block_count(t_job **lst)
 {
-	t_pipe	*current;
+	t_job	*current;
 	int	count;
 	int	flag;
 	int	i;
@@ -93,9 +93,9 @@ int	get_block_count(t_pipe **lst)
 	return (count);
 }
 
-int	malloc_combine_lines(char **combine, t_pipe **lst)
+int	malloc_combine_lines(char **combine, t_job **lst)
 {
-	t_pipe	*current;
+	t_job	*current;
 	int	length;
 	int count;
 	int	flag;
@@ -142,9 +142,9 @@ int	malloc_combine_lines(char **combine, t_pipe **lst)
 
 }
 
-int	fill_blocks(char **combine, t_pipe **lst)
+int	fill_blocks(char **combine, t_job **lst)
 {
-	t_pipe	*current;
+	t_job	*current;
 	int	index;
 	int count;
 	int	flag;
@@ -353,9 +353,9 @@ void	free_combine(char **combine)
 }
 */
 
-int	ft_export(t_pipe **lst, char **env, int fd)
+int	ft_export(t_job **lst, char **env, int fd)
 {
-	t_pipe	*current;
+	t_job	*current;
 	char	**combine;
 	//int		flag; //0 means left side of =, 1 means right side of =
 	//int		envp;
