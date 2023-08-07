@@ -45,11 +45,11 @@ int	main(int argc, char **argv, char **envp)
 			tokens = parse_tokens(&tokens, free);
 		
 			expansion(&tokens, envp);
-			read_tokens(tokens);
+			/* read_tokens(tokens); */
 			//printf("read tokens done\n");
 			open_file_redir(tokens);
 			jobs = extract_jobs(tokens);
-			read_jobs(jobs);
+			/* read_jobs(jobs); */
 			//printf("----------------------\n");
 			//printf("read jobs done\n");
 			printf("----------------------\n");
