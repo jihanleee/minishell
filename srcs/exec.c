@@ -131,7 +131,6 @@ int exec_cmd(t_job *cmd_line, char **env)
 
 	if (cmd_line->next)
 		pipe(cmd_line->next->pipefd);
-
 	pid = fork();
 	if (pid < 0)
 	{
@@ -142,15 +141,10 @@ int exec_cmd(t_job *cmd_line, char **env)
 	{
 		exec_child_process(cmd_line, env);
 	}
-
-    // 	waitpid(pid, &status, 0); deleted!!!!
-
 	if (cmd_line->next)
 		close(cmd_line->next->pipefd[1]);
-
 	if (cmd_line->pipefd[0] != 0)
 		close(cmd_line->pipefd[0]);
-
 	return (ret);
 }
 
@@ -169,15 +163,57 @@ void close_remaining_fds(t_job *cmd_line)
 	}
 }
 
+int	exec_builtin(t_job *cmd_line, char **env, int fd)
+{
+	if (ft_strncmp("pwd", cmd_line->cmd, 4) == 0)
+		ft_pwd(&cmd_line, env, fd);
+	else if (ft_strncmp("cd", cmd_line->cmd, 3) == 0)
+		ft_cd(&cmd_line, env, fd);
+	else if (ft_strncmp("echo", cmd_line->cmd, 5) == 0)
+		ft_echo(&cmd_line, env, fd);
+	else if (ft_strncmp("env", cmd_line->cmd, 4) == 0)
+		ft_env(&cmd_line, env, fd);
+	else if (ft_strncmp("export", cmd_line->cmd, 7) == 0)
+		ft_export(&cmd_line, env, fd);
+	else if (ft_strncmp("unset", cmd_line->cmd, 6) == 0)
+		ft_unset(&cmd_line, env, fd);
+	else if (ft_strncmp("exit", cmd_line->cmd, 5) == 0)
+		ft_exit(&cmd_line, env, fd);
+	else
+		return (0);
+	return (1);
+}
+
+int check_builtin(char *cmd)
+{
+	if (!ft_strncmp(cmd, "cd", 2) || !ft_strncmp(cmd, "echo", 4)
+		|| !ft_strncmp(cmd, "pwd", 3) || !ft_strncmp(cmd, "env", 3)
+		|| !ft_strncmp(cmd, "export", 6) || !ft_strncmp(cmd, "export", 6)
+		|| !ft_strncmp(cmd, "unset", 5) || !ft_strncmp(cmd, "exit", 4))
+	{
+		return (1);
+	}
+	return (0);
+}
+
+
 void exec_command_line(t_job *cmd_line, char **env)
 {
-    t_job *curr_job;
-    int status;
+	t_job *curr_job;
+	int status;
 
-    curr_job = cmd_line;
-    while (curr_job != NULL)
-    {
-        exec_cmd(curr_job, env);
+	curr_job = cmd_line;
+	while (curr_job != NULL)
+	{
+		// if (cmd_line->cmd)
+		// {
+		// 	if (cmd_line->in != 0 || cmd_line->out != 0)
+		// 		apply_redir(cmd_line);
+		// }
+		if ((check_builtin(cmd_line->cmd) == 1)) //여기서 그냥 처리해버릴까...? 아님 자식 프로세스 안에서?
+			exec_builtin(cmd_line, env, STDOUT_FILENO);
+		else
+			exec_cmd(curr_job, env);
         curr_job = curr_job->next;
     }
 
