@@ -559,7 +559,7 @@ char	**extract_arg(t_token **tokens)
 	return (result);
 }
 
-void	create_heredoc(const char *delim, bool is_quoted)
+void	create_heredoc(const char *delim)
 {
 	int	fd;
 	char	*line;
@@ -604,7 +604,7 @@ void	open_file_redir(t_token *token)
 			O_TRUNC * (current->type != append), 0777);
 		else if (current->type == heredoc)
 		{
-			create_heredoc(current->str, 1);
+			create_heredoc(current->str);
 			free(current->str);
 			current->str = ft_strdup("heredoc.tmp");
 		}

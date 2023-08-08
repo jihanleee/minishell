@@ -115,9 +115,10 @@ t_token	*token_to_etoken(t_token *old, char **envp);
 void	expansion(t_token **tokens, char **envp);
 void	read_jobs(t_job *jobs);
 char	**extract_arg(t_token **tokens);
-void	create_heredoc(const char *delim, bool is_quoted);
+void	create_heredoc(const char *delim);
 void	open_file_redir(t_token *token);
 t_job	*extract_jobs(t_token *tokens);
+void	clear_jobs(t_job **lst);
 
 /*exec.c*/
 // char    *ft_cmd(char **path, char *cmd);

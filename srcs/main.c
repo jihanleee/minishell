@@ -38,33 +38,19 @@ int	main(int argc, char **argv, char **envp)
 			//printf("bash: syntax error\n");
 			//print_error("syntax error\n");
 			clear_tokens(&tokens, free);
-			//return (1);	//error
 		}
 		else
 		{
 			tokens = parse_tokens(&tokens, free);
-		
 			expansion(&tokens, envp);
-			/* read_tokens(tokens); */
-			//printf("read tokens done\n");
 			open_file_redir(tokens);
 			jobs = extract_jobs(tokens);
-			/* read_jobs(jobs); */
-			//printf("----------------------\n");
-			//printf("read jobs done\n");
-			printf("----------------------\n");
-			//test_execute(jobs, envp, 1);
-			//exec_command_line(t_job *pipe, char **env);
-			//printf("\t\tcommand: %s\n", jobs->cmd);
-			//printf("\t\targ: %s\n", jobs->arg[0]);
-			execute_jobs(jobs, envp);
 			read_jobs(jobs);
-			/* exec_command_line(jobs, envp); */
-			printf("coming out of exec\n");
+			execute_jobs(jobs, envp);
+			clear_jobs(&jobs);
 			/* clear_tokens(&tokens, free); */
 				//parsing error 있는 경우 이미 exit_error에서 clear_tokens를 함
 				//main 정확히 짤 때는 두번 콜되지 않게 조심하기
-			printf("everything done\n");
 		}
 	}
 	rl_clear_history();

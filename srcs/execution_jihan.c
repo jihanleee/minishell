@@ -127,9 +127,9 @@ void	non_builtin_child(t_job *job, char **envp)
 	cpid = fork();
 	if (cpid == 0)
 	{
-		close(job->pipefd[0]);
-		if (job->in == -1)
+		if (job->cmd == 0)
 			exit(1);
+		close(job->pipefd[0]);
 		if (find_inout_fd(job, &infd, &outfd) == -1)
 			error_exit("fd error\n");
 		dup2(outfd, 1);
@@ -154,13 +154,14 @@ void	builtin_child(t_job *job, char **envp)
 	if (cpid == 0)
 	{
 		close(job->pipefd[0]);
+		if (job->cmd == 0)
+			exit(1);
 		if (job->in == -1)
 			exit(1);
 		if (find_inout_fd(job, &infd, &outfd) == -1)
 			error_exit("fd error\n");
-		dup2(outfd, 1);
 		dup2(infd, 0);
-		exec_builtin(job, envp, 1);
+		exec_builtin(job, envp, outfd);
 		exit(0);
 	}
 	close(job->pipefd[1]);
@@ -181,9 +182,9 @@ void	execute_jobs(t_job *jobs, char **envp)
 	while (current)
 	{
 		i++;
-		if (check_builtin(jobs->cmd))
-			builtin_child(jobs, envp);
-		else
+		if (current->cmd && check_builtin(current->cmd))
+			builtin_child(current, envp);
+		else if (current->cmd)
 			non_builtin_child(current, envp);
 		current = current->next;
 	}

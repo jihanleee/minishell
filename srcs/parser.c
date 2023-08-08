@@ -126,9 +126,6 @@ void	print_parse_error(t_token **input)
 
 int	check_tokens(t_token *tokens)
 {
-	int	result;
-
-	result = 0;
 	if (!tokens)
 		return (0);
 	//printf("\nin check tokens function\n");//
