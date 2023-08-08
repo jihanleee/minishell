@@ -177,8 +177,8 @@ int	ft_unset(t_job **lst, char **env, int fd);
 
 /* temp_execute.c */
 void	test_execute(t_job *jobs, char **env, int fd);
-
-
+int	exec_builtin(t_job *cmd_line, char **env, int fd);
+int check_builtin(char *cmd);
 /*main.c*/
 //moved to expander.c for now
 void	execute_jobs(t_job *jobs, char **envp);
