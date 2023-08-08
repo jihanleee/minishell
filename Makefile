@@ -16,18 +16,15 @@ SRCS		= ./srcs/tokenizer.c \
 				./srcs/find_param.c \
 				./srcs/expander.c \
 				./srcs/signal.c \
-				./srcs/echo.c \
-				./srcs/env.c \
-				./srcs/exit.c \
-				./srcs/export.c \
-				./srcs/pwd.c \
-				./srcs/unset.c \
-				./srcs/cd.c \
-				./srcs/exec.c \
 				./srcs/main.c \
-				./srcs/execution_jihan.c \
-				#./srcs/builtin/cd.c \
-				#./srcs/main.c \
+				./srcs/execution.c \
+				./srcs/builtins/echo.c \
+				./srcs/builtins/env.c \
+				./srcs/builtins/exit.c \
+				./srcs/builtins/export.c \
+				./srcs/builtins/pwd.c \
+				./srcs/builtins/unset.c \
+				./srcs/builtins/cd.c \
 				# change or add files if needed
 OBJS		= ${SRCS:.c=.o}
 

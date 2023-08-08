@@ -734,35 +734,3 @@ void	clear_jobs(t_job **lst)
 	}
 	*lst = 0;
 }
-/*expansion module tests*/
-//OLD - DO NOT USE
-/*int	main(int argc, char **argv, char **envp)
-{
-	t_lexeme	*lexemes;
-	t_token	*newtok;
-	char	*line;
-	int		*info;
-	int		*lexeme;
-	char	*tok;
-	int		i;
-
-	while (1)
-	{
-		line = readline("%");
-		ft_printf("line : %s\n", line);
-		lexemes = word_to_lexemes(line);
-		read_lexemes(lexemes);
-		replace_params(lexemes, envp);
-		ft_printf("after expansion\n");
-		read_lexemes(lexemes);
-		lexeme = lexemes_to_int(lexemes);
-		i = 0;
-		while (lexeme[i])
-			printf("%d\n", lexeme[i++]);
-		ft_printf("%d\n", lexemelen(lexemes));
-		newtok = lexeme_to_tokens(lexeme);
-		read_tokens(newtok);
-	}
-	return (0);
-}
-*/

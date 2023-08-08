@@ -120,25 +120,6 @@ void	open_file_redir(t_token *token);
 t_job	*extract_jobs(t_token *tokens);
 void	clear_jobs(t_job **lst);
 
-/*exec.c*/
-// char    *ft_cmd(char **path, char *cmd);
-// char    *ft_cmd(char **path, char *cmd);
-// char *get_full_path(char **env, char *cmd);
-// int	count_cmd(char **cmd);
-// char	**get_full_cmd(t_job *cmd_line);
-//int non_builtin(t_job *cmd_line, char **env, int fds[]) 
-// int	redirect_fd(int old_fd, int new_fd);
-// void right_redir(t_job *cmd_line);
-// void left_redir(t_job *cmd_line);
-// void	apply_redir(t_job *cmd_line);
-// void	ft_putstr_fd(char const *s, int fd);
-// int		exec_function(t_job *cmd_line, char ***env, int end[]);
-// int		exec(t_job *cmd_line, char **env);
-//void exec(t_job *cmd_line, char **env);
-//void exec_command_line(t_job *cmd_line, char **env);
-//void	exec_command_line(t_job **cmd_line, char **env);
-void exec_command_line(t_job *temp, char **env);
-
 /*signal.c*/
 void	new_prompt(void);
 void 	sig_handler(int signum, siginfo_t *info, void *context);
@@ -176,12 +157,9 @@ int		ft_pwd(t_job **lst, char **env, int fd);
 //void	ft_unset(t_job **lst, char **env, int fd);
 int	ft_unset(t_job **lst, char **env, int fd);
 
-/* temp_execute.c */
-void	test_execute(t_job *jobs, char **env, int fd);
-int	exec_builtin(t_job *cmd_line, char **env, int fd);
-int check_builtin(char *cmd);
 /*main.c*/
 //moved to expander.c for now
+/*execution.c*/
 void	execute_jobs(t_job *jobs, char **envp);
 
 #endif

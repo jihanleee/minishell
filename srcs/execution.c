@@ -169,6 +169,39 @@ void	builtin_child(t_job *job, char **envp)
 		close(job->prev->pipefd[0]);
 }
 
+int	exec_builtin(t_job *cmd_line, char **env, int fd)
+{
+	if (ft_strncmp("pwd", cmd_line->cmd, 4) == 0)
+		ft_pwd(&cmd_line, env, fd);
+	else if (ft_strncmp("cd", cmd_line->cmd, 3) == 0)
+		ft_cd(&cmd_line, env, fd);
+	else if (ft_strncmp("echo", cmd_line->cmd, 5) == 0)
+		ft_echo(&cmd_line, env, fd);
+	else if (ft_strncmp("env", cmd_line->cmd, 4) == 0)
+		ft_env(&cmd_line, env, fd);
+	else if (ft_strncmp("export", cmd_line->cmd, 7) == 0)
+		ft_export(&cmd_line, env, fd);
+	else if (ft_strncmp("unset", cmd_line->cmd, 6) == 0)
+		ft_unset(&cmd_line, env, fd);
+	else if (ft_strncmp("exit", cmd_line->cmd, 5) == 0)
+		ft_exit(&cmd_line, env, fd);
+	else
+		return (0);
+	return (1);
+}
+
+int check_builtin(char *cmd)
+{
+	if (!ft_strncmp(cmd, "cd", 3) || !ft_strncmp(cmd, "echo", 5)
+		|| !ft_strncmp(cmd, "pwd", 4) || !ft_strncmp(cmd, "env", 4)
+		|| !ft_strncmp(cmd, "export", 7) || !ft_strncmp(cmd, "export", 7)
+		|| !ft_strncmp(cmd, "unset", 6) || !ft_strncmp(cmd, "exit", 5))
+	{
+		return (1);
+	}
+	return (0);
+}
+
 void	execute_jobs(t_job *jobs, char **envp)
 {
 	t_job	*current;
