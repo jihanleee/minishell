@@ -40,7 +40,7 @@ char	**bin_path(char **envp)
 	return (path);
 }
 
-char	*bin_dir(char *cmd)
+char	*file_path(char *cmd)
 {
 	if (access(cmd, X_OK) == 0)
 		return (ft_strdup(cmd));
@@ -106,50 +106,50 @@ char	**get_argv(t_job *jobs)
 	return (result);
 }
 
-int	find_inout_fd(t_job *job, int *infd, int *outfd)
+int	redirect_fds(t_job *job)
 {
+	int	infd;
+	int	outfd;
+
 	if (job->in)
-		*infd = open(job->infile, O_RDONLY);
+		infd = open(job->infile, O_RDONLY);
 	else if (job->prev && job->in == 0)
-		*infd = job->prev->pipefd[0];
+		infd = job->prev->pipefd[0];
 	else
-		*infd = 0;
+		infd = 0;
 	if (job->out == 3)
-		*outfd = open(job->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		outfd = open(job->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	else if (job->out == 4)
-		*outfd = open(job->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		outfd = open(job->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	else if (job->next && job->out == 0)
-		*outfd = job->pipefd[1];
+		outfd = job->pipefd[1];
 	else if (!job->next)
-		*outfd = 1;
-	if (*outfd == -1 || *infd == -1)
-		return (-1);
+		outfd = 1;
+	if (outfd == -1 || infd == -1)
+		error_exit("fd error\n", 1);
+	if (dup2(outfd, 1) < 0 || dup2(infd, 0) < 0)
+		error_exit("dup2 error\n", 1);
 	return (0);
 }
 
 void	non_builtin_child(t_job *job, char **envp)
 {
 	pid_t	cpid;
-	int		infd;
-	int		outfd;
 	char	*cmd_path;
+	char	**argv;
 
-	pipe(job->pipefd);
 	cpid = fork();
 	if (cpid == 0)
 	{
-		if (job->cmd == 0)
-			exit(1);
 		close(job->pipefd[0]);
-		if (find_inout_fd(job, &infd, &outfd) == -1)
-			error_exit("fd error\n", 1);
-		dup2(outfd, 1);
-		dup2(infd, 0);
+		redirect_fds(job);
 		if (ft_strchr(job->cmd, '/'))
-			cmd_path = bin_dir(job->cmd);
+			cmd_path = file_path(job->cmd);
 		else
 			cmd_path = find_cmd_path(job->cmd, envp);
-		execve(cmd_path, get_argv(job), envp);
+		argv = get_argv(job);
+		execve(cmd_path, argv, envp);
+		error_exit("execve error", 1);
 	}
 	close(job->pipefd[1]);
 	if (job->prev)
@@ -163,28 +163,19 @@ void	builtin_child(t_job *job, char **envp)
 	int		outfd;
 	char	*cmd_path;
 
-	pipe(job->pipefd);
 	cpid = fork();
 	if (cpid == 0)
 	{
 		close(job->pipefd[0]);
-		if (job->cmd == 0)
-			exit(1);
-		if (job->in == -1)
-			exit(1);
-		if (find_inout_fd(job, &infd, &outfd) == -1)
-			error_exit("fd error\n", 1);
+		redirect_fds(job);
 		dup2(infd, 0);
 		exec_builtin(job, envp, outfd);
-		exit(1);
 	}
-	close(job->pipefd[1]);
-	if (job->prev)
-		close(job->prev->pipefd[0]);
 }
 
 int	exec_builtin(t_job *cmd_line, char **env, int fd)
 {
+	g_exit_stat = 0;
 	if (ft_strncmp("pwd", cmd_line->cmd, 4) == 0)
 		ft_pwd(&cmd_line, env, fd);
 	else if (ft_strncmp("cd", cmd_line->cmd, 3) == 0)
@@ -199,9 +190,8 @@ int	exec_builtin(t_job *cmd_line, char **env, int fd)
 		ft_unset(&cmd_line, env, fd);
 	else if (ft_strncmp("exit", cmd_line->cmd, 5) == 0)
 		ft_exit(&cmd_line, env, fd);
-	else
-		return (0);
-	return (1);
+	exit(g_exit_stat);
+	return (0);
 }
 
 int check_builtin(char *cmd)
@@ -227,12 +217,18 @@ void	execute_jobs(t_job *jobs, char **envp)
 	i = 0;
 	current = jobs;
 	while (current)
-	{
-		i++;
+	{	
+		if (pipe(current->pipefd) < 0)
+			perror("pipe");
+		else if (current->cmd)
+			i++;
 		if (current->cmd && check_builtin(current->cmd))
 			builtin_child(current, envp);
 		else if (current->cmd)
 			non_builtin_child(current, envp);
+		close(current->pipefd[1]);
+		if (current->prev)
+			close(current->prev->pipefd[0]);
 		current = current->next;
 	}
 	while (i-- > 0)

@@ -528,7 +528,7 @@ void	create_heredoc(const char *delim)
 	int	fd;
 	char	*line;
 
-	fd = open("heredoc.tmp", O_RDWR | O_CREAT | O_TRUNC, 0777);
+	fd = open("heredoc.tmp", O_RDWR | O_CREAT | O_TRUNC, 0666);
 	while (1)
 	{
 		ft_printf(">");
