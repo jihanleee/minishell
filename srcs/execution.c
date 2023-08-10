@@ -10,10 +10,10 @@ void	free_arrays(char **str)
 	free(str);
 }
 
-void	error_exit(char *str)
+void	error_exit(char *str, int exit_status)
 {
 	ft_putstr_fd(str, 2);
-	exit(EXIT_FAILURE);
+	exit(exit_status);
 }
 
 char	**bin_path(char **envp)
@@ -36,8 +36,19 @@ char	**bin_path(char **envp)
 	j++;
 	path = ft_split(&(envp[i][j]), ':');
 	if (path == 0)
-		error_exit("malloc error\n");
+		error_exit("malloc error\n", 1);
 	return (path);
+}
+
+char	*bin_dir(char *cmd)
+{
+	if (access(cmd, X_OK) == 0)
+		return (ft_strdup(cmd));
+	else
+	{
+		perror(cmd);
+		exit(127);
+	}
 }
 
 char	*find_cmd_path(char *cmd, char **envp)
@@ -65,7 +76,7 @@ char	*find_cmd_path(char *cmd, char **envp)
 	}
 	free_arrays(path);
 	if (!withcmd)
-		error_exit("command not found\n");
+		error_exit("command not found\n", 127);
 	return (withcmd);
 }
 
@@ -131,10 +142,13 @@ void	non_builtin_child(t_job *job, char **envp)
 			exit(1);
 		close(job->pipefd[0]);
 		if (find_inout_fd(job, &infd, &outfd) == -1)
-			error_exit("fd error\n");
+			error_exit("fd error\n", 1);
 		dup2(outfd, 1);
 		dup2(infd, 0);
-		cmd_path = find_cmd_path(job->cmd, envp);
+		if (ft_strchr(job->cmd, '/'))
+			cmd_path = bin_dir(job->cmd);
+		else
+			cmd_path = find_cmd_path(job->cmd, envp);
 		execve(cmd_path, get_argv(job), envp);
 	}
 	close(job->pipefd[1]);
@@ -159,10 +173,10 @@ void	builtin_child(t_job *job, char **envp)
 		if (job->in == -1)
 			exit(1);
 		if (find_inout_fd(job, &infd, &outfd) == -1)
-			error_exit("fd error\n");
+			error_exit("fd error\n", 1);
 		dup2(infd, 0);
 		exec_builtin(job, envp, outfd);
-		exit(0);
+		exit(1);
 	}
 	close(job->pipefd[1]);
 	if (job->prev)
@@ -223,5 +237,5 @@ void	execute_jobs(t_job *jobs, char **envp)
 	}
 	while (i-- > 0)
 		wait(&stat);
-	ft_printf("stat :%d\n", stat);
+	g_exit_stat = WEXITSTATUS(stat);
 }

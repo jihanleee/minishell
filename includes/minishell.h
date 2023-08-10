@@ -32,7 +32,6 @@ typedef enum e_token_type
 	out,
 	append,
 	pipe_op,
-	in_file,
 	amb_redir
 }			t_token_type;
 
@@ -58,7 +57,6 @@ typedef struct s_job
 	int				out; //0(stdout), 3(outfile), 4(append)
 	char 			*cmd;
 	char			**arg;
-	char			**argv;
 	char			*infile;
 	char			*outfile;
 	struct s_job	*next;
@@ -75,6 +73,7 @@ typedef struct s_list
 }				t_list;
 */
 
+extern int g_exit_stat;
 /*find_param.c*/
 char	*find_param(char *p_name, char **envp);
 

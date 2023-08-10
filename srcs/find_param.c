@@ -5,6 +5,8 @@ char	*find_param(char *p_name, char **envp)
 	int		i;
 	char	*str;
 
+	if (ft_strncmp(p_name, "?", 2) == 0)
+		return (ft_itoa(g_exit_stat));
 	str = 0;
 	i = 0;
 	while (envp[i])

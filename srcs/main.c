@@ -1,7 +1,5 @@
 #include "minishell.h"
 
-// int	g_status;
-
 int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
@@ -23,12 +21,14 @@ int	main(int argc, char **argv, char **envp)
 		line = readline(GREEN "MINISHELL> ");
 		if (line == NULL)
 		{
-			free(line);
 			write(STDOUT_FILENO, "exit\n", 5);
 			return (0);
 		}
+		if (ft_strlen(line) == 0)
+			continue ;
 		printf("----------------------------------\n");
 		printf("line : %s\n", line);
+		ft_printf("%d\n", g_exit_stat);
 		add_history(line);
 		tokens = create_tokens(line);
 		//printf("check tokens result is %d\n", check_tokens(tokens));
@@ -43,8 +43,10 @@ int	main(int argc, char **argv, char **envp)
 		{
 			tokens = parse_tokens(&tokens, free);
 			expansion(&tokens, envp);
+			g_exit_stat = 0;
 			open_file_redir(tokens);
 			jobs = extract_jobs(tokens);
+
 			read_jobs(jobs);
 			execute_jobs(jobs, envp);
 			clear_jobs(&jobs);

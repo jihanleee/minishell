@@ -10,11 +10,8 @@ void	clear_tokens(t_token **lst, void (*del)(void *))
 	if (del == 0)
 		return ;
 	current = *lst;
-	printf("\n-----------------------------------\n");
-	printf("currently in clear tokens function\n"); //
 	while (current)
 	{
-		printf("\ttoken we are deleting is %s\n", current->str);//
 		next = current->next;
 		if (current->str)
 			del(current->str);
@@ -163,41 +160,8 @@ void	read_lexemes(t_lexeme *current)
 		i++;
 	}
 }
-/*
-void	split_expansions(t_lexeme *lexemes)
-{
-	t_lexeme	*current;
-	t_lexeme	*next;
-	int		i;
 
-	current = lexemes;
-	while (current)
-	{
-		next = current->next;
-		//split them!
-		i = 0;
-		while (current->type != 1 && current->str[i])
-		{
-			if (current->str[i] == '$' && current->type != 1)
-			{
-				i++;
-				current->exp = TRUE;
-			}
-			while (current->str[i] && current->str[i] != '$')
-				i++;
-			if (current->str[i] == '$')
-			{
-				current->next = new_lexeme(ft_strdup(&(current->str[i])), current->type);
-				//protect the malloc
-				current->next->next = next;
-				current->next->exp = TRUE;
-				current->str[i] = '\0';
-			}
-		}
-		current = current->next;
-	}
-}
-*/int    len_lvname(char *str)
+int    len_lvname(char *str)
 {
     int    i;
 
@@ -567,13 +531,13 @@ void	create_heredoc(const char *delim)
 	fd = open("heredoc.tmp", O_RDWR | O_CREAT | O_TRUNC, 0777);
 	while (1)
 	{
-		ft_printf("heredoc>");
+		ft_printf(">");
 		line = get_next_line(0);
 		if (line == 0 || line[ft_strlen(line) - 1] != '\n')
 		{
 			if (line)
 				free(line);
-			ft_printf("ERRRRORROR\n");//error
+			ft_putstr_fd("warning: here-doc delimited by eof\n", 2);//error
 			break ;
 		}
 		else if (ft_strncmp(line, delim, ft_strlen(line) - 1) == 0 \
