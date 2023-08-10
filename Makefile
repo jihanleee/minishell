@@ -11,13 +11,17 @@ L_PATH		= ./includes/libft/ #libft should be replaced by 'your teammate's libft'
 
 INCLUDES	= -I ${I_PATH} -I ${L_PATH}
 
-SRCS		= ./srcs/tokenizer.c \
-				./srcs/parser.c \
+SRCS		=	./srcs/parser.c \
 				./srcs/find_param.c \
 				./srcs/expander.c \
 				./srcs/signal.c \
 				./srcs/main.c \
-				./srcs/execution.c \
+				./srcs/execution/exec_utils1.c \
+				./srcs/execution/exec_utils2.c \
+				./srcs/execution/execution.c \
+				./srcs/tokenizer/create_tokens.c \
+				./srcs/tokenizer/token_substr_len.c \
+				./srcs/tokenizer/token_utils.c \
 				./srcs/builtins/echo.c \
 				./srcs/builtins/env.c \
 				./srcs/builtins/exit.c \

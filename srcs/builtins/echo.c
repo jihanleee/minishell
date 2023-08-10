@@ -14,9 +14,7 @@ void	ft_echo(t_job **lst, char **env, int fd)
 {
 	int		i;
 	int		j;
-	int		length;
 	int		flag;
-	char	*temp;
 	t_job	*current;
 
 	flag = 0;

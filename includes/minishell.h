@@ -77,13 +77,20 @@ extern int g_exit_stat;
 /*find_param.c*/
 char	*find_param(char *p_name, char **envp);
 
-/*tokenizer.c*/
+/*tokenizer*/
+void	mark_single_quote(char *line, int *result, int *i);
+void	mark_double_quote(char *line, int *result, int *i);
+int		*create_quote_info(char *line);
+bool	is_op(char c);
+bool	is_blank(char c);
+int		token_op_len(char *line, int start, int *quote_info);
+int		token_word_len(char *line, int start, t_token_type *type, int *quote_info);
 void	read_tokens(t_token *current);
-int		*create_quote_info(char *line);
-t_token	*create_tokens(char *line);
-int		*create_quote_info(char *line);
-char	*find_param(char *p_name, char **envp);
+t_token	*new_token(char *line, int start, int len, t_token_type type);
 int		append_token(t_token **tokens, t_token *new);
+void	set_tokentype(t_token *tokens);
+int		line_to_token(t_token **tokens, int *quote_info, char *line);
+t_token	*create_tokens(char *line);
 
 /*parser.c*/
 void	temp_read_tokens(t_token **lst);
@@ -156,9 +163,18 @@ int		ft_pwd(t_job **lst, char **env, int fd);
 //void	ft_unset(t_job **lst, char **env, int fd);
 int	ft_unset(t_job **lst, char **env, int fd);
 
-/*main.c*/
-//moved to expander.c for now
-/*execution.c*/
+/*execution*/
+void	free_arrays(char **str);
+void	error_exit(char *str, int exit_status);
+char	**bin_path(char **envp);
+char	*file_path(char *cmd);
+char	*find_cmd_path(char *cmd, char **envp);
+char	**get_argv(t_job *jobs);
+int		redirect_fds(t_job *job);
+void	non_builtin_child(t_job *job, char **envp);
+int		exec_builtin(t_job *cmd_line, char **env, int fd);
+void	builtin(t_job *job, char **envp);
+int		check_builtin(char *cmd);
 void	execute_jobs(t_job *jobs, char **envp);
 
 #endif
