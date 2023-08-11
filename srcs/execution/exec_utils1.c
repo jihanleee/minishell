@@ -74,7 +74,7 @@ char	*find_cmd_path(char *cmd, char **envp)
 		i++;
 	}
 	free_arrays(path);
-	if (!withcmd)
+	if (!withcmd || cmd[0] == '\0')
 		error_exit("command not found\n", 127);
 	return (withcmd);
 }

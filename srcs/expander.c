@@ -21,7 +21,7 @@ void	clear_tokens(t_token **lst, void (*del)(void *))
 	*lst = 0;
 }
 
-char	*assign_single_quote(char *line, int *i, int *quote_info, t_quote_type *type)
+char	*assign_single_quote(char *line, int *i, int *quote_info, t_qtype *type)
 {
 	int		start;
 	int		size;
@@ -46,7 +46,7 @@ char	*assign_single_quote(char *line, int *i, int *quote_info, t_quote_type *typ
 	return (result);
 }
 
-char	*assign_double_quote(char *line, int *i, int *quote_info, t_quote_type *type)
+char	*assign_double_quote(char *line, int *i, int *quote_info, t_qtype *type)
 {
 	int		start;
 	int		size;
@@ -71,7 +71,7 @@ char	*assign_double_quote(char *line, int *i, int *quote_info, t_quote_type *typ
 	return (result);
 }
 
-char	*assign_non_quote(char *line, int *i, int *quote_info, t_quote_type *type)
+char	*assign_non_quote(char *line, int *i, int *quote_info, t_qtype *type)
 {
 	int		start;
 	int		size;
@@ -110,7 +110,7 @@ void	clear_lexemes(t_lexeme **lst, void (*del)(void *))
 	*lst = 0;
 }
 
-t_lexeme	*new_lexeme(char *str, t_quote_type type)
+t_lexeme	*new_lexeme(char *str, t_qtype type)
 {
 	t_lexeme *new;
 	
@@ -215,7 +215,7 @@ t_lexeme	*word_to_lexemes(char *str)
 	int				i;
 	char			*newstr;
 	t_lexeme			*result;
-	t_quote_type	type;
+	t_qtype	type;
 	int				*quote_info;
 
 	quote_info = create_quote_info(str);
@@ -261,7 +261,7 @@ void	replace_params(t_lexeme *lexemes, char **envp)
 	}
 }
 
-int	lexemelen(t_lexeme *lexemes, t_token_type type)
+int	lexemelen(t_lexeme *lexemes, t_ttype type)
 {
 	t_lexeme	*current;
 	//int		*lexeme;
@@ -319,7 +319,7 @@ t_token	*new_expanded_token(int *lexeme, int start, int len)
 and used as separator to perform field splitting.
 if not IFS, each element is stored as ascii value of the original character.
 the returned array is NULL-terminated.*/
-int	*lexemes_to_int(t_lexeme *lexemes, t_token_type type)
+int	*lexemes_to_int(t_lexeme *lexemes, t_ttype type)
 {
 	t_lexeme	*current;
 	int		*lexeme;

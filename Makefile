@@ -13,15 +13,22 @@ INCLUDES	= -I ${I_PATH} -I ${L_PATH}
 
 SRCS		=	./srcs/parser.c \
 				./srcs/find_param.c \
-				./srcs/expander.c \
 				./srcs/signal.c \
 				./srcs/main.c \
+				./srcs/expansion/assign_quotes.c \
+				./srcs/expansion/clear.c \
+				./srcs/expansion/expander.c \
+				./srcs/expansion/expansion_utils.c \
+				./srcs/expansion/jobs.c \
+				./srcs/expansion/lexemes.c \
+				./srcs/expansion/replace.c \
+				./srcs/expansion/token_conversion.c \
 				./srcs/execution/exec_utils1.c \
 				./srcs/execution/exec_utils2.c \
 				./srcs/execution/execution.c \
-				./srcs/tokenizer/create_tokens.c \
-				./srcs/tokenizer/token_substr_len.c \
-				./srcs/tokenizer/token_utils.c \
+				./srcs/tokenization/create_tokens.c \
+				./srcs/tokenization/token_substr_len.c \
+				./srcs/tokenization/token_utils.c \
 				./srcs/builtins/echo.c \
 				./srcs/builtins/env.c \
 				./srcs/builtins/exit.c \

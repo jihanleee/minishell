@@ -40,7 +40,7 @@ int	token_op_len(char *line, int start, int *quote_info)
 	return (len);
 }
 
-int	token_word_len(char *line, int start, t_token_type *type, int *quote_info)
+int	token_word_len(char *line, int start, t_ttype *type, int *quote_info)
 {
 	int	len;
 

@@ -22,7 +22,7 @@ typedef enum e_quote_type
 	uq,
 	sq,
 	dq
-}			t_quote_type;
+}			t_qtype;
 
 typedef enum e_token_type
 {
@@ -33,11 +33,11 @@ typedef enum e_token_type
 	append,
 	pipe_op,
 	amb_redir
-}			t_token_type;
+}			t_ttype;
 
 typedef struct s_lexeme
 {
-	t_quote_type	type;
+	t_qtype	type;
 	char			*str;
 	bool			exp;
 	bool			p_found;
@@ -46,7 +46,7 @@ typedef struct s_lexeme
 
 typedef struct s_token
 {
-	t_token_type	type;
+	t_ttype	type;
 	char 			*str;
 	struct s_token	*next;
 }			t_token;
@@ -84,9 +84,9 @@ int		*create_quote_info(char *line);
 bool	is_op(char c);
 bool	is_blank(char c);
 int		token_op_len(char *line, int start, int *quote_info);
-int		token_word_len(char *line, int start, t_token_type *type, int *quote_info);
+int		token_word_len(char *line, int start, t_ttype *type, int *quote_info);
 void	read_tokens(t_token *current);
-t_token	*new_token(char *line, int start, int len, t_token_type type);
+t_token	*new_token(char *line, int start, int len, t_ttype type);
 int		append_token(t_token **tokens, t_token *new);
 void	set_tokentype(t_token *tokens);
 int		line_to_token(t_token **tokens, int *quote_info, char *line);
@@ -99,32 +99,33 @@ void	exit_error(char *message, t_token **temp);
 void	print_parse_error(t_token **input);
 t_token	*parse_tokens(t_token **lst, void (*del)(void *));
 
-/*expander.c*/
+/*expander*/
 void	clear_tokens(t_token **lst, void (*del)(void *));
-char	*assign_single_quote(char *line, int *i, int *quote_info, t_quote_type *type);
-char	*assign_double_quote(char *line, int *i, int *quote_info, t_quote_type *type);
-char	*assign_non_quote(char *line, int *i, int *quote_info, t_quote_type *type);
-void	clear_lexemes(t_lexeme **lst, void (*del)(void *));
-t_lexeme	*new_lexeme(char *str, t_quote_type type);
-int	append_lexeme(t_lexeme **lexemes, t_lexeme *new);
-void	read_lexemes(t_lexeme *current);
-int    len_lvname(char *str);
-void    split_expansions(t_lexeme *lexemes);
-t_lexeme	*word_to_lexemes(char *str);
-void	replace_params(t_lexeme *lexemes, char **envp);
-int	lexemelen(t_lexeme *lexemes, t_token_type type);
-bool	is_ifs(char c);
-t_token	*new_expanded_token(int *lexeme, int start, int len);
-int	*lexemes_to_int(t_lexeme *lexemes, t_token_type type);
-t_token	*iword_to_tokens(int *lexeme);
-t_token	*token_to_etoken(t_token *old, char **envp);
-void	expansion(t_token **tokens, char **envp);
-void	read_jobs(t_job *jobs);
-char	**extract_arg(t_token **tokens);
-void	create_heredoc(const char *delim);
-void	open_file_redir(t_token *token);
-t_job	*extract_jobs(t_token *tokens);
-void	clear_jobs(t_job **lst);
+char *assign_single_quote(char *line, int *i, int *quote_info, t_qtype *type);
+char *assign_double_quote(char *line, int *i, int *quote_info, t_qtype *type);
+char *assign_non_quote(char *line, int *i, int *quote_info, t_qtype *type);
+void clear_lexemes(t_lexeme **lst, void (*del)(void *));
+t_lexeme *new_lexeme(char *str, t_qtype type);
+int append_lexeme(t_lexeme **lexemes, t_lexeme *new);
+void read_lexemes(t_lexeme *current);
+int len_lvname(char *str);
+void split_expansions(t_lexeme *lexemes);
+t_lexeme *word_to_lexemes(char *str);
+void replace_params(t_lexeme *lexemes, char **envp);
+int lexemelen(t_lexeme *lexemes, t_ttype type);
+bool is_ifs(char c);
+t_token *new_expanded_token(int *lexeme, int start, int len);
+int *lexemes_to_int(t_lexeme *lexemes, t_ttype type);
+t_token *iword_to_tokens(int *lexeme);
+t_token *token_to_etoken(t_token *old, char **envp);
+void expansion(t_token **tokens, char **envp);
+void read_jobs(t_job *jobs);
+char **extract_arg(t_token **tokens);
+void create_heredoc(const char *delim);
+void open_file_redir(t_token *token);
+void point_prev_job(t_job *jobs);
+t_job *extract_jobs(t_token *tokens);
+void clear_jobs(t_job **lst);
 
 /*signal.c*/
 void	new_prompt(void);
@@ -178,3 +179,4 @@ int		check_builtin(char *cmd);
 void	execute_jobs(t_job *jobs, char **envp);
 
 #endif
+

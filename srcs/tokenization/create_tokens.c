@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-t_token	*new_token(char *line, int start, int len, t_token_type type)
+t_token	*new_token(char *line, int start, int len, t_ttype type)
 {
 	t_token	*new;
 
@@ -54,7 +54,7 @@ int	line_to_token(t_token **tokens, int *quote_info, char *line)
 {
 	int				len;
 	int				start;
-	t_token_type	type;
+	t_ttype	type;
 
 	start = 0;
 	*tokens = 0;
