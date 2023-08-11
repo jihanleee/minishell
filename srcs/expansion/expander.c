@@ -52,9 +52,47 @@ void	expansion(t_token **tokens, char **envp)
 	t_token	*next;
 	t_token	*prev;
 	t_token	*expanded;
-	int		i;
 
-	i = 0;
+	prev = 0;
+	current = *tokens;
+	while (current)
+	{
+		next = current->next;
+		expanded = token_to_etoken(current, envp);
+		if (!prev && expanded)
+			*tokens = expanded;
+		if (!prev && !expanded && current->type == 0)
+			*tokens = next;
+		if (prev && expanded)
+			prev->next = expanded;
+		if (prev && !expanded)
+			prev->next = next;
+		if (expanded)
+		{
+			while (expanded->next)
+				expanded = expanded->next;
+			expanded->next = next;
+			prev = expanded;
+			expanded->type = current->type;
+		}
+		if (!expanded && (current->type == 1 || current->type == 3 || current->type == 4))
+		{
+			current->type = amb_redir;
+			prev = current;
+			current = next;
+			continue ;
+		}
+		free((free(current->str), current));
+		current = next;
+	}
+}
+/* void	expansion(t_token **tokens, char **envp)
+{
+	t_token	*current;
+	t_token	*next;
+	t_token	*prev;
+	t_token	*expanded;
+
 	prev = 0;
 	current = *tokens;
 	while (current)
@@ -90,7 +128,7 @@ void	expansion(t_token **tokens, char **envp)
 		free((free(current->str), current));
 		current = next;
 	}
-}
+} */
 
 char	**extract_arg(t_token **tokens)
 {
