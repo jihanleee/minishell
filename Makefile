@@ -16,6 +16,7 @@ SRCS		=	./srcs/parser.c \
 				./srcs/signal.c \
 				./srcs/main.c \
 				./srcs/expansion/assign_quotes.c \
+				./srcs/expansion/file_redir.c \
 				./srcs/expansion/clear.c \
 				./srcs/expansion/expander.c \
 				./srcs/expansion/expansion_utils.c \

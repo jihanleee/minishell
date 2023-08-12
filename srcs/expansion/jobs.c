@@ -124,8 +124,7 @@ void	clear_jobs(t_job **lst)
 {
 	t_job	*current;
 	t_job	*next;
-	int		i;
-
+	
 	if (lst == 0)
 		return ;
 	current = *lst;
@@ -136,13 +135,10 @@ void	clear_jobs(t_job **lst)
 			free(current->cmd);
 		if (current->outfile)
 			free(current->outfile);
+		if (current->infile)
+			free(current->infile);
 		if (current->arg)
-		{
-			i = 0;
-			while (current->arg[i])
-				free(current->arg[i++]);
-			free(current->arg);
-		}
+		free_arrays(current->arg);
 		free(current);
 		current = next;
 	}

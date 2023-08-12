@@ -43,10 +43,10 @@ int	main(int argc, char **argv, char **envp)
 		{
 			tokens = parse_tokens(&tokens, free);
 			expansion(&tokens, envp);
+			read_tokens(tokens);
 			g_exit_stat = 0;
 			open_file_redir(tokens);
 			jobs = extract_jobs(tokens);
-
 			read_jobs(jobs);
 			execute_jobs(jobs, envp);
 			clear_jobs(&jobs);

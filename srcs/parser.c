@@ -58,6 +58,7 @@ t_token	*parse_tokens(t_token **lst, void (*del)(void *))
 		current = current->next;
 		result = result->next;
 		temp->next = NULL;
+		free(temp->str);
 		free(temp);
 	}
 	while (current && current->next)
@@ -69,6 +70,7 @@ t_token	*parse_tokens(t_token **lst, void (*del)(void *))
 			next->next->type = next->type;
 			current->next = next->next;
 			next->next = NULL;
+			free(next->str);
 			free(next);
 		}
 		current = current->next;

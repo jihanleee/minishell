@@ -2,21 +2,21 @@
 
 void	clear_tokens(t_token **lst, void (*del)(void *))
 {
-	t_token	*current;
+	t_token	*crnt;
 	t_token	*next;
 
 	if (lst == 0)
 		return ;
 	if (del == 0)
 		return ;
-	current = *lst;
-	while (current)
+	crnt = *lst;
+	while (crnt)
 	{
-		next = current->next;
-		if (current->str)
-			del(current->str);
-		free(current);
-		current = next;
+		next = crnt->next;
+		if (crnt->str)
+			del(crnt->str);
+		free(crnt);
+		crnt = next;
 	}
 	*lst = 0;
 }
@@ -91,21 +91,21 @@ char	*assign_non_quote(char *line, int *i, int *quote_info, t_qtype *type)
 
 void	clear_lexemes(t_lexeme **lst, void (*del)(void *))
 {
-	t_lexeme	*current;
+	t_lexeme	*crnt;
 	t_lexeme	*next;
 
 	if (lst == 0)
 		return ;
 	if (del == 0)
 		return ;
-	current = *lst;
-	while (current)
+	crnt = *lst;
+	while (crnt)
 	{
-		next = current->next;
-		if (current->str)
-			del(current->str);
-		free(current);
-		current = next;
+		next = crnt->next;
+		if (crnt->str)
+			del(crnt->str);
+		free(crnt);
+		crnt = next;
 	}
 	*lst = 0;
 }
@@ -126,7 +126,7 @@ t_lexeme	*new_lexeme(char *str, t_qtype type)
 
 int	append_lexeme(t_lexeme **lexemes, t_lexeme *new)
 {
-	t_lexeme	*current;
+	t_lexeme	*crnt;
 
 	if (new == 0)
 		return (-1);
@@ -134,29 +134,29 @@ int	append_lexeme(t_lexeme **lexemes, t_lexeme *new)
 		*lexemes = new;
  	else
 	{
-		current = *lexemes;
-		while (current->next)
-			current = current->next;
-		current->next = new;
+		crnt = *lexemes;
+		while (crnt->next)
+			crnt = crnt->next;
+		crnt->next = new;
 	}
 	return (0);
 }
 
-void	read_lexemes(t_lexeme *current)
+void	read_lexemes(t_lexeme *crnt)
 {
 	int		i;
 	
 	i = 0;
-	while (current)
+	while (crnt)
 	{
 		ft_printf("\tindex:\t%d\n", i);
-		ft_printf("\tstr:\t%s\n", current->str);
-		ft_printf("\ttype:\t%d\n", current->type);
-		if (current->exp == 1)
+		ft_printf("\tstr:\t%s\n", crnt->str);
+		ft_printf("\ttype:\t%d\n", crnt->type);
+		if (crnt->exp == 1)
 			ft_printf("\texp:\tTRUE\n");
 		else
 			ft_printf("\texp:\tFALSE\n");
-		current = current->next;
+		crnt = crnt->next;
 		i++;
 	}
 }
@@ -175,32 +175,32 @@ int    len_lvname(char *str)
 
 void    split_expansions(t_lexeme *lexemes)
 {
-    t_lexeme    *current;
+    t_lexeme    *crnt;
     t_lexeme    *next;
     int            i;
 
-    current = lexemes;
-    while (current)
+    crnt = lexemes;
+    while (crnt)
     {
-        next = current->next;
+        next = crnt->next;
         //split them!
         i = 0;
-        while (current->type != 1 && current->str[i])
+        while (crnt->type != 1 && crnt->str[i])
         {
-            if (current->str[i] == '$' && current->type != 1)
-                i += len_lvname(&(current->str[i]));
+            if (crnt->str[i] == '$' && crnt->type != 1)
+                i += len_lvname(&(crnt->str[i]));
             else
-                while (current->str[i] && current->str[i] != '$')
+                while (crnt->str[i] && crnt->str[i] != '$')
                     i++;
-            if (current->str[i])
+            if (crnt->str[i])
             {
-                current->next = new_lexeme(ft_strdup(&(current->str[i])), current->type);
+                crnt->next = new_lexeme(ft_strdup(&(crnt->str[i])), crnt->type);
                 //protect the malloc
-                current->next->next = next;
-                current->str[i] = '\0';
+                crnt->next->next = next;
+                crnt->str[i] = '\0';
             }
         }
-        current = current->next;
+        crnt = crnt->next;
     }
     while (lexemes)
     {
@@ -239,48 +239,48 @@ t_lexeme	*word_to_lexemes(char *str)
 
 void	replace_params(t_lexeme *lexemes, char **envp)
 {
-	t_lexeme	*current;
+	t_lexeme	*crnt;
 	char	*newstr;
 
-	current = lexemes;
-	while (current)
+	crnt = lexemes;
+	while (crnt)
 	{
-		ft_printf("%s\n", current->str);
+		ft_printf("%s\n", crnt->str);
 		newstr = 0;
-		if (current->exp == TRUE)
+		if (crnt->exp == TRUE)
 		{
-			newstr = find_param(&(current->str[1]), envp);
+			newstr = find_param(&(crnt->str[1]), envp);
 			if (newstr)
 			{
-				current->p_found = TRUE;
-				free(current->str);
-				current->str = newstr;
+				crnt->p_found = TRUE;
+				free(crnt->str);
+				crnt->str = newstr;
 			}
 		}
-		current = current->next;
+		crnt = crnt->next;
 	}
 }
 
 int	lexemelen(t_lexeme *lexemes, t_ttype type)
 {
-	t_lexeme	*current;
+	t_lexeme	*crnt;
 	//int		*lexeme;
 	int		i;
 	int		count;
 
 	count = 0;
-	current = lexemes;
-	while (current)
+	crnt = lexemes;
+	while (crnt)
 	{
 		i = 0;
-		while (current->str[i])
+		while (crnt->str[i])
 		{
-			if (current->exp == TRUE && current->p_found == FALSE && type != heredoc)
+			if (crnt->exp == TRUE && crnt->p_found == FALSE && type != heredoc)
 				break;
 			i++;
 			count++;
 		}
-		current = current->next;
+		crnt = crnt->next;
 	}
 	return (count);
 }
@@ -321,7 +321,7 @@ if not IFS, each element is stored as ascii value of the original character.
 the returned array is NULL-terminated.*/
 int	*lexemes_to_int(t_lexeme *lexemes, t_ttype type)
 {
-	t_lexeme	*current;
+	t_lexeme	*crnt;
 	int		*lexeme;
 	int		i;
 	int		j;
@@ -330,24 +330,24 @@ int	*lexemes_to_int(t_lexeme *lexemes, t_ttype type)
 	lexeme = (int *)ft_calloc(lexemelen(lexemes, type) + 1, sizeof(int));
 	if (lexeme == 0)
 		return (NULL);
-	current = lexemes;
-	while (current)
+	crnt = lexemes;
+	while (crnt)
 	{
 		//printf("\tlexems_to_int_while\n");
-		while (current && current->exp == TRUE && current->p_found == FALSE && type != heredoc)
-			current = current->next;
-		if (current == 0)
+		while (crnt && crnt->exp == TRUE && crnt->p_found == FALSE && type != heredoc)
+			crnt = crnt->next;
+		if (crnt == 0)
 			break ;
 		i = 0;
-		while (current->str[i])
+		while (crnt->str[i])
 		{
-			if (is_ifs(current->str[i]) && current->type == 0)
+			if (is_ifs(crnt->str[i]) && crnt->type == 0)
 				lexeme[j++] = -1;
 			else
-				lexeme[j++] = current->str[i];
+				lexeme[j++] = crnt->str[i];
 			i++;
 		}
-		current = current->next;
+		crnt = crnt->next;
 	}
 	return (lexeme);
 }
@@ -410,7 +410,7 @@ t_token	*token_to_etoken(t_token *old, char **envp)
 
 void	expansion(t_token **tokens, char **envp)
 {
-	t_token	*current;
+	t_token	*crnt;
 	t_token	*next;
 	t_token	*prev;
 	t_token	*expanded;
@@ -418,15 +418,15 @@ void	expansion(t_token **tokens, char **envp)
 
 	i = 0;
 	prev = 0;
-	current = *tokens;
-	while (current)
+	crnt = *tokens;
+	while (crnt)
 	{
 		printf("\tindex %d\n", i++);
-		next = current->next;
-		expanded = token_to_etoken(current, envp);
+		next = crnt->next;
+		expanded = token_to_etoken(crnt, envp);
 		if (expanded)
 		{
-			expanded->type = current->type;
+			expanded->type = crnt->type;
 			if (prev == 0)
 				*tokens = expanded;
 			else
@@ -438,11 +438,11 @@ void	expansion(t_token **tokens, char **envp)
 		}
 		else if (!expanded)
 		{
-			if (current->type == 1 || current->type == 3 || current->type == 4)
+			if (crnt->type == 1 || crnt->type == 3 || crnt->type == 4)
 			{
-				current->type = amb_redir;
-				prev = current;
-				current = next;
+				crnt->type = amb_redir;
+				prev = crnt;
+				crnt = next;
 				continue ;
 			}
 			else if (prev == 0)
@@ -450,8 +450,8 @@ void	expansion(t_token **tokens, char **envp)
 			else
 				prev->next = next;
 		}
-		free((free(current->str), current));
-		current = next;
+		free((free(crnt->str), crnt));
+		crnt = next;
 	}
 }
 
@@ -463,7 +463,7 @@ void	read_jobs(t_job *jobs)
 	{
 		printf("--------------------\n");
 		printf("in read jobs function, expander\n");
-		//ft_printf("\tcurrent pipe has command\n", jobs->cmd);
+		//ft_printf("\tcrnt pipe has command\n", jobs->cmd);
 		ft_printf("\tintype\t%d\n", jobs->in);
 		ft_printf("\touttype\t%d\n", jobs->out);
 		if (jobs->cmd)
@@ -498,16 +498,16 @@ char	**extract_arg(t_token **tokens)
 {
 	char		**result;
 	int			size_result;
-	t_token		*current;
+	t_token		*crnt;
 	int			i;
 
 	size_result = 0;
-	current = *tokens;
-	while (current && current->type != pipe_op)
+	crnt = *tokens;
+	while (crnt && crnt->type != pipe_op)
 	{
-		if (current->type == word)
+		if (crnt->type == word)
 			size_result++;
-		current = current->next;
+		crnt = crnt->next;
 	}
 	result = (char **)ft_calloc(size_result + 1, sizeof (char *));
 	if (result == NULL)
@@ -554,38 +554,38 @@ void	create_heredoc(const char *delim)
 
 void	open_file_redir(t_token *token)
 {
-	t_token	*current;
+	t_token	*crnt;
 	int		fd;
 
-	current = token;
-	while (current)
+	crnt = token;
+	while (crnt)
 	{
 		fd = 0;
-		if (current->type == in)
-			fd = open(current->str, O_RDONLY);
-		else if (current->type == out || current->type == append)
-			fd = open(current->str, O_WRONLY | O_CREAT | \
-			O_TRUNC * (current->type != append), 0777);
-		else if (current->type == heredoc)
+		if (crnt->type == in)
+			fd = open(crnt->str, O_RDONLY);
+		else if (crnt->type == out || crnt->type == append)
+			fd = open(crnt->str, O_WRONLY | O_CREAT | \
+			O_TRUNC * (crnt->type != append), 0777);
+		else if (crnt->type == heredoc)
 		{
-			create_heredoc(current->str);
-			free(current->str);
-			current->str = ft_strdup("heredoc.tmp");
+			create_heredoc(crnt->str);
+			free(crnt->str);
+			crnt->str = ft_strdup("heredoc.tmp");
 		}
-		else if (current->type == amb_redir)
+		else if (crnt->type == amb_redir)
 			perror("ambiguous redirection");
 		if (fd == -1)
-			perror(current->str);
-		if (fd == -1 || current->type == amb_redir)
+			perror(crnt->str);
+		if (fd == -1 || crnt->type == amb_redir)
 		{
-			while (current && current->type != pipe_op)
+			while (crnt && crnt->type != pipe_op)
 			{
-				current->type = amb_redir;
-				current = current->next;
+				crnt->type = amb_redir;
+				crnt = crnt->next;
 			}
 		}
-		if (current)
-			current = current->next;
+		if (crnt)
+			crnt = crnt->next;
 	}
 }
 
@@ -602,68 +602,68 @@ t_job	*extract_jobs(t_token *tokens)
 {
 	t_job	*result;
 	t_job	*cur_result;
-	t_token	*current;
+	t_token	*crnt;
 
 	if (tokens == NULL)
 		return (NULL);
 	result = (t_job *)calloc(1, sizeof(t_job));
 	cur_result = result;
-	current = tokens;
-	while (current)
+	crnt = tokens;
+	while (crnt)
 	{
-		if (current->type == pipe_op)
+		if (crnt->type == pipe_op)
 		{
 			cur_result->next = (t_job *)ft_calloc(1, sizeof (t_job));
 			cur_result = cur_result->next;
 		}
-		else if (current->type == in || current->type == heredoc)
+		else if (crnt->type == in || crnt->type == heredoc)
 		{
 			if (cur_result->infile)
 				free(cur_result->infile);
-			cur_result->infile = ft_strdup(current->str);
+			cur_result->infile = ft_strdup(crnt->str);
 			cur_result->in = in;
 		}
-		else if (current->type == out || current->type == append)
+		else if (crnt->type == out || crnt->type == append)
 		{
 			if (cur_result->outfile)
 				free(cur_result->outfile);
-			cur_result->outfile = ft_strdup(current->str);
-			cur_result->out = current->type;
+			cur_result->outfile = ft_strdup(crnt->str);
+			cur_result->out = crnt->type;
 		}
-		if (current->type == amb_redir)
+		if (crnt->type == amb_redir)
 		{
 			cur_result->in = -1;
 			cur_result->out = -1;
-			while (current->next && current->next->type != pipe_op)
-				current = current->next;
+			while (crnt->next && crnt->next->type != pipe_op)
+				crnt = crnt->next;
 		}
-		current = current->next;
+		crnt = crnt->next;
 	}
-	current = tokens;
+	crnt = tokens;
 	cur_result = result;
 	int	i = 0;
-	while (current && cur_result)
+	while (crnt && cur_result)
 	{
-		while (current && current->type != pipe_op && current->type != word)
-			current = current->next;
-		if (current == 0)
+		while (crnt && crnt->type != pipe_op && crnt->type != word)
+			crnt = crnt->next;
+		if (crnt == 0)
 			break ;
-		if (current->type == pipe_op)
+		if (crnt->type == pipe_op)
 		{
 			ft_printf("index %d\n", i++);
 			cur_result = cur_result->next;
-			current = current->next;
+			crnt = crnt->next;
 		}
-		else if (current->type == word)
+		else if (crnt->type == word)
 		{
 			if (cur_result->cmd == 0)
 			{
-				//ft_printf("str:%s\n", current->str);
-				cur_result->cmd = ft_strdup(current->str);
-				current = current->next;
+				//ft_printf("str:%s\n", crnt->str);
+				cur_result->cmd = ft_strdup(crnt->str);
+				crnt = crnt->next;
 			}
 			else
-				cur_result->arg = extract_arg(&current);
+				cur_result->arg = extract_arg(&crnt);
 		}
 	}
 	point_prev_job(result);
@@ -672,29 +672,29 @@ t_job	*extract_jobs(t_token *tokens)
 
 void	clear_jobs(t_job **lst)
 {
-	t_job	*current;
+	t_job	*crnt;
 	t_job	*next;
 	int		i;
 
 	if (lst == 0)
 		return ;
-	current = *lst;
-	while (current)
+	crnt = *lst;
+	while (crnt)
 	{
-		next = current->next;
-		if(current->cmd)
-			free(current->cmd);
-		if (current->outfile)
-			free(current->outfile);
-		if (current->arg)
+		next = crnt->next;
+		if(crnt->cmd)
+			free(crnt->cmd);
+		if (crnt->outfile)
+			free(crnt->outfile);
+		if (crnt->arg)
 		{
 			i = 0;
-			while (current->arg[i])
-				free(current->arg[i++]);
-			free(current->arg);
+			while (crnt->arg[i])
+				free(crnt->arg[i++]);
+			free(crnt->arg);
 		}
-		free(current);
-		current = next;
+		free(crnt);
+		crnt = next;
 	}
 	*lst = 0;
 }

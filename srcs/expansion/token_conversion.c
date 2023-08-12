@@ -99,7 +99,8 @@ t_token	*token_to_etoken(t_token *old, char **envp)
 	allexp = TRUE;
 	while (lexemes)
 	{
-		if (lexemes->exp == FALSE)
+		if (lexemes->exp == FALSE || \
+		(lexemes->type == 2 && lexemes->exp))
 			allexp = FALSE;
 		lexemes = lexemes->next;
 	}
