@@ -46,29 +46,34 @@ void	split_expansions(t_lexeme *lexemes)
 		lexemes = lexemes->next;
 	}
 }
-
-void	substitute_tokens(t_token **exp, t_token **next, \
-t_token **prev, t_token **crnt)
+void	replace_tokens(t_token **tokens, t_token **expanded, \
+t_token **next, t_token **prev)
 {
-	if (*prev && *exp)
-		(*prev)->next = *exp;
-	if (*prev && !(*exp))
-		(*prev)->next = *next;
-	if (*exp)
-	{
-		while ((*exp)->next)
-			(*exp) = (*exp)->next;
-		(*exp)->next = *next;
-		*prev = (*exp);
-		(*exp)->type = (*crnt)->type;
-	}
-	if (!(*exp) && \
-	((*crnt)->type == 1 || (*crnt)->type == 3 || (*crnt)->type == 4))
+	if (*prev == 0)
+		*tokens = *expanded;
+	else
+		(*prev)->next = *expanded;
+	while ((*expanded)->next)
+		(*expanded) = (*expanded)->next;
+	(*expanded)->next = *next;
+	*prev = *expanded;
+}
+
+int	treat_empty_exp(t_token **tokens, t_token **crnt, \
+t_token **next, t_token **prev)
+{
+	if ((*crnt)->type == 1 || (*crnt)->type == 3 || (*crnt)->type == 4)
 	{
 		(*crnt)->type = amb_redir;
-		(*prev) = (*crnt);
-		(*crnt) = (*next);
+		*prev = *crnt;
+		*crnt = *next;
+		return (-1);
 	}
+	else if (*prev == 0)
+		*tokens = *next;
+	else
+		(*prev)->next = *next;
+	return (0);
 }
 
 void	expansion(t_token **tokens, char **envp)
@@ -77,52 +82,23 @@ void	expansion(t_token **tokens, char **envp)
 	t_token	*next;
 	t_token	*prev;
 	t_token	*expanded;
-	int		type;
 
 	prev = 0;
 	crnt = *tokens;
 	while (crnt)
 	{
-		type = crnt->type;
 		next = crnt->next;
 		expanded = token_to_etoken(crnt, envp);
-		if (!prev && expanded)
-			*tokens = expanded;
-		if (!prev && !expanded && crnt->type == 0)
-			*tokens = next;
-		substitute_tokens(&expanded, &next, &prev, &crnt);
-		if (!expanded && (type == 1 || type == 3 || type == 4))
-			continue ;
+		if (expanded)
+			expanded->type = crnt->type;
+		if (expanded)
+			replace_tokens(tokens, &expanded, &next, &prev);
+		else if (!expanded)
+		{
+			if (treat_empty_exp(tokens, &crnt, &next, &prev))
+				continue ;
+		}
 		free((free(crnt->str), crnt));
 		crnt = next;
 	}
-}
-
-char	**extract_arg(t_token **tokens)
-{
-	char		**result;
-	int			size_result;
-	t_token		*crnt;
-	int			i;
-
-	size_result = 0;
-	crnt = *tokens;
-	while (crnt && crnt->type != pipe_op)
-	{
-		if (crnt->type == word)
-			size_result++;
-		crnt = crnt->next;
-	}
-	result = (char **)ft_calloc(size_result + 1, sizeof (char *));
-	if (result == NULL)
-		return (NULL);
-	i = 0;
-	while (*tokens && (*tokens)->type != pipe_op)
-	{
-		if ((*tokens)->type == word)
-			result[i++] = ft_strdup((*tokens)->str);
-		*tokens = (*tokens)->next;
-	}
-	result[i] = 0;
-	return (result);
 }
