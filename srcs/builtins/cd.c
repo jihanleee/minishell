@@ -21,13 +21,8 @@ static int invalid_cd(char *path)
 	int i;
 
 	i = 0;
-	printf("inside invalid cd\n");
-	if (path[0] == '/' && path[1])	// '/' can only come in the first index if there's nothing afterwards
-	{
-		//printf("Something after /\n");
+	if (path[0] == '/' && path[1])
 		return (1);
-	}
-	printf("before while loop\n");
 	while (path[i])
 	{
 		if (i != 0 && i == '~')
@@ -44,12 +39,8 @@ static int invalid_cd(char *path)
 
 static void	cd_unset(char **env, char *arg)
 {
-	//t_job	*current;
-	//int		length;
 	int		i;
 
-	//current = *lst;
-	printf("\tinside cd_unset\n");
 	i = 0;
 	while (env[i])
 	{
@@ -73,109 +64,104 @@ static void	cd_export(char **env, char *arg, char *path)
 	length = 0;	
 	length += get_length(arg);
 	length += get_length(path);
-	printf("arg is %s\n", arg);
-	printf("path is %s\n", path);
-	printf("\tinside cd_export\n");
 	i = 0;
 	while(env[i])
 		i++;
-	printf("\tafter env loop\n");
-	//env[i] = malloc(sizeof(char *) * (length + 1));
 	env[i] = (char*)ft_calloc(length + 1, sizeof(char));
 	if (!env[i])
 		return ;
-	j = 0;
-	printf("\tafter malloc\n");
-	while (j < get_length(arg))
-	{
+	j = -1;
+	while (++j < get_length(arg))
 		env[i][j] = arg[j];
-		j++;
-	}
 	x = 0;
-	printf("\tafter arg loop\n");
 	while (x < get_length(path))
 	{
 		env[i][j] = path[x];
 		j++;
 		x++;
 	}
-	printf("\tafter path loop\n");
+}
+
+static void	cd_old_path(t_job *current, char **env)
+{
+	char	*new;
+
+	new = find_param("OLDPWD", env);
+	cd_unset(env, "OLDPWD=");
+	cd_export(env, "OLDPWD=", getcwd(NULL,0));
+	chdir(new);
+	cd_unset(env, "PWD=");
+	//printf("\tnew PWD: %s\n", getcwd(NULL, 0));
+	cd_export(env, "PWD=", getcwd(NULL, 0));
+}
+
+static void cd_normal_path(t_job *current, char **env)
+{
+	cd_unset(env, "OLDPWD=");
+	cd_export(env, "OLDPWD=", getcwd(NULL, 0));
+	chdir(current->arg[0]);
+	cd_unset(env, "PWD=");
+	cd_export(env, "PWD=", getcwd(NULL, 0));
+}
+
+static void	cd_to_home(t_job *current, char **env)
+{
+	char	*new;
+
+	new = getenv("HOME");
+	cd_unset(env, "OLDPWD=");
+	cd_export(env, "OLDPWD=", getcwd(NULL, 0));
+	chdir(new);
+	cd_unset(env, "PWD=");
+	cd_export(env, "PWD=", getcwd(NULL, 0));
+}
+
+static void	cd_absolute_path(t_job *current, char **env)
+{
+	char	*new;
+
+	if (!current->arg[0][1])
+		cd_to_home(current, env);
+	else if (current->arg[0][1] == '/')
+	{
+		//hmm.... not working... why....
+		cd_unset(env, "OLDPWD=");
+		printf("\told path updated to: %s\n", getcwd(NULL, 0));
+		cd_export(env, "OLDPWD=", getcwd(NULL, 0));
+		new = getenv("HOME");
+		new = ft_strjoin(new, &current->arg[0][1]);
+		printf("\tnew path: %s\n", new);
+		chdir(new);
+		cd_unset(env, "PWD=");
+		printf("\tnew PWD updated to %s\n", new);
+		cd_export(env, "PWD=", new);
+		//printf("\tnew PWD updated to %s\n", getcwd(NULL, 0));
+		//cd_export(env, "PWD=", getcwd(NULL, 0));
+		free(new);
+	}
 }
 
 int	ft_cd(t_job **lst, char **env, int fd)
 {
 	t_job	*current;
 	char	*new;
-	//int flag;
 	int i;
 	
 	current = *lst;
 	(void)fd;
-	if (!current->arg || (current->arg[0][0] == '/' && !current->arg[0][1])) //not sure if sending to HOME is correct
-	{
-		//send to root
-		new = getenv("HOME");
-		printf("%s\n", new);
-		cd_unset(env, "OLDPWD=");
-		cd_export(env, "OLDPWD=", getenv("PWD"));
-		cd_unset(env, "PWD=");
-		cd_export(env, "PWD=", new);
-		chdir(new);
-		//free(new);
-	}		
-	else if (current->arg[0][0] == '-' && !current->arg[0][1])	//works on the first try but not for others..?
-	{
-		printf("received -\n");
-		new = getenv("OLDPWD");
-		printf("old path saved as %s\n", new);
-		cd_unset(env, "PWD=");
-		cd_export(env, "PWD=", getenv("OLDPWD"));
-		cd_unset(env, "OLDPWD=");
-		cd_export(env, "OLDPWD=", getcwd(NULL,0));
-		chdir(new);
-
-		/*
-		new = getenv("PWD");
-		printf("%s\n", new);
-		cd_unset(env, "PWD=");
-		cd_export(env, "PWD=", getenv("OLDPWD"));
-		chdir(getenv("OLDPWD"));
-		cd_unset(env, "OLDPWD=");
-		cd_export(env, "OLDPWD=", getcwd(NULL, 0));
-		*/
-		/*
-		cd_unset(env, "PWD=");
-		cd_export(env, "PWD=", getenv("OLDPWD"));
-		chdir(getenv("PWD"));
-		cd_unset(env, "OLDPWD=");
-		cd_export(env, "OLDPWD=", getenv("PWD"));
-		*/
-	}
-	else if (current->arg[0][0] == '~' && (!current->arg[0][1] || current->arg[0][1] == '/'))	//works
-	{
-		printf("received ~\n");
-		new = getenv("HOME");
-		printf("%s\n", new);
-		cd_unset(env, "OLDPWD=");
-		cd_export(env, "OLDPWD=", getenv("PWD"));
-		cd_unset(env, "PWD=");
-		cd_export(env, "PWD=", new);
-		chdir(new);
-	}
-	else	//seems to work..?
+	if (current->arg[1])
+		return (write(fd, "bash: cd: too many arguments\n", 29), 1);
+	if (!current->arg || (current->arg[0][0] == '/' && !current->arg[0][1]))
+		cd_to_home(current, env);	
+	else if (current->arg[0][0] == '-' && !current->arg[0][1])
+		cd_old_path(current, env);
+	else if (current->arg[0][0] == '~' && (!current->arg[0][1] || current->arg[0][1] == '/'))
+		cd_absolute_path(current, env);
+	else
 	{
 		if (invalid_cd(current->arg[0]) == 1)
-		{
-			printf("No Such Directory\n");
-			return (1);
-		}
-		//cd_reset(env, "OLDPWD=", getenv("PWD"));
-		cd_unset(env, "OLDPWD=");
-		cd_export(env, "OLDPWD=", getenv("PWD"));
-		chdir(current->arg[0]);
-		cd_unset(env, "PWD=");
-		cd_export(env, "PWD=", getcwd(NULL, 0));
-		//cd_reset(env, "PWD=", current->arg[0]);
+			return (printf("No Such Directory\n"), 1); //is printf okay?
+		cd_normal_path(current, env);
 	}
 	return (0);
 }
