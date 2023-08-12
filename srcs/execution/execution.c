@@ -33,7 +33,8 @@ int	exec_builtin(t_job *cmd_line, char **env, int fd)
 	else if (ft_strncmp("cd", cmd_line->cmd, 3) == 0)
 		ft_cd(&cmd_line, env, fd);
 	else if (ft_strncmp("echo", cmd_line->cmd, 5) == 0)
-		ft_echo(&cmd_line, env, fd);
+		ft_echo(cmd_line, env, fd);
+		//ft_echo(&cmd_line, env, fd);
 	else if (ft_strncmp("env", cmd_line->cmd, 4) == 0)
 		ft_env(&cmd_line, env, fd);
 	else if (ft_strncmp("export", cmd_line->cmd, 7) == 0)

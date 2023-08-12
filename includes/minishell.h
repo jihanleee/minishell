@@ -138,7 +138,8 @@ int	ft_cd(t_job **lst, char **env, int fd);
 
 /* echo.c */
 int		get_length(char *str);
-void	ft_echo(t_job **lst, char **env, int fd);
+void	ft_echo(t_job *current, char **env, int fd);
+//void	ft_echo(t_job **lst, char **env, int fd);
 
 /* env.c */
 void	ft_env(t_job **lst, char **env, int fd);
