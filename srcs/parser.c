@@ -102,6 +102,7 @@ void	print_parse_error(t_token **input)
 {
 	t_token	*current;
 
+	g_exit_stat = 2;
 	current = *input;
 	//printf("current string is %s\n", current->str);
 	write(STDERR_FILENO, "bash: syntax error near unexpected token \'", 42);

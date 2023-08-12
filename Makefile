@@ -23,7 +23,8 @@ SRCS		=	./srcs/parser.c \
 				./srcs/expansion/jobs.c \
 				./srcs/expansion/lexemes.c \
 				./srcs/expansion/replace.c \
-				./srcs/expansion/token_conversion.c \
+				./srcs/expansion/token_conversion1.c \
+				./srcs/expansion/token_conversion2.c \
 				./srcs/execution/exec_utils1.c \
 				./srcs/execution/exec_utils2.c \
 				./srcs/execution/execution.c \

@@ -77,11 +77,13 @@ void	expansion(t_token **tokens, char **envp)
 	t_token	*next;
 	t_token	*prev;
 	t_token	*expanded;
+	int		type;
 
 	prev = 0;
 	crnt = *tokens;
 	while (crnt)
 	{
+		type = crnt->type;
 		next = crnt->next;
 		expanded = token_to_etoken(crnt, envp);
 		if (!prev && expanded)
@@ -89,7 +91,7 @@ void	expansion(t_token **tokens, char **envp)
 		if (!prev && !expanded && crnt->type == 0)
 			*tokens = next;
 		substitute_tokens(&expanded, &next, &prev, &crnt);
-		if (prev->type == amb_redir)
+		if (!expanded && (type == 1 || type == 3 || type == 4))
 			continue ;
 		free((free(crnt->str), crnt));
 		crnt = next;
