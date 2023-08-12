@@ -30,13 +30,6 @@ int	first_is_valid(char c)
 	else if (c >= 'A' || c <= 'Z')
 		return (0);
 	return (1);
-	/*
-	if (c >= 'a' && c <= 'z')
-		return (0);
-	else if (c >= 'A' && c <= 'Z')
-		return (0);
-	return (1);
-	*/
 }
 
 int	get_block_count(t_job **lst)
@@ -53,39 +46,28 @@ int	get_block_count(t_job **lst)
 	i = 0;
 	while (current->arg[i])
 	{
-		printf("\targ number %d\n", i);
-		printf("\tcurrent char is %c\n", current->arg[i][0]);
 		if (flag == 0 && first_is_valid(current->arg[i][0]) == 1)
 		{
-			printf("export: invalid identifier\n");
+			write(2, "bash: export: \'", 15);
+			write(2, current->arg[i], get_length(current->arg[i]));
+			write(2, "\': not a valid identifier\n", 26);
 			if (current->arg[i + 1])
 				i++;
 			else
 				return (count);
 		}
 		j = 0;
-		//if (flag == 0 && i != 0 && current->arg[i][j] != '=')
-		//{
-		//	printf("\ti has value %d\n", i);
-		//	printf("\tone: new block break at %c\n", current->arg[i][j]);
-		//	j++;
-		//	count++;
-		//}
-		//else
-		//{
-			while (current->arg[i][j])
-			{
-				if (current->arg[i][j] == '\\')
-					j++;
-				if (current->arg[i][j] == '=')
-					flag = 1;
+		while (current->arg[i][j])
+		{
+			if (current->arg[i][j] == '\\')
 				j++;
-			}
-		//}
+			if (current->arg[i][j] == '=')
+				flag = 1;
+			j++;
+		}
 		if (flag == 1)
 		{
 			flag = 0;
-			printf("\t\ttwo: new block break at %c\n", current->arg[i][j - 1]);
 			count++;
 		}
 		i++;
@@ -109,7 +91,6 @@ int	malloc_combine_lines(char **combine, t_job **lst)
 	i = 0;
 	while (current->arg[i])
 	{
-		printf("\targ number %d\n", i);
 		j = 0;
 		while (current->arg[i][j])
 		{
@@ -121,12 +102,7 @@ int	malloc_combine_lines(char **combine, t_job **lst)
 		if (flag == 1)
 		{
 			flag = 0;
-			//printf("\ttwo: new block break at %c\n", current->arg[i][j - 1]);
-			printf("\tcreating combine line #%d with length of %d\n", count + 1, length);
-			//combine[count] = (char *)malloc(sizeof(char) * (length + 1));
-			combine[count] = (char*) calloc(length + 1, sizeof(char));
-			//if (!combine[count++])
-			//if (!combine[count + 1])
+			combine[count] = (char*)ft_calloc(length + 1, sizeof(char));
 			if (!combine[count])
 				return (-1);
 			length = 0;
@@ -135,9 +111,6 @@ int	malloc_combine_lines(char **combine, t_job **lst)
 			length = 0;
 		i++;
 	}
-	//combine[count] = (char *)malloc(1);
-	//if (!combine[count])
-	//	return (-1);
 	return (0);
 
 }
@@ -158,52 +131,32 @@ int	fill_blocks(char **combine, t_job **lst)
 	i = 0;
 	while (current->arg[i] && combine[count])
 	{
-		//printf("\targ number %d\n", i);
 		j = 0;
-		//printf("before while loop one\n");
 		while (current->arg[i] && first_is_valid(current->arg[i][j]) == 1)
 			i++;
-		//printf("before while loop two\n");
 		while (current->arg[i][j] && combine[count])
 		{
-			//printf("\tchar: %c\n", current->arg[i][j]);
 			if (current->arg[i][j] == '\\')
 				j++;
 			if (flag == 0 && current->arg[i][j] == '=' && j == 0)
 				combine[count][index++] = ' ';
-			//printf("after if one\n");
-			//printf("\tcurrent char is %c\n", current->arg[i][j]);
 			if (middle_is_valid(current->arg[i][j]) == 1)
 			{
-				printf("invalid identifier\n");
+				write(2, "bash: export: \'", 15);//
+				write(2, current->arg[i], get_length(current->arg[i]));//
+				write(2, "\': not a valid identifier\n", 26);//
 				return (1);	//error, invalid identifier
 			}
 			if (current->arg[i][j] == '=')
 				flag = 1;
-			//if (current->arg[i][j] == '\\')
-			//	j++;
 			if (middle_is_valid(current->arg[i][j]) == 0)
-			{
-				//printf("after if one\n");
-				//printf("added %c\n", current->arg[i][j]);
 				combine[count][index] = current->arg[i][j];
-			}
-			//printf("\tcurrent temp string is %s\n", save);
 			index++;
 			j++;
 		}
 		if (flag == 1)
 		{
 			flag = 0;
-			//printf("\ttwo: new block break at %c\n", current->arg[i][j - 1]);
-			//printf("\tcreating combine line #%d with length of %d\n", count + 1, length);
-				//combine[count] = (char *)malloc(sizeof(char) * length + 1);
-				//if (!combine[count++])
-					//return (-1);
-				//length = 0;
-			//printf("before copy paste\n");
-			//scopy_paste(&combine[count], &temp);
-			//free(temp);
 			count++;
 			index = 0;
 		}
@@ -218,11 +171,9 @@ int	fill_blocks(char **combine, t_job **lst)
 				}
 				index = 0;
 			}
-			
 		}
 		i++;
 	}
-	//combine[count] = NULL;
 	return (0);
 
 }
@@ -233,7 +184,6 @@ static char	*get_command(char *line, int end)
 	int i;
 
 	i = 0;
-	//result = (char *)malloc(sizeof(char) * end + 1);
 	result = (char*)ft_calloc(end + 1, sizeof(char));
 	if (!result)
 		return (NULL);
@@ -277,8 +227,6 @@ void	read_blocks(char **combine, char **env)
 
 	i = 0;
 	end = 0;
-	//if (!combine)
-	//	return ;
 	while (combine[i])
 	{
 		j = 0;
@@ -357,67 +305,43 @@ int	ft_export(t_job **lst, char **env, int fd)
 {
 	t_job	*current;
 	char	**combine;
-	//int		flag; //0 means left side of =, 1 means right side of =
-	//int		envp;
 	int		count;
 	int		i;
 	int		x;
 
-	printf("\tinside ft_export function\n");
 	current = *lst;
 	if (!current->arg)
 		return (-1);
-	else if (current->arg == NULL)
+	else if (current->arg == NULL) //?
 	{
 		printf("invalid identifier\n");
 		return (-1);	//error
 	}
-	if (current->arg[0] == NULL)
-		//call env function
+	if (current->arg[0] == NULL) //export만 들어오면
 		ft_env(lst, env, fd);
 	else
 	{
-		//loop through the whole arg 2d array to get count
-		//count = get_block_count(lst) + 1;
 		count = get_block_count(lst);
-		printf("\t# of blocks = %d\n", count);
 		if (count != 0)
 		{
-			//combine = (char **)malloc(sizeof(char *) * (count + 1));
 			combine = (char **)ft_calloc(count + 1, sizeof(char *));
-			//count = 0;
 			if (!combine)
 				return (-1);
 			i = 0;
 			malloc_combine_lines(combine, lst);
-			printf("malloc combine lines done\n");
-			if (fill_blocks(combine, lst) == 1)
+			if (fill_blocks(combine, lst) == 1) //fill blocks gave error
 			{
-				printf("fill blocks gave error\n");
 				while (count > 0)
 					free(combine[count--]);
 				free(combine);
-				return (-1);	//error
+				return (-1);
 			}
-			printf("fill blocks done\n");
-			printf("----------------------------------------\n");
-			printf("reading blocks below...\n");
 			read_blocks(combine, env);
-			printf("before add blocks\n");
 			add_blocks(combine, env);
-			printf("after add blocks\n");
 			while (count > 0)
 					free(combine[count--]);
 			free(combine);
 			return (1);
-			//printf("\n\n");
-			//ft_env(lst, env, fd);
-			//export_combined(combine);
-				//read each line, check conditions, and add to env
-			//free_combine(combine);
-			//free(combine);
 		}
 	}
-	//loop through combine's lines and free
-	//free combine itself
 }
