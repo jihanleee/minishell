@@ -1,7 +1,6 @@
 #include "minishell.h"
 
 
-
 static char	*change_directory(char **env, char *new, int fd)
 {
 	int i;
@@ -25,7 +24,7 @@ static int invalid_cd(char *path)
 		return (1);
 	while (path[i])
 	{
-		if (i != 0 && i == '~')
+		if (i != 0 && path[i] == '~')
 			return (1);
 		if (i != 0)
 		{
@@ -91,7 +90,6 @@ static void	cd_old_path(t_job *current, char **env)
 	cd_export(env, "OLDPWD=", getcwd(NULL,0));
 	chdir(new);
 	cd_unset(env, "PWD=");
-	//printf("\tnew PWD: %s\n", getcwd(NULL, 0));
 	cd_export(env, "PWD=", getcwd(NULL, 0));
 }
 
@@ -119,37 +117,41 @@ static void	cd_to_home(t_job *current, char **env)
 static void	cd_absolute_path(t_job *current, char **env)
 {
 	char	*new;
+	char	*old;
 
 	if (!current->arg[0][1])
 		cd_to_home(current, env);
 	else if (current->arg[0][1] == '/')
 	{
-		//hmm.... not working... why....
-		cd_unset(env, "OLDPWD=");
-		printf("\told path updated to: %s\n", getcwd(NULL, 0));
-		cd_export(env, "OLDPWD=", getcwd(NULL, 0));
+		old = getcwd(NULL, 0);
 		new = getenv("HOME");
 		new = ft_strjoin(new, &current->arg[0][1]);
-		printf("\tnew path: %s\n", new);
-		chdir(new);
-		cd_unset(env, "PWD=");
-		printf("\tnew PWD updated to %s\n", new);
-		cd_export(env, "PWD=", new);
-		//printf("\tnew PWD updated to %s\n", getcwd(NULL, 0));
-		//cd_export(env, "PWD=", getcwd(NULL, 0));
+		if (access(new, X_OK) == 0)
+		{
+			cd_unset(env, "OLDPWD=");
+			cd_export(env, "OLDPWD=", old);
+			chdir(new);
+			cd_unset(env, "PWD=");
+			cd_export(env, "PWD=", new);
+		}
+		else
+			write(2, "bash: ", 6);
+			write(2, new, get_length(new));
+			write(2, ": No such file or directory\n", 28);
 		free(new);
+		free(old);
 	}
 }
 
 int	ft_cd(t_job **lst, char **env, int fd)
 {
 	t_job	*current;
+	char	*path;
 	char	*new;
-	int i;
 	
 	current = *lst;
 	(void)fd;
-	if (current->arg[1])
+	if (current->arg && current->arg[1])
 		return (write(fd, "bash: cd: too many arguments\n", 29), 1);
 	if (!current->arg || (current->arg[0][0] == '/' && !current->arg[0][1]))
 		cd_to_home(current, env);	
@@ -160,7 +162,11 @@ int	ft_cd(t_job **lst, char **env, int fd)
 	else
 	{
 		if (invalid_cd(current->arg[0]) == 1)
-			return (printf("No Such Directory\n"), 1); //is printf okay?
+		{
+			write(2, "bash: cd: ", 10);
+			write(2, current->arg[0], get_length(current->arg[0]));
+			write(2, ": No such file or directory\n", 28);
+		}
 		cd_normal_path(current, env);
 	}
 	return (0);
