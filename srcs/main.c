@@ -5,9 +5,13 @@ int	main(int argc, char **argv, char **envp)
 	t_token	*tokens;
 	t_job	*jobs;
 	char	*line;
+	int		i;
 
 	(void)argc;
 	(void)argv;
+	i = 0;
+	while (envp[i])
+		i++;
 	if (!sigaction_set())
 		write(STDERR_FILENO, "Error: sigaction_set_failed\n", 28);
 	while (1)
@@ -15,6 +19,8 @@ int	main(int argc, char **argv, char **envp)
 		line = readline(GREEN "MINISHELL> ");
 		if (line == NULL)
 		{
+			while (envp[i])
+				free(envp[i++]);
 			write(STDOUT_FILENO, "exit\n", 5);
 			return (0);
 		}
