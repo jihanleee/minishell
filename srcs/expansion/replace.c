@@ -8,7 +8,6 @@ void	replace_params(t_lexeme *lexemes, char **envp)
 	current = lexemes;
 	while (current)
 	{
-		ft_printf("%s\n", current->str);
 		newstr = 0;
 		if (current->exp == TRUE)
 		{

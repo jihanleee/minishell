@@ -46,7 +46,7 @@ char	*file_path(char *cmd)
 	else
 	{
 		perror(cmd);
-		exit(127);
+		exit(errno);
 	}
 }
 

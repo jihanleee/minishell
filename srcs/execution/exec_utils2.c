@@ -13,7 +13,7 @@ char	**get_argv(t_job *jobs)
 		while (jobs->arg[i])
 			i++;
 	size = i + 1;
-	result = (char **)calloc(size + 1, sizeof(char *));
+	result = (char **)ft_calloc(size + 1, sizeof(char *));
 	if (!result)
 		return (0);
 	result[0] = jobs->cmd;

@@ -49,7 +49,7 @@ int	*create_quote_info(char *line)
 	int	*result;
 	int	i;
 
-	result = (int *)calloc(strlen(line) + 1, sizeof(int));
+	result = (int *)ft_calloc(ft_strlen(line) + 1, sizeof(int));
 	if (result == 0)
 		return (NULL);
 	i = 0;
@@ -62,23 +62,4 @@ int	*create_quote_info(char *line)
 		i++;
 	}
 	return (result);
-}
-
-void	read_tokens(t_token *current)
-{
-	int		i;
-
-	printf("---------------------------------------\n");
-	printf("....tokens read....\n");
-	if (current == NULL)
-		printf("\t(NULL)\n");
-	i = 0;
-	while (current)
-	{
-		printf("\tindex:\t%d\n", i);
-		printf("\tstr:\t%s\n", current->str);
-		printf("\ttype:\t%d\n", current->type);
-		current = current->next;
-		i++;
-	}
 }

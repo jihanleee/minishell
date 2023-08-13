@@ -22,7 +22,6 @@ t_token	*token_to_etoken(t_token *old, char **envp)
 	int			*iword;
 
 	lexemes = word_to_lexemes(old->str);
-	read_lexemes(lexemes);
 	if (old->type != heredoc)
 		replace_params(lexemes, envp);
 	iword = lexemes_to_int(lexemes, old->type);

@@ -11,7 +11,7 @@ void	non_builtin_child(t_job *job, char **envp)
 	{
 		close(job->pipefd[0]);
 		redirect_fds(job);
-		if (ft_strchr(job->cmd, '/'))
+		if (ft_strchr(job->cmd, '/') || job->cmd[0] == '~')
 			cmd_path = file_path(job->cmd);
 		else
 			cmd_path = find_cmd_path(job->cmd, envp);
@@ -21,7 +21,7 @@ void	non_builtin_child(t_job *job, char **envp)
 		execve(cmd_path, argv, envp);
 		free(argv);
 		free(cmd_path);
-		error_exit("execve error", 1);
+		error_exit("execve error", errno);
 	}
 }
 

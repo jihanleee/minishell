@@ -32,25 +32,6 @@ int	append_lexeme(t_lexeme **lexemes, t_lexeme *new)
 	return (0);
 }
 
-void	read_lexemes(t_lexeme *current)
-{
-	int		i;
-
-	i = 0;
-	while (current)
-	{
-		ft_printf("\tindex:\t%d\n", i);
-		ft_printf("\tstr:\t%s\n", current->str);
-		ft_printf("\ttype:\t%d\n", current->type);
-		if (current->exp == 1)
-			ft_printf("\texp:\tTRUE\n");
-		else
-			ft_printf("\texp:\tFALSE\n");
-		current = current->next;
-		i++;
-	}
-}
-
 int	lexemelen(t_lexeme *lexemes, t_ttype type)
 {
 	t_lexeme	*current;

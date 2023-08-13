@@ -386,7 +386,6 @@ t_token	*token_to_etoken(t_token *old, char **envp)
 
 	lexemes = word_to_lexemes(old->str);
 	first = lexemes;
-	read_lexemes(lexemes);
 	if (old->type != heredoc)
 		replace_params(lexemes, envp);
 	iword = lexemes_to_int(lexemes, old->type);
@@ -606,7 +605,7 @@ t_job	*extract_jobs(t_token *tokens)
 
 	if (tokens == NULL)
 		return (NULL);
-	result = (t_job *)calloc(1, sizeof(t_job));
+	result = (t_job *)ft_calloc(1, sizeof(t_job));
 	cur_result = result;
 	crnt = tokens;
 	while (crnt)

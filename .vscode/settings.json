@@ -3,6 +3,8 @@
 		"unistd.h": "c",
 		"history.h": "c",
 		"compare": "c",
-		"type_traits": "c"
+		"type_traits": "c",
+		"libft.h": "c",
+		"stdlib.h": "c"
 	}
 }

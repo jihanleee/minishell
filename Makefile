@@ -7,14 +7,15 @@ CFLAGS		= -Wall -Wextra -g3 #-Werror commented out for now, erase it before subm
 RM			= rm -f
 
 I_PATH		= ./includes/
-L_PATH		= ./includes/libft/ #libft should be replaced by 'your teammate's libft' before submission to match the 42 header author name.
+L_PATH		= ./includes/libft/
 
 INCLUDES	= -I ${I_PATH} -I ${L_PATH}
 
 SRCS		=	./srcs/parser.c \
-				./srcs/find_param.c \
 				./srcs/signal.c \
 				./srcs/main.c \
+				./srcs/debug.c \
+				./srcs/expansion/find_param.c \
 				./srcs/expansion/assign_quotes.c \
 				./srcs/expansion/file_redir.c \
 				./srcs/expansion/clear.c \

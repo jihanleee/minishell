@@ -44,3 +44,28 @@ void	clear_lexemes(t_lexeme **lst, void (*del)(void *))
 	}
 	*lst = 0;
 }
+
+void	clear_jobs(t_job **lst)
+{
+	t_job	*current;
+	t_job	*next;
+
+	if (lst == 0)
+		return ;
+	current = *lst;
+	while (current)
+	{
+		next = current->next;
+		if (current->cmd)
+			free(current->cmd);
+		if (current->outfile)
+			free(current->outfile);
+		if (current->infile)
+			free(current->infile);
+		if (current->arg)
+			free_arrays(current->arg);
+		free(current);
+		current = next;
+	}
+	*lst = 0;
+}

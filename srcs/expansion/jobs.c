@@ -1,40 +1,5 @@
 #include "minishell.h"
 
-void	read_jobs(t_job *jobs)
-{
-	int	i;
-
-	while (jobs)
-	{
-		printf("--------------------\n");
-		printf("in read jobs function, expander\n");
-		ft_printf("\tintype\t%d\n", jobs->in);
-		ft_printf("\touttype\t%d\n", jobs->out);
-		if (jobs->cmd)
-			ft_printf("\tcmd\t%s\n", jobs->cmd);
-		i = 0;
-		if (jobs->arg)
-		{
-			while (jobs->arg[i])
-			{
-				ft_printf("\targ[%d]\t%s\n", i, jobs->arg[i]);
-				i++;
-			}
-		}
-		if (jobs->infile)
-			ft_printf("\tinfile\t%s\n", jobs->infile);
-		if (jobs->outfile)
-		{
-			ft_printf("\toutfile\t%s\n", jobs->outfile);
-		}
-		ft_printf("--------------------\n");
-		if (jobs->next != NULL)
-			jobs = jobs->next;
-		else
-			return ;
-	}
-}
-
 void	point_prev_job(t_job *jobs)
 {
 	while (jobs->next)
@@ -78,7 +43,7 @@ t_job	*extract_jobs(t_token *tokens)
 
 	if (tokens == NULL)
 		return (NULL);
-	result = (t_job *)calloc(1, sizeof(t_job));
+	result = (t_job *)ft_calloc(1, sizeof(t_job));
 	cur_result = result;
 	current = tokens;
 	while (current)
@@ -123,31 +88,6 @@ void	assign_cmd_arg(t_token *current, t_job *cur_result)
 				cur_result->arg = extract_arg(&current);
 		}
 	}
-}
-
-void	clear_jobs(t_job **lst)
-{
-	t_job	*current;
-	t_job	*next;
-	
-	if (lst == 0)
-		return ;
-	current = *lst;
-	while (current)
-	{
-		next = current->next;
-		if (current->cmd)
-			free(current->cmd);
-		if (current->outfile)
-			free(current->outfile);
-		if (current->infile)
-			free(current->infile);
-		if (current->arg)
-		free_arrays(current->arg);
-		free(current);
-		current = next;
-	}
-	*lst = 0;
 }
 
 char	**extract_arg(t_token **tokens)

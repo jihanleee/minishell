@@ -33,7 +33,7 @@ void	open_file_errors(t_token **current, int fd)
 {
 	if ((*current)->type == amb_redir)
 	{
-		perror("ambiguous redirection");
+		ft_putstr_fd("ambiguous redirection\n", 2);
 		g_exit_stat = 1;
 	}
 	if (fd == -1)

@@ -46,6 +46,7 @@ void	split_expansions(t_lexeme *lexemes)
 		lexemes = lexemes->next;
 	}
 }
+
 void	replace_tokens(t_token **tokens, t_token **expanded, \
 t_token **next, t_token **prev)
 {

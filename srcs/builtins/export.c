@@ -103,6 +103,12 @@ int	malloc_combine_lines(char **combine, t_job **lst)
 		{
 			flag = 0;
 			combine[count] = (char*)ft_calloc(length + 1, sizeof(char));
+			//printf("\ttwo: new block break at %c\n", current->arg[i][j - 1]);
+			printf("\tcreating combine line #%d with length of %d\n", count + 1, length);
+			//combine[count] = (char *)malloc(sizeof(char) * (length + 1));
+			combine[count] = (char*) ft_calloc(length + 1, sizeof(char));
+			//if (!combine[count++])
+			//if (!combine[count + 1])
 			if (!combine[count])
 				return (-1);
 			length = 0;

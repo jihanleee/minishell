@@ -16,7 +16,6 @@ char	*find_param(char *p_name, char **envp)
 			if (envp[i][ft_strlen(p_name)] == '=')
 			{
 				str = ft_strdup(ft_strchr(envp[i], '=') + 1);
-				printf("%s\n", str);
 				break ;
 			}
 		}

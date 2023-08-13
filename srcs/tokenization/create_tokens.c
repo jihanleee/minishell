@@ -54,7 +54,7 @@ int	line_to_token(t_token **tokens, int *quote_info, char *line)
 {
 	int				len;
 	int				start;
-	t_ttype	type;
+	t_ttype			type;
 
 	start = 0;
 	*tokens = 0;
@@ -90,6 +90,5 @@ t_token	*create_tokens(char *line)
 	if (line_to_token(&tokens, quote_info, line) == -1)
 		return (NULL);
 	set_tokentype(tokens);
-	read_tokens(tokens);
 	return (free(quote_info), tokens);
 }
