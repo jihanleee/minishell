@@ -41,9 +41,11 @@ static void	cd_unset(char **env, char *arg)
 	int		i;
 
 	i = 0;
-	while (env[i]) //어느 순간부터 에러 남
+	printf("before while loop\n");
+	while (env[i]) //어느 순간부터 에러 남 //expansion쪽 에러도 나서 같이 종합적으로 봐야할 것 같음
 	{
-		if (ft_strncmp(&env[i], arg, get_length(arg)) == 0)
+		printf("inside while loop\n");
+		if (ft_strncmp(env[i], arg, get_length(arg)) == 0)
 		{
 			env[i] = NULL;
 			free(env[i]);
