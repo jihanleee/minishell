@@ -41,9 +41,9 @@ static void	cd_unset(char **env, char *arg)
 	int		i;
 
 	i = 0;
-	while (env[i])
+	while (env[i]) //어느 순간부터 에러 남
 	{
-		if (ft_strncmp(env[i], arg, get_length(arg)) == 0)
+		if (ft_strncmp(&env[i], arg, get_length(arg)) == 0)
 		{
 			env[i] = NULL;
 			free(env[i]);
@@ -84,34 +84,58 @@ static void	cd_export(char **env, char *arg, char *path)
 static void	cd_old_path(t_job *current, char **env)
 {
 	char	*new;
+	char	*cwd;
 
 	new = find_param("OLDPWD", env);
 	cd_unset(env, "OLDPWD=");
-	cd_export(env, "OLDPWD=", getcwd(NULL,0));
+	cwd = getcwd(NULL, 0);
+	//cd_export(env, "OLDPWD=", getcwd(NULL,0));
+	cd_export(env, "OLDPWD=", cwd);
+	free(cwd);
 	chdir(new);
+	free(new);
 	cd_unset(env, "PWD=");
-	cd_export(env, "PWD=", getcwd(NULL, 0));
+	cwd = getcwd(NULL, 0);
+	//cd_export(env, "PWD=", getcwd(NULL, 0));
+	cd_export(env, "PWD=", cwd);
+	free(cwd);
 }
 
 static void cd_normal_path(t_job *current, char **env)
 {
+	char	*cwd;
+
 	cd_unset(env, "OLDPWD=");
-	cd_export(env, "OLDPWD=", getcwd(NULL, 0));
+	cwd = getcwd(NULL, 0);
+	cd_export(env, "OLDPWD=", cwd);
+	//cd_export(env, "OLDPWD=", getcwd(NULL, 0));
+	free(cwd);
 	chdir(current->arg[0]);
 	cd_unset(env, "PWD=");
-	cd_export(env, "PWD=", getcwd(NULL, 0));
+	cwd = getcwd(NULL, 0);
+	//cd_export(env, "PWD=", getcwd(NULL, 0));
+	cd_export(env, "OLDPWD=", cwd);
+	free(cwd);
 }
 
 static void	cd_to_home(t_job *current, char **env)
 {
 	char	*new;
+	char	*cwd;
 
 	new = getenv("HOME");
 	cd_unset(env, "OLDPWD=");
-	cd_export(env, "OLDPWD=", getcwd(NULL, 0));
+	cwd = getcwd(NULL, 0);
+	//cd_export(env, "OLDPWD=", getcwd(NULL, 0));
+	cd_export(env, "OLDPWD=", cwd);
+	free(cwd);
 	chdir(new);
+	//free(new);
 	cd_unset(env, "PWD=");
-	cd_export(env, "PWD=", getcwd(NULL, 0));
+	cwd = getcwd(NULL, 0);
+	cd_export(env, "OLDPWD=", cwd);
+	//cd_export(env, "PWD=", getcwd(NULL, 0));
+	free(cwd);
 }
 
 static void	cd_absolute_path(t_job *current, char **env)
