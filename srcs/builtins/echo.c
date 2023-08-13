@@ -6,7 +6,11 @@ int	get_length(char *str)
 
 	length = 0;
 	while (str[length])
+	{
+		//printf("\tcurrent char: %c\n", str[length]);
 		length++;
+	}
+	//printf("\tlength is %d\n", length);
 	return (length);
 }
 

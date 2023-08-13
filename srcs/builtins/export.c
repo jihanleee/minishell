@@ -72,6 +72,7 @@ int	get_block_count(t_job **lst)
 		}
 		i++;
 	}
+	printf("number of blocks: %d\n", count);
 	return (count);
 }
 
@@ -103,14 +104,9 @@ int	malloc_combine_lines(char **combine, t_job **lst)
 		{
 			flag = 0;
 			combine[count] = (char*)ft_calloc(length + 1, sizeof(char));
-			//printf("\ttwo: new block break at %c\n", current->arg[i][j - 1]);
-			printf("\tcreating combine line #%d with length of %d\n", count + 1, length);
-			//combine[count] = (char *)malloc(sizeof(char) * (length + 1));
-			combine[count] = (char*) ft_calloc(length + 1, sizeof(char));
-			//if (!combine[count++])
-			//if (!combine[count + 1])
-			if (!combine[count])
-				return (-1);
+			//if (!combine[count])
+			//	return (-1);
+			count++;
 			length = 0;
 		}
 		if (flag == 0)
@@ -180,8 +176,13 @@ int	fill_blocks(char **combine, t_job **lst)
 		}
 		i++;
 	}
+	i = 0;
+	while (combine[i])
+	{
+		printf("combine: index %d has %s\n", i, combine[i]);
+		i++;
+	}
 	return (0);
-
 }
 
 static char	*get_command(char *line, int end)
@@ -280,9 +281,9 @@ int	add_blocks(char **combine, char **env)
 	while (combine[i])
 	{
 		printf("\tcombine[i] is %s\n", combine[i]);
-		env[x] = malloc(sizeof(char *) * (get_length(combine[i]) + 1));
-		if (!env[x])
-			return (-1);
+		//env[x] = malloc(sizeof(char *) * (get_length(combine[i]) + 1));
+		//if (!env[x])
+		//	return (-1);
 		env[x] = combine[i];
 		printf("\tenv now has %s\n", env[x]);
 		printf("\tcombine had %s\n", combine[i]);
@@ -344,8 +345,8 @@ int	ft_export(t_job **lst, char **env, int fd)
 			}
 			read_blocks(combine, env);
 			add_blocks(combine, env);
-			while (count > 0)
-					free(combine[count--]);
+			//while (count > 0)
+			//		free(combine[count--]);
 			free(combine);
 			return (1);
 		}

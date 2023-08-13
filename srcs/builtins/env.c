@@ -3,7 +3,6 @@
 void	ft_env(t_job **lst, char **env, int fd)
 {
 	int		i;
-	int		length;
 	t_job	*current;
 
 	current = *lst;
@@ -15,10 +14,11 @@ void	ft_env(t_job **lst, char **env, int fd)
 		write(fd, "\': No such file or directory\n", 29);
 		return ;
 	}
-	while (env[i] && env[i][0])
+	while (env[i]) //
 	{
-		length = get_length(env[i]);
-		write(fd, env[i], length);
+		//length = get_length(env[i]);
+		//write(fd, env[i], length);
+		write(fd, env[i], get_length(env[i]));
 		write(fd, "\n", 1);
 		i++;
 	}
