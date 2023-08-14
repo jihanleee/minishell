@@ -10,13 +10,16 @@ void	free_arrays(char **str)
 	free(str);
 }
 
-void	error_exit(char *str, int exit_status)
+void	error_exit(char *str, int exit_status, t_job *job)
 {
+	rl_clear_history();
+	clear_env();
+	clear_jobs(job);
 	ft_putstr_fd(str, 2);
 	exit(exit_status);
 }
 
-char	**bin_path(char **envp)
+char	**bin_path(char **envp, t_job *job)
 {
 	int		i;
 	int		j;
@@ -35,7 +38,7 @@ char	**bin_path(char **envp)
 	j++;
 	path = ft_split(&(envp[i][j]), ':');
 	if (path == 0)
-		error_exit("malloc error\n", 1);
+		error_exit("malloc error\n", 1, job);
 	return (path);
 }
 
@@ -50,14 +53,14 @@ char	*file_path(char *cmd)
 	}
 }
 
-char	*find_cmd_path(char *cmd, char **envp)
+char	*find_cmd_path(char *cmd, char **envp, t_job *job)
 {
 	int		i;
 	char	*slashed;
 	char	*withcmd;
 	char	**path;
 
-	path = bin_path(envp);
+	path = bin_path(envp, job);
 	i = 0;
 	while (path[i])
 	{
@@ -75,6 +78,6 @@ char	*find_cmd_path(char *cmd, char **envp)
 	}
 	free_arrays(path);
 	if (!withcmd || cmd[0] == '\0')
-		error_exit("command not found\n", 127);
+		error_exit("command not found\n", 127, job);
 	return (withcmd);
 }

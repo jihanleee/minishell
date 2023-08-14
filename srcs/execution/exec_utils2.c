@@ -46,8 +46,8 @@ int	redirect_fds(t_job *job)
 	else if (!job->next)
 		outfd = 1;
 	if (outfd == -1 || infd == -1)
-		error_exit("fd error\n", 1);
+		error_exit("fd error\n", 1, job);
 	if (dup2(outfd, 1) < 0 || dup2(infd, 0) < 0)
-		error_exit("dup2 error\n", 1);
+		error_exit("dup2 error\n", 1, job);
 	return (0);
 }

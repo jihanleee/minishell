@@ -127,7 +127,7 @@ void		create_heredoc(const char *delim);
 void		open_file_redir(t_token *token);
 void		point_prev_job(t_job *jobs);
 t_job		*extract_jobs(t_token *tokens);
-void		clear_jobs(t_job **lst);
+void		clear_jobs(t_job *current);
 
 /*signal.c*/
 void		new_prompt(void);
@@ -167,10 +167,10 @@ int			ft_unset(t_job **lst, char **env, int fd);
 
 /*execution*/
 void		free_arrays(char **str);
-void		error_exit(char *str, int exit_status);
-char		**bin_path(char **envp);
+void		error_exit(char *str, int exit_status, t_job *job);
+char		**bin_path(char **envp, t_job *job);
 char		*file_path(char *cmd);
-char		*find_cmd_path(char *cmd, char **envp);
+char		*find_cmd_path(char *cmd, char **envp, t_job *job);
 char		**get_argv(t_job *jobs);
 int			redirect_fds(t_job *job);
 void		non_builtin_child(t_job *job, char **envp);

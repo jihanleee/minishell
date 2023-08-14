@@ -14,14 +14,14 @@ void	non_builtin_child(t_job *job, char **envp)
 		if (ft_strchr(job->cmd, '/') || job->cmd[0] == '~')
 			cmd_path = file_path(job->cmd);
 		else
-			cmd_path = find_cmd_path(job->cmd, envp);
+			cmd_path = find_cmd_path(job->cmd, envp, job);
 		argv = get_argv(job);
 		if (!argv)
-			error_exit((free(cmd_path), "malloc error"), 1);
+			error_exit((free(cmd_path), "malloc error"), 1, job);
 		execve(cmd_path, argv, envp);
 		free(argv);
 		free(cmd_path);
-		error_exit("execve error", errno);
+		error_exit("execve error", errno, job);
 	}
 }
 
