@@ -183,4 +183,6 @@ void		execute_jobs(t_job *jobs, char **envp);
 void	init_env_var(char **envp);
 void	read_env();
 t_env	**get_env_address();
+void	clear_env();
+
 #endif

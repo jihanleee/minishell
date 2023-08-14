@@ -11,9 +11,6 @@ int	main(int argc, char **argv, char **envp)
 	read_env();
 	(void)argc;
 	(void)argv;
-	i = 0;
-	while (envp[i])
-		i++;
 	if (!sigaction_set())
 		write(STDERR_FILENO, "Error: sigaction_set_failed\n", 28);
 	while (1)
@@ -21,8 +18,8 @@ int	main(int argc, char **argv, char **envp)
 		line = readline(GREEN "MINISHELL> ");
 		if (line == NULL)
 		{
-			while (envp[i])
-				free(envp[i++]);
+			clear_env();
+			rl_clear_history();
 			write(STDOUT_FILENO, "exit\n", 5);
 			return (0);
 		}
@@ -51,6 +48,6 @@ int	main(int argc, char **argv, char **envp)
 				//main 정확히 짤 때는 두번 콜되지 않게 조심하기
 		}
 	}
-	rl_clear_history();
+
 	return (0);
 }

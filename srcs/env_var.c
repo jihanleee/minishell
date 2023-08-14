@@ -18,6 +18,22 @@ void	read_env()
 	}
 }
 
+void	clear_env()
+{
+	t_env	*current;
+	t_env	*next;
+
+	current = *get_env_address();
+	while (current)
+	{
+		next = current->next;
+		if (current->str)
+			free(current->str);
+		free(current);
+		current = next;
+	}
+}
+
 void	init_env_var(char **envp)
 {
 	int	i;
