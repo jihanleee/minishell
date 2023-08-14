@@ -15,6 +15,20 @@ static bool	is_allexp(t_lexeme *lexemes)
 	return (allexp);
 }
 
+static bool quote_is_found(t_lexeme *lexemes)
+{
+	bool	found;
+
+	found = FALSE;
+	while (lexemes)
+	{
+		if (lexemes->type)
+			found = TRUE;
+		lexemes = lexemes->next;
+	}
+	return (found);
+}
+
 t_token	*token_to_etoken(t_token *old, char **envp)
 {
 	t_lexeme	*lexemes;
@@ -32,6 +46,8 @@ t_token	*token_to_etoken(t_token *old, char **envp)
 		if (result)
 		result->str = ft_strdup("");
 	}
+	if (old->type == heredoc && quote_is_found(lexemes))
+		result->hereq = 1;
 	clear_lexemes(&lexemes, free);
 	return (free(iword), result);
 }

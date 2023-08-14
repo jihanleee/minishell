@@ -49,6 +49,7 @@ void	read_lexemes(t_lexeme *crnt)
 			ft_printf("\texp:\tTRUE\n");
 		else
 			ft_printf("\texp:\tFALSE\n");
+		ft_printf("p_found %d\n", crnt->p_found);
 		crnt = crnt->next;
 		i++;
 	}

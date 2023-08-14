@@ -38,7 +38,7 @@ int	main(int argc, char **argv, char **envp)
 			expansion(&tokens, envp);
 /* 			read_tokens(tokens); */
 			g_exit_stat = 0;
-			open_file_redir(tokens);
+			open_file_redir(tokens, envp);
 			jobs = extract_jobs(tokens);
 /* 			read_jobs(jobs); */
 			clear_tokens(&tokens, free);

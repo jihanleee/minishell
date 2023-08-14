@@ -1,6 +1,35 @@
 #include "minishell.h"
 
-void	create_heredoc(const char *delim)
+char	*gnl_heredoc(char **envp, bool hereq)
+{
+	char		*line;
+	t_lexeme	*lexemes;
+	t_lexeme	*current;
+	int			i;
+	int			j;
+
+	line = get_next_line(0);
+	if (hereq || !line)
+		return (line);
+	lexemes = new_lexeme(ft_strdup(line), 0);
+	split_expansions((free(line),lexemes));
+	replace_params(lexemes, envp);
+	line = (char *)calloc(lexemelen(lexemes, 0) + 1, sizeof (char));
+	read_lexemes(lexemes);
+	i = 0;
+	current = lexemes;
+	while (line && current)
+	{
+		j = 0;
+		while (current->str[j] && !(!current->p_found && current->exp))
+			line[i++] = current->str[j++];
+		current = current->next;
+	}
+	clear_lexemes(&lexemes, free);
+	return (line);
+}
+
+void	create_heredoc(const char *delim, bool hereq, char **envp)
 {
 	int		fd;
 	char	*line;
@@ -9,7 +38,7 @@ void	create_heredoc(const char *delim)
 	while (1)
 	{
 		ft_printf("heredoc> ");
-		line = get_next_line(0);
+		line = gnl_heredoc(envp, hereq);
 		if (line == 0 || line[ft_strlen(line) - 1] != '\n')
 		{
 			if (line)
@@ -51,7 +80,7 @@ void	open_file_errors(t_token **current, int fd)
 	}
 }
 
-void	open_file_redir(t_token *token)
+void	open_file_redir(t_token *token, char **envp)
 {
 	t_token	*current;
 	int		fd;
@@ -67,7 +96,7 @@ void	open_file_redir(t_token *token)
 			O_TRUNC * (current->type != append), 0777);
 		if (current->type == heredoc)
 		{
-			create_heredoc(current->str);
+			create_heredoc(current->str, current->hereq, envp);
 			free(current->str);
 			current->str = ft_strdup("heredoc.tmp");
 		}

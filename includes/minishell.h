@@ -53,6 +53,7 @@ typedef struct s_lexeme
 typedef struct s_token
 {
 	t_ttype			type;
+	bool			hereq;
 	char			*str;
 	struct s_token	*next;
 }			t_token;
@@ -123,8 +124,8 @@ t_token		*token_to_etoken(t_token *old, char **envp);
 void		expansion(t_token **tokens, char **envp);
 void		read_jobs(t_job *jobs);
 char		**extract_arg(t_token **tokens);
-void		create_heredoc(const char *delim);
-void		open_file_redir(t_token *token);
+void		create_heredoc(const char *delim, bool hereq, char **envp);
+void		open_file_redir(t_token *token, char **envp);
 void		point_prev_job(t_job *jobs);
 t_job		*extract_jobs(t_token *tokens);
 void		clear_jobs(t_job *current);
