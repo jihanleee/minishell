@@ -13,7 +13,7 @@ void	read_env()
 	current = *get_env_address();
 	while (current)
 	{
-		ft_printf("current %s\n", current->str);
+		//ft_printf("current %s\n", current->str);
 		current = current->next;
 	}
 }

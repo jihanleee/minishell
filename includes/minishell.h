@@ -142,7 +142,7 @@ int			get_length(char *str);
 void		ft_echo(t_job *current, char **env, int fd);
 
 /* env.c */
-void		ft_env(t_job **lst, char **env, int fd);
+void		ft_env(t_job **lst, char **envp, int fd);
 
 /* exit.c */
 int			check_int(char *arg);
@@ -163,7 +163,8 @@ int			ft_pwd(t_job **lst, char **env, int fd);
 /* unset.c */
 //void	delete_line(char **env, char *string);
 //void	ft_unset(t_job **lst, char **env, int fd);
-int			ft_unset(t_job **lst, char **env, int fd);
+//int			ft_unset(t_job **lst, char **env, int fd);
+void	ft_unset(t_job **lst, char **envp, int fd);
 
 /*execution*/
 void		free_arrays(char **str);

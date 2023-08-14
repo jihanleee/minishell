@@ -258,32 +258,20 @@ void	read_blocks(char **combine, char **env)
 	}
 }
 
-
+/*
 int	add_blocks(char **combine, char **env)
 {
 	int i;
-	//int j;
 	int x;
-	//char *current;
 
 	i = 0;
 	x = 0;
-	//current = **env;
-	printf("\tcurrently in add blocks\n");
-	//while (current[x])
-	//	x++;
-	//current[x] = malloc(sizeof(char *) * get_length(combine[i] + 1));
-	//if (!current[x])
-	//		return (-1);
+	//printf("\tcurrently in add blocks\n");
 	while (env[x])
 		x++;
-	//while (combine[i] && combine[i] != NULL)
 	while (combine[i])
 	{
 		printf("\tcombine[i] is %s\n", combine[i]);
-		//env[x] = malloc(sizeof(char *) * (get_length(combine[i]) + 1));
-		//if (!env[x])
-		//	return (-1);
 		env[x] = combine[i];
 		printf("\tenv now has %s\n", env[x]);
 		printf("\tcombine had %s\n", combine[i]);
@@ -291,6 +279,31 @@ int	add_blocks(char **combine, char **env)
 		i++;
 	}
 	env[x] = NULL;
+	return (0);
+}
+*/
+
+int	add_blocks(char **combine, char **envp)
+{
+	t_env	**env;
+	t_env	*current;
+	t_env	*new;
+	int		i;
+
+	//printf("inside export-add blocks function\n");
+	env = get_env_address();
+	current = (*env);
+	while (current && current->next != NULL)
+		current = current->next;
+	i = 0;
+	while (combine[i])
+	{
+		current->next = (t_env *)calloc(1, sizeof (t_env));
+		current->next->str = ft_strdup(combine[i]);
+		current->next->next = NULL;
+		current = current->next;
+		i++;
+	}
 	return (0);
 }
 
