@@ -41,10 +41,8 @@ static void	cd_unset(char **env, char *arg)
 	int		i;
 
 	i = 0;
-	printf("before while loop\n");
 	while (env[i]) //어느 순간부터 에러 남 //expansion쪽 에러도 나서 같이 종합적으로 봐야할 것 같음
 	{
-		printf("inside while loop\n");
 		if (ft_strncmp(env[i], arg, get_length(arg)) == 0)
 		{
 			env[i] = NULL;
@@ -89,35 +87,49 @@ static void	cd_old_path(t_job *current, char **env)
 	char	*cwd;
 
 	new = find_param("OLDPWD", env);
-	cd_unset(env, "OLDPWD=");
-	cwd = getcwd(NULL, 0);
-	//cd_export(env, "OLDPWD=", getcwd(NULL,0));
-	cd_export(env, "OLDPWD=", cwd);
-	free(cwd);
-	chdir(new);
+	if (access(new, X_OK) == 0)
+	{
+		cd_unset(env, "OLDPWD=");
+		cwd = getcwd(NULL, 0);
+		cd_export(env, "OLDPWD=", cwd);
+		free(cwd);
+		chdir(new);
+		cd_unset(env, "PWD=");
+		cwd = getcwd(NULL, 0);
+		cd_export(env, "OLDPWD=", cwd);
+		free(cwd);
+	}
+	else
+	{
+		write(2, "bash: ", 6);
+		write(2, new, get_length(new));
+		write(2, ": No such file or directory\n", 28);
+	}
 	free(new);
-	cd_unset(env, "PWD=");
-	cwd = getcwd(NULL, 0);
-	//cd_export(env, "PWD=", getcwd(NULL, 0));
-	cd_export(env, "PWD=", cwd);
-	free(cwd);
 }
 
 static void cd_normal_path(t_job *current, char **env)
 {
 	char	*cwd;
 
-	cd_unset(env, "OLDPWD=");
-	cwd = getcwd(NULL, 0);
-	cd_export(env, "OLDPWD=", cwd);
-	//cd_export(env, "OLDPWD=", getcwd(NULL, 0));
-	free(cwd);
-	chdir(current->arg[0]);
-	cd_unset(env, "PWD=");
-	cwd = getcwd(NULL, 0);
-	//cd_export(env, "PWD=", getcwd(NULL, 0));
-	cd_export(env, "OLDPWD=", cwd);
-	free(cwd);
+	if (access(current->arg[0], X_OK) == 0)
+	{
+		cd_unset(env, "OLDPWD=");
+		cwd = getcwd(NULL, 0);
+		cd_export(env, "OLDPWD=", cwd);
+		free(cwd);
+		chdir(current->arg[0]);
+		cd_unset(env, "PWD=");
+		cwd = getcwd(NULL, 0);
+		cd_export(env, "OLDPWD=", cwd);
+		free(cwd);
+	}
+	else
+	{
+		write(2, "bash: ", 6);
+		write(2, current->arg[0], get_length(current->arg[0]));
+		write(2, ": No such file or directory\n", 28);
+	}
 }
 
 static void	cd_to_home(t_job *current, char **env)
@@ -126,18 +138,25 @@ static void	cd_to_home(t_job *current, char **env)
 	char	*cwd;
 
 	new = getenv("HOME");
-	cd_unset(env, "OLDPWD=");
-	cwd = getcwd(NULL, 0);
-	//cd_export(env, "OLDPWD=", getcwd(NULL, 0));
-	cd_export(env, "OLDPWD=", cwd);
-	free(cwd);
-	chdir(new);
+	if (access(new, X_OK) == 0)
+	{
+		cd_unset(env, "OLDPWD=");
+		cwd = getcwd(NULL, 0);
+		cd_export(env, "OLDPWD=", cwd);
+		free(cwd);
+		chdir(new);
+		cd_unset(env, "PWD=");
+		cwd = getcwd(NULL, 0);
+		cd_export(env, "PWD=", cwd);
+		free(cwd);
+	}
+	else
+	{
+		write(2, "bash: ", 6);
+		write(2, new, get_length(new));
+		write(2, ": No such file or directory\n", 28);
+	}
 	//free(new);
-	cd_unset(env, "PWD=");
-	cwd = getcwd(NULL, 0);
-	cd_export(env, "OLDPWD=", cwd);
-	//cd_export(env, "PWD=", getcwd(NULL, 0));
-	free(cwd);
 }
 
 static void	cd_absolute_path(t_job *current, char **env)
@@ -161,9 +180,11 @@ static void	cd_absolute_path(t_job *current, char **env)
 			cd_export(env, "PWD=", new);
 		}
 		else
+		{
 			write(2, "bash: ", 6);
 			write(2, new, get_length(new));
 			write(2, ": No such file or directory\n", 28);
+		}
 		free(new);
 		free(old);
 	}
