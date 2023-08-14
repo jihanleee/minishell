@@ -258,31 +258,6 @@ void	read_blocks(char **combine, char **env)
 	}
 }
 
-/*
-int	add_blocks(char **combine, char **env)
-{
-	int i;
-	int x;
-
-	i = 0;
-	x = 0;
-	//printf("\tcurrently in add blocks\n");
-	while (env[x])
-		x++;
-	while (combine[i])
-	{
-		printf("\tcombine[i] is %s\n", combine[i]);
-		env[x] = combine[i];
-		printf("\tenv now has %s\n", env[x]);
-		printf("\tcombine had %s\n", combine[i]);
-		x++;
-		i++;
-	}
-	env[x] = NULL;
-	return (0);
-}
-*/
-
 int	add_blocks(char **combine, char **envp)
 {
 	t_env	**env;
@@ -358,8 +333,8 @@ int	ft_export(t_job **lst, char **env, int fd)
 			}
 			read_blocks(combine, env);
 			add_blocks(combine, env);
-			//while (count > 0)
-			//		free(combine[count--]);
+			while (count > 0)
+					free(combine[count--]);
 			free(combine);
 			return (1);
 		}

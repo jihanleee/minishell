@@ -133,9 +133,9 @@ void	ft_unset(t_job **lst, char **envp, int fd)
 			{
 				next = current->next;
 				printf("\tdeleting/freeing %s\n", current->str);
-				free(current->str);
-				free(current->next);
-				free(current); //
+				//free(current->str);
+				//free(current->next);
+				//free(current); //
 				current = next;
 			}
 		}
@@ -150,9 +150,9 @@ void	ft_unset(t_job **lst, char **envp, int fd)
 				//printf("found it:\n\tcurrnet line is\n\t\t\t%s\n", next->str);
 				current->next = current->next->next;
 				printf("\tdeleting/freeing %s\n", next->str);
-				free(next->str);
-				free(next->next);
-				free(next);
+				//free(next->str);
+				//free(next->next);
+				//free(next);
 				break ;
 			}
 			current = current->next;
