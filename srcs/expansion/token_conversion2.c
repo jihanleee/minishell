@@ -29,7 +29,7 @@ static bool quote_is_found(t_lexeme *lexemes)
 	return (found);
 }
 
-t_token	*token_to_etoken(t_token *old, char **envp)
+t_token	*token_to_etoken(t_token *old)
 {
 	t_lexeme	*lexemes;
 	t_token		*result;
@@ -37,7 +37,7 @@ t_token	*token_to_etoken(t_token *old, char **envp)
 
 	lexemes = word_to_lexemes(old->str);
 	if (old->type != heredoc)
-		replace_params(lexemes, envp);
+		replace_params(lexemes);
 	iword = lexemes_to_int(lexemes, old->type);
 	result = iword_to_tokens(iword);
 	if (!is_allexp(lexemes) && !result)

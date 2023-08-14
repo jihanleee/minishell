@@ -21,22 +21,27 @@ void	error_exit(char *str, int exit_status, t_job *job)
 
 char	**bin_path(char **envp, t_job *job)
 {
+	t_env	*env;
 	int		i;
-	int		j;
 	char	**path;
 
-	i = 0;
-	while (envp[i])
+	env = *get_env_address();
+	while (env)
 	{
-		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
+		if (ft_strncmp(env->str, "PATH=", 5) == 0)
 			break ;
-		i++;
+		env = env->next;
 	}
-	j = 0;
-	while (envp[i][j] && envp[i][j] != '=')
-		j++;
-	j++;
-	path = ft_split(&(envp[i][j]), ':');
+	if (!env)
+	{
+		path = ft_split("/bin", ' ');
+		return (path);
+	}
+	i = 0;
+	while (env->str[i] && env->str[i] != '=')
+		i++;
+	i++;
+	path = ft_split(&(env->str[i]), ':');
 	if (path == 0)
 		error_exit("malloc error\n", 1, job);
 	return (path);

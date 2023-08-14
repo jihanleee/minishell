@@ -77,7 +77,7 @@ t_token **next, t_token **prev)
 	return (0);
 }
 
-void	expansion(t_token **tokens, char **envp)
+void	expansion(t_token **tokens)
 {
 	t_token	*crnt;
 	t_token	*next;
@@ -89,7 +89,7 @@ void	expansion(t_token **tokens, char **envp)
 	while (crnt)
 	{
 		next = crnt->next;
-		expanded = token_to_etoken(crnt, envp);
+		expanded = token_to_etoken(crnt);
 		if (expanded)
 			expanded->type = crnt->type;
 		if (expanded)

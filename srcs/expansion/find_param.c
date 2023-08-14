@@ -1,25 +1,25 @@
 #include "minishell.h"
 
-char	*find_param(char *p_name, char **envp)
+char	*find_param(char *p_name)
 {
-	int		i;
 	char	*str;
+	t_env	*env;
 
+	env = *get_env_address();
 	if (ft_strncmp(p_name, "?", 2) == 0)
 		return (ft_itoa(g_exit_stat));
 	str = 0;
-	i = 0;
-	while (envp[i])
+	while (env)
 	{
-		if (ft_strncmp(envp[i], p_name, ft_strlen(p_name)) == 0)
+		if (ft_strncmp(env->str, p_name, ft_strlen(p_name)) == 0)
 		{
-			if (envp[i][ft_strlen(p_name)] == '=')
+			if (env->str[ft_strlen(p_name)] == '=')
 			{
-				str = ft_strdup(ft_strchr(envp[i], '=') + 1);
+				str = ft_strdup(ft_strchr(env->str, '=') + 1);
 				break ;
 			}
 		}
-		i++;
+		env = env->next;
 	}
 	return (str);
 }

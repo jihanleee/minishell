@@ -238,7 +238,7 @@ t_lexeme	*word_to_lexemes(char *str)
 	return (free(quote_info), result);
 }
 
-void	replace_params(t_lexeme *lexemes, char **envp)
+void	replace_params(t_lexeme *lexemes)
 {
 	t_lexeme	*crnt;
 	char	*newstr;
@@ -377,7 +377,7 @@ t_token	*iword_to_tokens(int *lexeme)
 	return (result);
 }
 
-t_token	*token_to_etoken(t_token *old, char **envp)
+t_token	*token_to_etoken(t_token *old)
 {
 	t_lexeme	*lexemes;
 	t_lexeme	*first;
@@ -408,7 +408,7 @@ t_token	*token_to_etoken(t_token *old, char **envp)
 	return (free(iword), result);
 }
 
-void	expansion(t_token **tokens, char **envp)
+void	expansion(t_token **tokens)
 {
 	t_token	*crnt;
 	t_token	*next;

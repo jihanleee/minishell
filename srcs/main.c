@@ -5,7 +5,6 @@ int	main(int argc, char **argv, char **envp)
 	t_token	*tokens;
 	t_job	*jobs;
 	char	*line;
-	int		i;
 
 	init_env_var(envp);
 	read_env();
@@ -35,10 +34,10 @@ int	main(int argc, char **argv, char **envp)
 		else
 		{
 			tokens = parse_tokens(&tokens, free);
-			expansion(&tokens, envp);
+			expansion(&tokens);
 /* 			read_tokens(tokens); */
 			g_exit_stat = 0;
-			open_file_redir(tokens, envp);
+			open_file_redir(tokens);
 			jobs = extract_jobs(tokens);
 /* 			read_jobs(jobs); */
 			clear_tokens(&tokens, free);

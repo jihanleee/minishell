@@ -76,7 +76,7 @@ typedef struct s_job
 extern int	g_exit_stat;
 
 /*tokenizer*/
-char		*find_param(char *p_name, char **envp);
+char		*find_param(char *p_name);
 void		mark_single_quote(char *line, int *result, int *i);
 void		mark_double_quote(char *line, int *result, int *i);
 int			*create_quote_info(char *line);
@@ -114,18 +114,18 @@ void		read_lexemes(t_lexeme *current);
 int			len_lvname(char *str);
 void		split_expansions(t_lexeme *lexemes);
 t_lexeme	*word_to_lexemes(char *str);
-void		replace_params(t_lexeme *lexemes, char **envp);
+void		replace_params(t_lexeme *lexemes);
 int			lexemelen(t_lexeme *lexemes, t_ttype type);
 bool		is_ifs(char c);
 t_token		*new_expanded_token(int *lexeme, int start, int len);
 int			*lexemes_to_int(t_lexeme *lexemes, t_ttype type);
 t_token		*iword_to_tokens(int *lexeme);
-t_token		*token_to_etoken(t_token *old, char **envp);
-void		expansion(t_token **tokens, char **envp);
+t_token		*token_to_etoken(t_token *old);
+void		expansion(t_token **tokens);
 void		read_jobs(t_job *jobs);
 char		**extract_arg(t_token **tokens);
-void		create_heredoc(const char *delim, bool hereq, char **envp);
-void		open_file_redir(t_token *token, char **envp);
+void		create_heredoc(const char *delim, bool hereq);
+void		open_file_redir(t_token *token);
 void		point_prev_job(t_job *jobs);
 t_job		*extract_jobs(t_token *tokens);
 void		clear_jobs(t_job *current);

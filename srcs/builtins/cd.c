@@ -86,7 +86,7 @@ static void	cd_old_path(t_job *current, char **env)
 	char	*new;
 	char	*cwd;
 
-	new = find_param("OLDPWD", env);
+	new = find_param("OLDPWD");
 	if (access(new, X_OK) == 0)
 	{
 		cd_unset(env, "OLDPWD=");
