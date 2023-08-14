@@ -7,6 +7,8 @@ int	main(int argc, char **argv, char **envp)
 	char	*line;
 	int		i;
 
+	init_env_var(envp);
+	read_env();
 	(void)argc;
 	(void)argv;
 	i = 0;

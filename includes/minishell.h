@@ -17,6 +17,12 @@
 
 # define GREEN "\033[32m"
 
+typedef struct s_env
+{
+	char			*str;
+	struct s_env	*next;
+}				t_env;
+
 typedef enum e_quote_type
 {
 	uq,
@@ -173,4 +179,8 @@ void		builtin(t_job *job, char **envp);
 int			check_builtin(char *cmd);
 void		execute_jobs(t_job *jobs, char **envp);
 
+/*env_var*/
+void	init_env_var(char **envp);
+void	read_env();
+t_env	**get_env_address();
 #endif

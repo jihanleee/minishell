@@ -39,6 +39,7 @@ SRCS		=	./srcs/parser.c \
 				./srcs/builtins/pwd.c \
 				./srcs/builtins/unset.c \
 				./srcs/builtins/cd.c \
+				./srcs/env_var.c
 				# change or add files if needed
 OBJS		= ${SRCS:.c=.o}
 
