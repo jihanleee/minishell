@@ -19,7 +19,7 @@ void	error_exit(char *str, int exit_status, t_job *job)
 	exit(exit_status);
 }
 
-char	**bin_path(char **envp, t_job *job)
+char	**bin_path(t_job *job)
 {
 	t_env	*env;
 	int		i;
@@ -58,14 +58,14 @@ char	*file_path(char *cmd)
 	}
 }
 
-char	*find_cmd_path(char *cmd, char **envp, t_job *job)
+char	*find_cmd_path(char *cmd, t_job *job)
 {
 	int		i;
 	char	*slashed;
 	char	*withcmd;
 	char	**path;
 
-	path = bin_path(envp, job);
+	path = bin_path(job);
 	i = 0;
 	while (path[i])
 	{

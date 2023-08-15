@@ -136,19 +136,19 @@ void		sig_handler(int signum, siginfo_t *info, void *context);
 int			sigaction_set(void);
 
 /* cd.c */
-int			ft_cd(t_job **lst, char **env, int fd);
+int			ft_cd(t_job **lst, int fd);
 
 /* echo.c */
 int			get_length(char *str);
-void		ft_echo(t_job *current, char **env, int fd);
+void		ft_echo(t_job *current, int fd);
 
 /* env.c */
-void		ft_env(t_job **lst, char **envp, int fd);
+void		ft_env(t_job **lst, int fd);
 
 /* exit.c */
 int			check_int(char *arg);
 int			get_exit_num(t_job current);
-int			ft_exit(t_job **lst, char **env, int fd);
+int			ft_exit(t_job **lst, int fd);
 
 /* export.c */
 int			first_is_valid(char c);
@@ -156,30 +156,31 @@ int			middle_is_valid(char c);
 void		export_combined(char **combine);
 int			get_block_count(t_job **lst);
 int			fill_blocks(char **combine, t_job **lst);
-int			ft_export(t_job **lst, char **env, int fd);
+int			ft_export(t_job **lst, int fd);
 
 /* pwd.c */
-int			ft_pwd(t_job **lst, char **env, int fd);
+int			ft_pwd(t_job **lst, int fd);
 
 /* unset.c */
-//void	delete_line(char **env, char *string);
-//void	ft_unset(t_job **lst, char **env, int fd);
-//int			ft_unset(t_job **lst, char **env, int fd);
-void	ft_unset(t_job **lst, char **envp, int fd);
+//void	delete_line(char *string);
+//void	ft_unset(t_job **lst, int fd);
+//int			ft_unset(t_job **lst, int fd);
+void	ft_unset(t_job **lst, int fd);
 
 /*execution*/
 void		free_arrays(char **str);
 void		error_exit(char *str, int exit_status, t_job *job);
-char		**bin_path(char **envp, t_job *job);
+char		**bin_path(t_job *job);
 char		*file_path(char *cmd);
-char		*find_cmd_path(char *cmd, char **envp, t_job *job);
+char		*find_cmd_path(char *cmd, t_job *job);
 char		**get_argv(t_job *jobs);
 int			redirect_fds(t_job *job);
-void		non_builtin_child(t_job *job, char **envp);
-int			exec_builtin(t_job *cmd_line, char **env, int fd);
-void		builtin(t_job *job, char **envp);
+void		non_builtin_child(t_job *job);
+int			exec_builtin(t_job *cmd_line, int fd);
+void		builtin(t_job *job);
 int			check_builtin(char *cmd);
-void		execute_jobs(t_job *jobs, char **envp);
+void		execute_jobs(t_job *jobs);
+char		**get_envp();
 
 /*env_var*/
 void	init_env_var(char **envp);

@@ -1,52 +1,55 @@
 #include "minishell.h"
 
-void	non_builtin_child(t_job *job, char **envp)
+void	non_builtin_child(t_job *job)
 {
 	pid_t	cpid;
 	char	*cmd_path;
 	char	**argv;
+	char	**envp;
 
 	cpid = fork();
 	if (cpid == 0)
 	{
 		close(job->pipefd[0]);
 		redirect_fds(job);
-		if (ft_strchr(job->cmd, '/') || job->cmd[0] == '~')
+		if (ft_strchr(job->cmd, '/'))
 			cmd_path = file_path(job->cmd);
 		else
-			cmd_path = find_cmd_path(job->cmd, envp, job);
+			cmd_path = find_cmd_path(job->cmd, job);
 		argv = get_argv(job);
 		if (!argv)
-			error_exit((free(cmd_path), "malloc error"), 1, job);
+			error_exit((free(cmd_path), "malloc error\n"), 1, job);
+		envp = get_envp();
+		if (!envp)
+			error_exit((free((free_arrays(envp),cmd_path)), "malloc error\n"), 1, job);
 		execve(cmd_path, argv, envp);
-		free(argv);
-		free(cmd_path);
+		free((free(cmd_path), (free_arrays(envp), argv)));
 		error_exit("execve error", errno, job);
 	}
 }
 
-int	exec_builtin(t_job *cmd_line, char **env, int fd)
+int	exec_builtin(t_job *cmd_line, int fd)
 {
 	g_exit_stat = 0;
 	if (ft_strncmp("pwd", cmd_line->cmd, 4) == 0)
-		ft_pwd(&cmd_line, env, fd);
+		ft_pwd(&cmd_line, fd);
 	else if (ft_strncmp("cd", cmd_line->cmd, 3) == 0)
-		ft_cd(&cmd_line, env, fd);
+		ft_cd(&cmd_line, fd);
 	else if (ft_strncmp("echo", cmd_line->cmd, 5) == 0)
-		ft_echo(cmd_line, env, fd);
+		ft_echo(cmd_line, fd);
 		//ft_echo(&cmd_line, env, fd);
 	else if (ft_strncmp("env", cmd_line->cmd, 4) == 0)
-		ft_env(&cmd_line, env, fd);
+		ft_env(&cmd_line, fd);
 	else if (ft_strncmp("export", cmd_line->cmd, 7) == 0)
-		ft_export(&cmd_line, env, fd);
+		ft_export(&cmd_line, fd);
 	else if (ft_strncmp("unset", cmd_line->cmd, 6) == 0)
-		ft_unset(&cmd_line, env, fd);
+		ft_unset(&cmd_line, fd);
 	else if (ft_strncmp("exit", cmd_line->cmd, 5) == 0)
-		ft_exit(&cmd_line, env, fd);
+		ft_exit(&cmd_line, fd);
 	return (0);
 }
 
-void	builtin(t_job *job, char **envp)
+void	builtin(t_job *job)
 {
 	int		outfd;
 
@@ -58,7 +61,7 @@ void	builtin(t_job *job, char **envp)
 		outfd = job->pipefd[1];
 	else if (!job->next)
 		outfd = 1;
-	exec_builtin(job, envp, outfd);
+	exec_builtin(job, outfd);
 }
 
 int	check_builtin(char *cmd)
@@ -73,7 +76,7 @@ int	check_builtin(char *cmd)
 	return (0);
 }
 
-void	execute_jobs(t_job *jobs, char **envp)
+void	execute_jobs(t_job *jobs)
 {
 	t_job	*current;
 	int		stat;
@@ -86,11 +89,11 @@ void	execute_jobs(t_job *jobs, char **envp)
 		if (pipe(current->pipefd) < 0)
 			perror("pipe");
 		if (current->cmd && check_builtin(current->cmd))
-			builtin(current, envp);
+			builtin(current);
 		else if (current->cmd)
 		{
 			n_child++;
-			non_builtin_child(current, envp);
+			non_builtin_child(current);
 		}
 		close(current->pipefd[1]);
 		if (current->prev)

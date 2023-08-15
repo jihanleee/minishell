@@ -1,5 +1,30 @@
 #include "minishell.h"
 
+char	**get_envp()
+{
+	t_env	*env;
+	t_env	*fst;
+	int		i;
+	char	**result;
+	i = 0;
+	env = *get_env_address();
+	fst = env;
+	while (env)
+	{
+		env = env->next;
+		i++;
+	}
+	result = (char **)calloc(i + 1, sizeof (char *));
+	i = 0;
+	while (fst)
+	{
+		result[i] = ft_strdup(fst->str);
+		fst = fst->next;
+		i++;
+	}
+	return (result);
+}
+
 char	**get_argv(t_job *jobs)
 {
 	char	**result;
