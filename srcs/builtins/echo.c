@@ -34,7 +34,7 @@ int	print_args(t_job *current, int i, int fd)
 	}
 }
 
-void	ft_echo(t_job *current, char **env, int fd)
+void	ft_echo(t_job *current, int fd)
 {
 	int		i;
 	int		j;

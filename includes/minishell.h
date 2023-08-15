@@ -165,6 +165,7 @@ int			ft_pwd(t_job **lst, int fd);
 //void	delete_line(char *string);
 //void	ft_unset(t_job **lst, int fd);
 //int			ft_unset(t_job **lst, int fd);
+int		unset_strncmp(const char *s1, const char *s2, size_t n);
 void	ft_unset(t_job **lst, int fd);
 
 /*execution*/

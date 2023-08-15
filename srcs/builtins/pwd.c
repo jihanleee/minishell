@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int	ft_pwd(t_job **lst, char **env, int fd)
+int	ft_pwd(t_job **lst, int fd)
 {
 	t_job	*current;
 	char	*print;

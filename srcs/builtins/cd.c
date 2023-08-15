@@ -1,7 +1,7 @@
 #include "minishell.h"
 
 
-static char	*change_directory(char **env, char *new, int fd)
+static char	*change_directory(char *new, int fd)
 {
 	int i;
 
@@ -35,8 +35,8 @@ static int invalid_cd(char *path)
 	}
 }
 
-
-static void	cd_unset(char **env, char *arg)
+/*
+static void	cd_unset(char *arg)
 {
 	int		i;
 
@@ -52,8 +52,9 @@ static void	cd_unset(char **env, char *arg)
 		i++;
 	}
 }
-
-static void	cd_export(char **env, char *arg, char *path)
+*/
+/*
+static void	cd_export(char *arg, char *path)
 {
 	int length;
 	int i;
@@ -80,8 +81,66 @@ static void	cd_export(char **env, char *arg, char *path)
 		x++;
 	}
 }
+*/
 
-static void	cd_old_path(t_job *current, char **env)
+static void	cd_unset(char *arg)
+{
+	t_env	**env;
+	t_env	*current;
+	t_env	*next;
+
+	env = get_env_address();
+	current = (*env);
+
+	if (current && current->str)
+	{
+		if (current && unset_strncmp(current->str, arg, get_length(arg) == 0))
+		{
+			next = current->next;
+			printf("\tdeleting/freeing %s\n", current->str);
+			//free(current->str);
+			//free(current->next);
+			//free(current); //
+			current = next;
+		}
+	}
+	while (current)
+	{
+		next = current->next;
+		//printf("%s\n", current->str);
+		//length = get_length(temp->arg[0]);
+		//printf("\tcurrent env line: %s\n", current->str);
+		if (next && unset_strncmp(next->str, arg, get_length(arg) == 0))
+		{
+			//printf("found it:\n\tcurrnet line is\n\t\t\t%s\n", next->str);
+			current->next = current->next->next;
+			printf("\tdeleting/freeing %s\n", next->str);
+			//free(next->str);
+			//free(next->next);
+			//free(next);
+			break ;
+		}
+		current = current->next;
+	}
+}
+
+
+static void	cd_export(char *arg, char *path)
+{
+	t_env	**env;
+	t_env	*current;
+
+	env = get_env_address();
+	current = (*env);
+	cd_unset(arg);
+	while (current && current->next != NULL)
+		current = current->next;
+	current->next = (t_env *)ft_calloc(1, sizeof(t_env));
+	current->next->str = ft_strdup(ft_strjoin(arg, path));
+	current->next->next = NULL;
+}
+
+static void	cd_old_path(t_job *current)
 {
 	char	*new;
 	char	*cwd;
@@ -89,6 +148,14 @@ static void	cd_old_path(t_job *current, char **env)
 	new = find_param("OLDPWD");
 	if (access(new, X_OK) == 0)
 	{
+		cwd = getcwd(NULL, 0);
+		cd_export("OLDPWD=", cwd);
+		free(cwd);
+		chdir(new);
+		cwd = getcwd(NULL, 0);
+		cd_export("PWD=", cwd);
+		free(cwd);
+		/*
 		cd_unset(env, "OLDPWD=");
 		cwd = getcwd(NULL, 0);
 		cd_export(env, "OLDPWD=", cwd);
@@ -98,6 +165,7 @@ static void	cd_old_path(t_job *current, char **env)
 		cwd = getcwd(NULL, 0);
 		cd_export(env, "OLDPWD=", cwd);
 		free(cwd);
+		*/
 	}
 	else
 	{
@@ -108,12 +176,20 @@ static void	cd_old_path(t_job *current, char **env)
 	free(new);
 }
 
-static void cd_normal_path(t_job *current, char **env)
+static void cd_normal_path(t_job *current)
 {
 	char	*cwd;
 
 	if (access(current->arg[0], X_OK) == 0)
 	{
+		cwd = getcwd(NULL, 0);
+		cd_export("OLDPWD=", cwd);
+		free(cwd);
+		chdir(current->arg[0]);
+		cwd = getcwd(NULL, 0);
+		cd_export("PWD=", cwd);
+		free(cwd);
+		/*
 		cd_unset(env, "OLDPWD=");
 		cwd = getcwd(NULL, 0);
 		cd_export(env, "OLDPWD=", cwd);
@@ -123,6 +199,7 @@ static void cd_normal_path(t_job *current, char **env)
 		cwd = getcwd(NULL, 0);
 		cd_export(env, "OLDPWD=", cwd);
 		free(cwd);
+		*/
 	}
 	else
 	{
@@ -132,7 +209,7 @@ static void cd_normal_path(t_job *current, char **env)
 	}
 }
 
-static void	cd_to_home(t_job *current, char **env)
+static void	cd_to_home(t_job *current)
 {
 	char	*new;
 	char	*cwd;
@@ -140,6 +217,13 @@ static void	cd_to_home(t_job *current, char **env)
 	new = getenv("HOME");
 	if (access(new, X_OK) == 0)
 	{
+		cwd = getcwd(NULL, 0);
+		cd_export("OLDPWD=", cwd);
+		free(cwd);
+		chdir(new);
+		cd_export("PWD=", cwd);
+		free(cwd);
+		/*
 		cd_unset(env, "OLDPWD=");
 		cwd = getcwd(NULL, 0);
 		cd_export(env, "OLDPWD=", cwd);
@@ -149,6 +233,7 @@ static void	cd_to_home(t_job *current, char **env)
 		cwd = getcwd(NULL, 0);
 		cd_export(env, "PWD=", cwd);
 		free(cwd);
+		*/
 	}
 	else
 	{
@@ -159,13 +244,13 @@ static void	cd_to_home(t_job *current, char **env)
 	//free(new);
 }
 
-static void	cd_absolute_path(t_job *current, char **env)
+static void	cd_absolute_path(t_job *current)
 {
 	char	*new;
 	char	*old;
 
 	if (!current->arg[0][1])
-		cd_to_home(current, env);
+		cd_to_home(current);
 	else if (current->arg[0][1] == '/')
 	{
 		old = getcwd(NULL, 0);
@@ -173,11 +258,16 @@ static void	cd_absolute_path(t_job *current, char **env)
 		new = ft_strjoin(new, &current->arg[0][1]);
 		if (access(new, X_OK) == 0)
 		{
+			cd_export("OLDPWD=", old);
+			chdir(new);
+			cd_export("PWD=", new);
+			/*
 			cd_unset(env, "OLDPWD=");
 			cd_export(env, "OLDPWD=", old);
 			chdir(new);
 			cd_unset(env, "PWD=");
 			cd_export(env, "PWD=", new);
+			*/
 		}
 		else
 		{
@@ -190,7 +280,7 @@ static void	cd_absolute_path(t_job *current, char **env)
 	}
 }
 
-int	ft_cd(t_job **lst, char **env, int fd)
+int	ft_cd(t_job **lst, int fd)
 {
 	t_job	*current;
 	char	*path;
@@ -201,11 +291,11 @@ int	ft_cd(t_job **lst, char **env, int fd)
 	if (current->arg && current->arg[1])
 		return (write(fd, "bash: cd: too many arguments\n", 29), 1);
 	if (!current->arg || (current->arg[0][0] == '/' && !current->arg[0][1]))
-		cd_to_home(current, env);	
+		cd_to_home(current);	
 	else if (current->arg[0][0] == '-' && !current->arg[0][1])
-		cd_old_path(current, env);
+		cd_old_path(current);
 	else if (current->arg[0][0] == '~' && (!current->arg[0][1] || current->arg[0][1] == '/'))
-		cd_absolute_path(current, env);
+		cd_absolute_path(current);
 	else
 	{
 		if (invalid_cd(current->arg[0]) == 1)
@@ -214,7 +304,7 @@ int	ft_cd(t_job **lst, char **env, int fd)
 			write(2, current->arg[0], get_length(current->arg[0]));
 			write(2, ": No such file or directory\n", 28);
 		}
-		cd_normal_path(current, env);
+		cd_normal_path(current);
 	}
 	return (0);
 }

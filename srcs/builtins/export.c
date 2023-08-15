@@ -4,7 +4,7 @@ int	middle_is_valid(char c)
 {
 	//0 = no problem
 	//1 = problem
-	if (c == '=' || c == '_' || c == '-' || c == '\\' || c == ' ' || c == '|')
+	if (c == '=' || c == '_') //c == '-' || c == '\\' || c == ' ' || ||  c == '|'
 		return (0);
 	else if (c == '(' || c == ')')
 		return (0);
@@ -202,7 +202,7 @@ static char	*get_command(char *line, int end)
 	return (result);
 }
 
-
+/*
 static void	export_unset(char **env, char *arg)
 {
 	int		length;
@@ -224,8 +224,46 @@ static void	export_unset(char **env, char *arg)
 		}
 	}
 }
+*/
 
-void	read_blocks(char **combine, char **env)
+static void	export_unset(char *key)
+{
+	t_env	**env;
+	t_env	*current;
+	t_env	*next;
+	t_job	*temp;
+	int		i;
+	//int		length;
+
+	env = get_env_address();
+	i = 0;
+	current = (*env);
+	if (current && current->str)
+	{
+		if (current && unset_strncmp(current->str, key, get_length(key)) == 0)
+		{
+			next = current->next;
+			printf("\tdeleting/freeing %s\n", current->str);
+			current = next;
+		}
+	}
+	while (current)
+	{
+		next = current->next;
+		if (next && unset_strncmp(next->str, key, get_length(key) == 0))
+		{
+			current->next = current->next->next;
+			printf("\tdeleting/freeing %s\n", next->str);
+			break ;
+		}
+		current = current->next;
+	}
+	i++;
+}
+
+
+
+void	read_blocks(char **combine)
 {
 	int i;
 	int j;
@@ -252,13 +290,13 @@ void	read_blocks(char **combine, char **env)
 		printf("before get_command is called\n");
 		arg = get_command(combine[i], end);
 		//printf("looking for var %s in env\n", arg);
-		export_unset(env, arg);
+		export_unset(arg);
 		free(arg);
 		i++;
 	}
 }
 
-int	add_blocks(char **combine, char **envp)
+int	add_blocks(char **combine)
 {
 	t_env	**env;
 	t_env	*current;
@@ -296,7 +334,7 @@ void	free_combine(char **combine)
 }
 */
 
-int	ft_export(t_job **lst, char **env, int fd)
+int	ft_export(t_job **lst, int fd)
 {
 	t_job	*current;
 	char	**combine;
@@ -313,7 +351,7 @@ int	ft_export(t_job **lst, char **env, int fd)
 		return (-1);	//error
 	}
 	if (current->arg[0] == NULL) //export만 들어오면
-		ft_env(lst, env, fd);
+		ft_env(lst, fd);
 	else
 	{
 		count = get_block_count(lst);
@@ -331,8 +369,8 @@ int	ft_export(t_job **lst, char **env, int fd)
 				free(combine);
 				return (-1);
 			}
-			read_blocks(combine, env);
-			add_blocks(combine, env);
+			read_blocks(combine);
+			add_blocks(combine);
 			while (count > 0)
 					free(combine[count--]);
 			free(combine);

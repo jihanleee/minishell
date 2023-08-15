@@ -38,13 +38,13 @@ int	cnt_arg(t_job *current)
 	return (cnt);
 }
 
-int	ft_exit(t_job **lst, char **env, int fd)
+int	ft_exit(t_job **lst, int fd)
 {
 	t_job	*current;
 	int		exit_num;
 	int		arg_cnt;
 
-	(void)env;
+	//(void)env;
 	exit_num = 0;
 	current = *lst;
 	arg_cnt = cnt_arg(current);

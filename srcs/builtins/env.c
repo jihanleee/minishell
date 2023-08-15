@@ -1,13 +1,13 @@
 #include "minishell.h"
 
-void	ft_env(t_job **lst, char **envp, int fd)
+void	ft_env(t_job **lst, int fd)
 {
 	int		i;
 	t_job	*job;
 	t_env	**env;
 	t_env	*current;
 
-	printf("inside export-add blocks function\n");
+	//printf("inside export-add blocks function\n");
 	job = *lst;
 	i = 0;
 	if (job->arg)
