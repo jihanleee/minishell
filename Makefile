@@ -32,15 +32,16 @@ SRCS		=	./srcs/parser.c \
 				./srcs/tokenization/create_tokens.c \
 				./srcs/tokenization/token_substr_len.c \
 				./srcs/tokenization/token_utils.c \
-				./srcs/builtins/echo.c \
-				./srcs/builtins/env.c \
-				./srcs/builtins/exit.c \
-				./srcs/builtins/export.c \
-				./srcs/builtins/pwd.c \
-				./srcs/builtins/unset.c \
-				./srcs/builtins/cd.c \
+				./srcs/builtins/echo/echo.c \
+				./srcs/builtins/env/env.c \
+				./srcs/builtins/exit/exit.c \
+				./srcs/builtins/export/export.c \
+				./srcs/builtins/pwd/pwd.c \
+				./srcs/builtins/unset/unset.c \
+				./srcs/builtins/cd/cd.c \
+				./srcs/builtins/cd/cd_utils.c \
 				./srcs/env_var.c
-				# change or add files if needed
+
 OBJS		= ${SRCS:.c=.o}
 
 all: ${NAME}

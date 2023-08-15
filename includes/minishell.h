@@ -138,8 +138,15 @@ int			sigaction_set(void);
 /* cd.c */
 int			ft_cd(t_job **lst, int fd);
 
+/* cd_utils.c */
+int		invalid_cd(char *path);
+int		cd_strncmp(const char *s1, const char *s2, size_t n);
+void	cd_unset(char *arg);
+void	cd_export(char *arg, char *path);
+
 /* echo.c */
 int			get_length(char *str);
+int			print_args(t_job *current, int i, int fd);
 void		ft_echo(t_job *current, int fd);
 
 /* env.c */
@@ -157,15 +164,14 @@ void		export_combined(char **combine);
 int			get_block_count(t_job **lst);
 int			fill_blocks(char **combine, t_job **lst);
 int			ft_export(t_job **lst, int fd);
+void	export_error(char *str);
 
 /* pwd.c */
 int			ft_pwd(t_job **lst, int fd);
 
 /* unset.c */
-//void	delete_line(char *string);
-//void	ft_unset(t_job **lst, int fd);
-//int			ft_unset(t_job **lst, int fd);
 int		unset_strncmp(const char *s1, const char *s2, size_t n);
+t_env	*check_first(t_env *env, char *value);
 void	ft_unset(t_job **lst, int fd);
 
 /*execution*/

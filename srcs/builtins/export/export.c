@@ -72,7 +72,6 @@ int	get_block_count(t_job **lst)
 		}
 		i++;
 	}
-	//printf("number of blocks: %d\n", count);
 	return (count);
 }
 
@@ -89,8 +88,8 @@ int	malloc_combine_lines(char **combine, t_job **lst)
 	flag = 0;
 	count = 0;
 	length = 0;
-	i = 0;
-	while (current->arg[i])
+	i = -1;
+	while (current->arg[++i])
 	{
 		j = 0;
 		while (current->arg[i][j])
@@ -104,18 +103,20 @@ int	malloc_combine_lines(char **combine, t_job **lst)
 		{
 			flag = 0;
 			combine[count] = (char*)ft_calloc(length + 1, sizeof(char));
-			//if (!combine[count])
-			//	return (-1);
 			count++;
-			length = 0;
 		}
-		if (flag == 0)
-			length = 0;
-		i++;
+		length = 0;
 	}
 	return (0);
-
 }
+
+void	export_error(char *str)
+{
+	write(2, "bash: export: \'", 15);//
+	write(2, str, get_length(str));//
+	write(2, "\': not a valid identifier\n", 26);//
+}
+
 
 int	fill_blocks(char **combine, t_job **lst)
 {
@@ -143,12 +144,7 @@ int	fill_blocks(char **combine, t_job **lst)
 			if (flag == 0 && current->arg[i][j] == '=' && j == 0)
 				combine[count][index++] = ' ';
 			if (middle_is_valid(current->arg[i][j]) == 1)
-			{
-				write(2, "bash: export: \'", 15);//
-				write(2, current->arg[i], get_length(current->arg[i]));//
-				write(2, "\': not a valid identifier\n", 26);//
-				return (1);	//error, invalid identifier
-			}
+				return (export_error(current->arg[i]), 1);
 			if (current->arg[i][j] == '=')
 				flag = 1;
 			if (middle_is_valid(current->arg[i][j]) == 0)
@@ -178,10 +174,7 @@ int	fill_blocks(char **combine, t_job **lst)
 	}
 	i = 0;
 	while (combine[i])
-	{
-		//printf("combine: index %d has %s\n", i, combine[i]);
 		i++;
-	}
 	return (0);
 }
 
@@ -202,67 +195,32 @@ static char	*get_command(char *line, int end)
 	return (result);
 }
 
-/*
-static void	export_unset(char **env, char *arg)
-{
-	int		length;
-	int		i;
-
-	i = 0;
-	if (arg)
-	{
-		length = get_length(arg);
-		while (env[i])
-		{
-			if (ft_strncmp(env[i], arg, length) == 0)
-			{
-				env[i] = NULL;
-				free(env[i]);
-				return ;
-			}
-			i++;
-		}
-	}
-}
-*/
-
-
 static void	export_unset(char *key)
 {
 	t_env	**env;
 	t_env	*current;
 	t_env	*next;
 	t_job	*temp;
-	//int		length;
 
 	env = get_env_address();
 	current = (*env);
-	//printf("inside export unset\n");
-	
 	if (current && current->str)
 	{
-		//printf("currently looking at line \n\t%s\n", current->str);
 		if (current && unset_strncmp(current->str, key, get_length(key)) == 0)
 		{
-			//printf("\tdeleting/freeing %s\n", current->str);
 			next = current->next;
 			current = next;
 		}
-		//printf("moving to next line of env\n");
 	}
 	while (current)
 	{
 		next = current->next;
-		//printf("currently looking at line \n\t%s\n", next->str);
-		//printf("key has length %d\n", get_length(key));
 		if (next && unset_strncmp(next->str, key, get_length(key)) == 0)
 		{
-			//printf("\tdeleting/freeing %s\n", next->str);
 			current->next = current->next->next;
 			break ;
 		}
 		current = next;
-		//printf("moving to next line of env\n");
 	}
 }
 
@@ -280,21 +238,15 @@ void	read_blocks(char **combine)
 	while (combine[i])
 	{
 		j = 0;
-		//printf("block #%d:\n", i + 1);
 		while (combine[i][j])
 		{
-			//printf("\tcombine has char %c\n", combine[i][j]);
 			if (combine[i][j] == '=')
 			{
-				//printf("\t\tinside if statement\n");
 				end = j;
 			}
 			j++;
 		}
-		//printf("\n");
-		//printf("before get_command is called\n");
 		arg = get_command(combine[i], end);
-		//printf("looking for var %s in env\n", arg);
 		export_unset(arg);
 		free(arg);
 		i++;
@@ -308,7 +260,6 @@ int	add_blocks(char **combine)
 	t_env	*new;
 	int		i;
 
-	//printf("inside export-add blocks function\n");
 	env = get_env_address();
 	i = 0;
 	if (*env == NULL)
@@ -323,26 +274,11 @@ int	add_blocks(char **combine)
 	{
 		current->next = (t_env *)ft_calloc(1, sizeof (t_env));
 		current->next->str = ft_strdup(combine[i]);
-		//current->next->next = NULL;
 		current = current->next;
 		i++;
 	}
 	return (0);
 }
-
-/*
-void	free_combine(char **combine)
-{
-	int i;
-
-	i = 0;
-	while (combine[i])
-		i++;
-	while (i >= 0)
-		free(combine[i--]);
-	//free(combine);
-}
-*/
 
 int	ft_export(t_job **lst, int fd)
 {
@@ -357,7 +293,8 @@ int	ft_export(t_job **lst, int fd)
 		return (-1);
 	else if (current->arg == NULL) //?
 	{
-		printf("invalid identifier\n");
+		//ft_putstr_fd("invalid identifier\n", 2);
+		export_error("");
 		return (-1);	//error
 	}
 	if (current->arg[0] == NULL) //export만 들어오면
