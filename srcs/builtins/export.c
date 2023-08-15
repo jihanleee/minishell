@@ -310,15 +310,20 @@ int	add_blocks(char **combine)
 
 	//printf("inside export-add blocks function\n");
 	env = get_env_address();
+	i = 0;
+	if (*env == NULL)
+	{
+		*env = (t_env *)ft_calloc(1, sizeof(t_env));
+		(*env)->str = ft_strdup(combine[i++]);
+	}
 	current = (*env);
 	while (current && current->next != NULL)
 		current = current->next;
-	i = 0;
 	while (combine[i])
 	{
 		current->next = (t_env *)ft_calloc(1, sizeof (t_env));
 		current->next->str = ft_strdup(combine[i]);
-		current->next->next = NULL;
+		//current->next->next = NULL;
 		current = current->next;
 		i++;
 	}
@@ -369,16 +374,12 @@ int	ft_export(t_job **lst, int fd)
 			malloc_combine_lines(combine, lst);
 			if (fill_blocks(combine, lst) == 1) //fill blocks gave error
 			{
-				while (count > 0)
-					free(combine[count--]);
-				free(combine);
+				free_arrays(combine);
 				return (-1);
 			}
 			read_blocks(combine);
 			add_blocks(combine);
-			while (count > 0)
-					free(combine[count--]);
-			free(combine);
+			free_arrays(combine);
 			return (1);
 		}
 	}
