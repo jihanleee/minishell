@@ -14,7 +14,7 @@ char	**get_envp()
 		env = env->next;
 		i++;
 	}
-	result = (char **)calloc(i + 1, sizeof (char *));
+	result = (char **)ft_calloc(i + 1, sizeof (char *));
 	i = 0;
 	while (fst)
 	{
