@@ -114,8 +114,8 @@ static void	cd_unset(char *arg)
 		{
 			next = current->next;
 			//printf("\tdeleting/freeing %s\n", current->str);
-			//free(current->str);
-			//free(current->next);
+			free(current->str);
+			free(current->next);
 			//free(current); //
 			current = next;
 		}
@@ -131,12 +131,13 @@ static void	cd_unset(char *arg)
 			//printf("found it:\n\tcurrnet line is\n\t\t\t%s\n", next->str);
 			current->next = current->next->next;
 			//printf("\tdeleting/freeing %s\n", next->str);
-			//free(next->str);
-			//free(next->next);
+			free(next->str);
+			free(next);
 			//free(next);
 			break ;
 		}
-		current = next;
+		//current = next;
+		current = current->next;
 	}
 }
 
@@ -145,7 +146,7 @@ static void	cd_export(char *arg, char *path)
 {
 	t_env	**env;
 	t_env	*current;
-	char	new;
+	//char	new;
 
 	env = get_env_address();
 	current = (*env);
@@ -154,9 +155,10 @@ static void	cd_export(char *arg, char *path)
 	while (current && current->next != NULL)
 		current = current->next;
 	current->next = (t_env *)ft_calloc(1, sizeof(t_env));
-	new = ft_strjoin(arg, path);
-	current->next->str = ft_strdup(new);
-	free(new);
+	current->next->str = ft_strjoin(arg, path);
+	//current->next->str = ft_strdup(arg);
+	//current->next->str = ft_strjoin(current->next->str, path);
+	//free(new);
 	current->next->next = NULL;
 }
 
@@ -238,9 +240,11 @@ static void	cd_to_home(t_job *current)
 	if (access(new, X_OK) == 0)
 	{
 		cwd = getcwd(NULL, 0);
+		ft_printf("\tcwd = %s\n", cwd);
 		cd_export("OLDPWD=", cwd);
 		free(cwd);
 		chdir(new);
+		cwd = getcwd(NULL, 0);
 		cd_export("PWD=", cwd);
 		free(cwd);
 		/*
