@@ -83,6 +83,22 @@ static void	cd_export(char *arg, char *path)
 }
 */
 
+int	cd_strncmp(const char *s1, const char *s2, size_t n)
+{
+	size_t	i;
+
+	i = 0;
+	//printf("size of comparison: %d\n", n);
+	while ((s1[i] || s2[i]) && i < n)
+	{
+		//printf("comparing %c and %c\n", s1[i], s2[i]);
+		if (s1[i] != s2[i])
+			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+		i++;
+	}
+	return (0);
+}
+
 static void	cd_unset(char *arg)
 {
 	t_env	**env;
@@ -91,13 +107,13 @@ static void	cd_unset(char *arg)
 
 	env = get_env_address();
 	current = (*env);
-
+	//printf("\treceived %s to look for\n", arg);
 	if (current && current->str)
 	{
-		if (current && unset_strncmp(current->str, arg, get_length(arg) == 0))
+		if (current && cd_strncmp(current->str, arg, get_length(arg)) == 0)
 		{
 			next = current->next;
-			printf("\tdeleting/freeing %s\n", current->str);
+			//printf("\tdeleting/freeing %s\n", current->str);
 			//free(current->str);
 			//free(current->next);
 			//free(current); //
@@ -110,17 +126,17 @@ static void	cd_unset(char *arg)
 		//printf("%s\n", current->str);
 		//length = get_length(temp->arg[0]);
 		//printf("\tcurrent env line: %s\n", current->str);
-		if (next && unset_strncmp(next->str, arg, get_length(arg) == 0))
+		if (next && cd_strncmp(next->str, arg, get_length(arg)) == 0)
 		{
 			//printf("found it:\n\tcurrnet line is\n\t\t\t%s\n", next->str);
 			current->next = current->next->next;
-			printf("\tdeleting/freeing %s\n", next->str);
+			//printf("\tdeleting/freeing %s\n", next->str);
 			//free(next->str);
 			//free(next->next);
 			//free(next);
 			break ;
 		}
-		current = current->next;
+		current = next;
 	}
 }
 
@@ -129,14 +145,18 @@ static void	cd_export(char *arg, char *path)
 {
 	t_env	**env;
 	t_env	*current;
+	char	new;
 
 	env = get_env_address();
 	current = (*env);
+	//printf("trying to find %s\n", arg);
 	cd_unset(arg);
 	while (current && current->next != NULL)
 		current = current->next;
 	current->next = (t_env *)ft_calloc(1, sizeof(t_env));
-	current->next->str = ft_strdup(ft_strjoin(arg, path));
+	new = ft_strjoin(arg, path);
+	current->next->str = ft_strdup(new);
+	free(new);
 	current->next->next = NULL;
 }
 

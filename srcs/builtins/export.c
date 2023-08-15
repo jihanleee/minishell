@@ -72,7 +72,7 @@ int	get_block_count(t_job **lst)
 		}
 		i++;
 	}
-	printf("number of blocks: %d\n", count);
+	//printf("number of blocks: %d\n", count);
 	return (count);
 }
 
@@ -179,7 +179,7 @@ int	fill_blocks(char **combine, t_job **lst)
 	i = 0;
 	while (combine[i])
 	{
-		printf("combine: index %d has %s\n", i, combine[i]);
+		//printf("combine: index %d has %s\n", i, combine[i]);
 		i++;
 	}
 	return (0);
@@ -226,39 +226,44 @@ static void	export_unset(char **env, char *arg)
 }
 */
 
+
 static void	export_unset(char *key)
 {
 	t_env	**env;
 	t_env	*current;
 	t_env	*next;
 	t_job	*temp;
-	int		i;
 	//int		length;
 
 	env = get_env_address();
-	i = 0;
 	current = (*env);
+	//printf("inside export unset\n");
+	
 	if (current && current->str)
 	{
+		//printf("currently looking at line \n\t%s\n", current->str);
 		if (current && unset_strncmp(current->str, key, get_length(key)) == 0)
 		{
+			//printf("\tdeleting/freeing %s\n", current->str);
 			next = current->next;
-			printf("\tdeleting/freeing %s\n", current->str);
 			current = next;
 		}
+		//printf("moving to next line of env\n");
 	}
 	while (current)
 	{
 		next = current->next;
-		if (next && unset_strncmp(next->str, key, get_length(key) == 0))
+		//printf("currently looking at line \n\t%s\n", next->str);
+		//printf("key has length %d\n", get_length(key));
+		if (next && unset_strncmp(next->str, key, get_length(key)) == 0)
 		{
+			//printf("\tdeleting/freeing %s\n", next->str);
 			current->next = current->next->next;
-			printf("\tdeleting/freeing %s\n", next->str);
 			break ;
 		}
-		current = current->next;
+		current = next;
+		//printf("moving to next line of env\n");
 	}
-	i++;
 }
 
 
@@ -275,19 +280,19 @@ void	read_blocks(char **combine)
 	while (combine[i])
 	{
 		j = 0;
-		printf("block #%d:\n", i + 1);
+		//printf("block #%d:\n", i + 1);
 		while (combine[i][j])
 		{
-			printf("\tcombine has char %c\n", combine[i][j]);
+			//printf("\tcombine has char %c\n", combine[i][j]);
 			if (combine[i][j] == '=')
 			{
-				printf("\t\tinside if statement\n");
+				//printf("\t\tinside if statement\n");
 				end = j;
 			}
 			j++;
 		}
-		printf("\n");
-		printf("before get_command is called\n");
+		//printf("\n");
+		//printf("before get_command is called\n");
 		arg = get_command(combine[i], end);
 		//printf("looking for var %s in env\n", arg);
 		export_unset(arg);
@@ -311,7 +316,7 @@ int	add_blocks(char **combine)
 	i = 0;
 	while (combine[i])
 	{
-		current->next = (t_env *)calloc(1, sizeof (t_env));
+		current->next = (t_env *)ft_calloc(1, sizeof (t_env));
 		current->next->str = ft_strdup(combine[i]);
 		current->next->next = NULL;
 		current = current->next;

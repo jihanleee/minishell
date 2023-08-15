@@ -23,7 +23,7 @@ void	clear_env()
 	t_env	*current;
 	t_env	*next;
 
-	current = *get_env_address();
+	current = *get_env_address(); //unconditonal jump 나와서 추가
 	while (current)
 	{
 		next = current->next;
@@ -32,6 +32,7 @@ void	clear_env()
 		free(current);
 		current = next;
 	}
+	
 }
 
 void	init_env_var(char **envp)
@@ -43,13 +44,13 @@ void	init_env_var(char **envp)
 	env = get_env_address();
 	if (!envp[0])
 		return 0;
-	*env = (t_env *)calloc(1, sizeof (t_env));
+	*env = (t_env *)ft_calloc(1, sizeof (t_env));
 	(*env)->str = ft_strdup(envp[0]);
 	current = (*env);
 	i = 1;
 	while (envp[i])
 	{
-		current->next = (t_env *)calloc(1, sizeof (t_env));
+		current->next = (t_env *)ft_calloc(1, sizeof (t_env));
 		current->next->str = ft_strdup(envp[i]);
 		current = current->next;
 		i++;
