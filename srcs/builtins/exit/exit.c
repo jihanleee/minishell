@@ -61,6 +61,7 @@ void	exit_error_cases(int arg_cnt, t_job *current)
 		g_exit_stat = 2;
 	}
 }
+
 int	ft_exit(t_job **lst, int fd)
 {
 	t_job	*current;

@@ -43,8 +43,8 @@ void	ft_unset(t_job **lst, int fd)
 
 	env = get_env_address();
 	temp = *lst;
-	i = 0;
-	while (temp->arg[i])
+	i = -1;
+	while (temp->arg[++i])
 	{
 		current = check_first(*env, temp->arg[i]);
 		while (current)
@@ -59,6 +59,5 @@ void	ft_unset(t_job **lst, int fd)
 			}
 			current = current->next;
 		}
-		i++;
 	}
 }
