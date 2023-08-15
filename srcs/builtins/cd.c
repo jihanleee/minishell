@@ -237,7 +237,9 @@ static void	cd_to_home(t_job *current)
 	char	*cwd;
 
 	new = getenv("HOME");
-	if (access(new, X_OK) == 0)
+	if (!new)
+		write(2, "bash: HOME: No such file or directory\n", 38);
+	else if (access(new, X_OK) == 0)
 	{
 		cwd = getcwd(NULL, 0);
 		ft_printf("\tcwd = %s\n", cwd);
