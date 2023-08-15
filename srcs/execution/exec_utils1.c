@@ -47,14 +47,17 @@ char	**bin_path(t_job *job)
 	return (path);
 }
 
-char	*file_path(char *cmd)
+char	*file_path(char *cmd, t_job *job)
 {
 	if (access(cmd, X_OK) == 0)
 		return (ft_strdup(cmd));
 	else
 	{
 		perror(cmd);
-		exit(errno);
+		rl_clear_history();
+		clear_env();
+		clear_jobs(job);
+		exit(127);
 	}
 }
 

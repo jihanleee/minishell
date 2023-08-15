@@ -172,7 +172,7 @@ void	ft_unset(t_job **lst, int fd);
 void		free_arrays(char **str);
 void		error_exit(char *str, int exit_status, t_job *job);
 char		**bin_path(t_job *job);
-char		*file_path(char *cmd);
+char		*file_path(char *cmd, t_job *job);
 char		*find_cmd_path(char *cmd, t_job *job);
 char		**get_argv(t_job *jobs);
 int			redirect_fds(t_job *job);

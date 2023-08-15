@@ -1,20 +1,18 @@
 #include "minishell.h"
 
-char	*gnl_heredoc(bool hereq)
+char	*gnl_heredoc(bool hereq, char **line)
 {
-	char		*line;
 	t_lexeme	*lexemes;
 	t_lexeme	*current;
 	int			i;
 	int			j;
 
-	line = get_next_line(0);
-	if (hereq || !line)
-		return (line);
-	lexemes = new_lexeme(ft_strdup(line), 0);
-	split_expansions((free(line),lexemes));
+	if (hereq || !*line)
+		return (*line);
+	lexemes = new_lexeme(ft_strdup(*line), 0);
+	split_expansions((free(*line),lexemes));
 	replace_params(lexemes);
-	line = (char *)ft_calloc(lexemelen(lexemes, 0) + 1, sizeof (char));
+	*line = (char *)ft_calloc(lexemelen(lexemes, 0) + 1, sizeof (char));
 	read_lexemes(lexemes);
 	i = 0;
 	current = lexemes;
@@ -22,11 +20,11 @@ char	*gnl_heredoc(bool hereq)
 	{
 		j = 0;
 		while (current->str[j] && !(!current->p_found && current->exp))
-			line[i++] = current->str[j++];
+			(*line)[i++] = current->str[j++];
 		current = current->next;
 	}
 	clear_lexemes(&lexemes, free);
-	return (line);
+	return (*line);
 }
 
 void	create_heredoc(const char *delim, bool hereq)
@@ -37,8 +35,7 @@ void	create_heredoc(const char *delim, bool hereq)
 	fd = open("heredoc.tmp", O_RDWR | O_CREAT | O_TRUNC, 0777);
 	while (1)
 	{
-		ft_printf("heredoc> ");
-		line = gnl_heredoc(hereq);
+		line = ft_printf("heredoc> ") * 0 + get_next_line(0);
 		if (line == 0 || line[ft_strlen(line) - 1] != '\n')
 		{
 			if (line)
@@ -46,12 +43,13 @@ void	create_heredoc(const char *delim, bool hereq)
 			ft_putstr_fd("warning: heredoc delimeted by EOF\n", 2);
 			break ;
 		}
-		else if (ft_strncmp(line, delim, ft_strlen(line) - 1) == 0 \
+		if (ft_strncmp(line, delim, ft_strlen(line) - 1) == 0 \
 		&& (ft_strlen(line) - 1 == ft_strlen(delim)))
 		{
 			free(line);
 			break ;
 		}
+		gnl_heredoc(hereq, &line);
 		write(fd, line, ft_strlen(line));
 		free(line);
 	}

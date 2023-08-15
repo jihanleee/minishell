@@ -6,7 +6,7 @@
 /*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 15:43:31 by jihalee           #+#    #+#             */
-/*   Updated: 2023/07/04 00:11:01 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/08/15 13:25:16 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define LIBFT_H
 
 # include <string.h>
+# include <stdlib.h>
 # include "get_next_line.h"
 # include "ft_printf.h"
 

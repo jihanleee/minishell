@@ -6,17 +6,16 @@
 /*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 17:23:53 by jihalee           #+#    #+#             */
-/*   Updated: 2023/05/08 14:03:20 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/08/15 14:06:12 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
+#include "libft.h"
 
 static void	assign_nbr(char *result, int size, long nbr)
 {
 	if (nbr == 0)
 		result[0] = '0';
-	result[size] = '\0';
 	size--;
 	while (nbr)
 	{
@@ -56,7 +55,7 @@ char	*ft_itoa(int n)
 
 	size = count_size(n);
 	nbr = (long)n;
-	result = (char *)malloc(sizeof (char) * (size + 1));
+	result = (char *)ft_calloc(sizeof (char), (size + 1));
 	if (result == 0)
 		return (NULL);
 	if (nbr < 0)

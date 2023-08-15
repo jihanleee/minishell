@@ -13,7 +13,7 @@ void	non_builtin_child(t_job *job)
 		close(job->pipefd[0]);
 		redirect_fds(job);
 		if (ft_strchr(job->cmd, '/'))
-			cmd_path = file_path(job->cmd);
+			cmd_path = file_path(job->cmd, job);
 		else
 			cmd_path = find_cmd_path(job->cmd, job);
 		argv = get_argv(job);
