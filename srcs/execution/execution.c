@@ -10,6 +10,7 @@ void	non_builtin_child(t_job *job)
 	cpid = fork();
 	if (cpid == 0)
 	{
+		sigaction_set();
 		close(job->pipefd[0]);
 		redirect_fds(job);
 		if (ft_strchr(job->cmd, '/'))
@@ -24,7 +25,8 @@ void	non_builtin_child(t_job *job)
 			error_exit((free((free_arrays(envp),cmd_path)), "malloc error\n"), 1, job);
 		execve(cmd_path, argv, envp);
 		free((free(cmd_path), (free_arrays(envp), argv)));
-		error_exit("execve error", errno, job);
+		perror(job->cmd);
+		error_exit("", 126, job);
 	}
 }
 
@@ -76,31 +78,31 @@ int	check_builtin(char *cmd)
 	return (0);
 }
 
-void	execute_jobs(t_job *jobs)
+void	execute_jobs(t_job *current)
 {
-	t_job	*current;
 	int		stat;
 	int		n_child;
+	int		i;
 
+	stat = 0;
 	n_child = 0;
-	current = jobs;
 	while (current)
-	{	
+	{
 		if (pipe(current->pipefd) < 0)
 			perror("pipe");
 		if (current->cmd && check_builtin(current->cmd))
 			builtin(current);
 		else if (current->cmd)
-		{
-			n_child++;
-			non_builtin_child(current);
-		}
+			non_builtin_child((n_child++, current));
 		close(current->pipefd[1]);
 		if (current->prev)
 			close(current->prev->pipefd[0]);
 		current = current->next;
 	}
-	while (n_child-- > 0)
+	i = 0;
+	while (i++ < n_child)
 		wait(&stat);
-	g_exit_stat = WEXITSTATUS(stat);
+	ft_printf("wait done\n");
+	if (n_child)
+		g_exit_stat = get_child_status(stat);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hesong <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 17:09:14 by hesong            #+#    #+#             */
-/*   Updated: 2023/08/05 17:09:27 by hesong           ###   ########.fr       */
+/*   Updated: 2023/08/15 19:30:16 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@ void	new_prompt(void)
  //	write(STDOUT_FILENO, "^C\n", 3);
  //new prompt
 
-	rl_replace_line("", 1);
- 	if (rl_on_new_line() != 0)
-		exit (1);
+	g_exit_stat = 130;
 	write(1, "\n", 1);
- 	rl_redisplay();
+	rl_replace_line("", 0);
+ 	rl_on_new_line();
+	rl_redisplay();
 	/*TEST EXIT*/
 	//exit (0);
 }

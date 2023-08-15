@@ -13,10 +13,9 @@ char	*gnl_heredoc(bool hereq, char **line)
 	split_expansions((free(*line),lexemes));
 	replace_params(lexemes);
 	*line = (char *)ft_calloc(lexemelen(lexemes, 0) + 1, sizeof (char));
-	read_lexemes(lexemes);
 	i = 0;
 	current = lexemes;
-	while (line && current)
+	while (*line && current)
 	{
 		j = 0;
 		while (current->str[j] && !(!current->p_found && current->exp))

@@ -49,6 +49,19 @@ char	**bin_path(t_job *job)
 
 char	*file_path(char *cmd, t_job *job)
 {
+	DIR	*dir;
+
+	dir = opendir(cmd);
+	if (dir)
+	{
+		closedir(dir);
+		ft_putstr_fd(cmd, 2);
+		ft_putstr_fd(": Is a directory\n", 2);
+		rl_clear_history();
+		clear_env();
+		clear_jobs(job);
+		exit(126);
+	}
 	if (access(cmd, X_OK) == 0)
 		return (ft_strdup(cmd));
 	else
@@ -57,6 +70,8 @@ char	*file_path(char *cmd, t_job *job)
 		rl_clear_history();
 		clear_env();
 		clear_jobs(job);
+		if (errno == 13)
+			exit(126);
 		exit(127);
 	}
 }
@@ -72,7 +87,7 @@ char	*find_cmd_path(char *cmd, t_job *job)
 	i = 0;
 	while (path[i])
 	{
-		slashed = ft_strjoin(path[i], "/");
+		slashed = ft_strjoin(path[i++], "/");
 		withcmd = ft_strjoin(slashed, cmd);
 		if (slashed)
 			free(slashed);
@@ -82,10 +97,9 @@ char	*find_cmd_path(char *cmd, t_job *job)
 			break ;
 		free(withcmd);
 		withcmd = 0;
-		i++;
 	}
 	free_arrays(path);
 	if (!withcmd || cmd[0] == '\0')
-		error_exit("command not found\n", 127, job);
+		error_exit((ft_putstr_fd(cmd, 2), ": Command not found\n"), 127, job);
 	return (withcmd);
 }

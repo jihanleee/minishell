@@ -10,10 +10,11 @@ int	main(int argc, char **argv, char **envp)
 	read_env();
 	(void)argc;
 	(void)argv;
-	if (!sigaction_set())
-		write(STDERR_FILENO, "Error: sigaction_set_failed\n", 28);
+
 	while (1)
 	{
+		if (!sigaction_set())
+			write(STDERR_FILENO, "Error: sigaction_set_failed\n", 28);
 		line = readline(GREEN "MINISHELL> ");
 		if (line == NULL)
 		{

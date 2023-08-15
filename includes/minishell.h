@@ -13,6 +13,7 @@
 # include <term.h>
 # include <signal.h>
 # include <errno.h>
+# include <dirent.h>
 # include "libft.h"
 
 # define GREEN "\033[32m"
@@ -188,7 +189,7 @@ void		builtin(t_job *job);
 int			check_builtin(char *cmd);
 void		execute_jobs(t_job *jobs);
 char		**get_envp();
-
+int			get_child_status(int stat);
 /*env_var*/
 void	init_env_var(char **envp);
 void	read_env();

@@ -76,3 +76,12 @@ int	redirect_fds(t_job *job)
 		error_exit("dup2 error\n", 1, job);
 	return (0);
 }
+
+int	get_child_status(int stat)
+{
+	if (WIFEXITED(stat))
+		return (WEXITSTATUS(stat));
+	else if (WIFSIGNALED(stat))
+		return (WTERMSIG(stat));
+	return (0);
+}
