@@ -207,6 +207,7 @@ void		cd_export(char *arg, char *path);
 bool		is_dir(char *path);
 
 /* cd_error.c */
+void	cd_nonexist_error(char *str);
 void	cd_dir_error(char *str);
 void	cd_error(char *str);
 int		invalid_cd(char *path);
