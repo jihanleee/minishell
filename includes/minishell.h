@@ -12,8 +12,8 @@
 # include <curses.h>
 # include <term.h>
 # ifndef __USE_POSIX
-# 	define __USE_POSIX
-# 	include <signal.h>
+#   define __USE_POSIX
+#   include <signal.h>
 # endif
 # include <errno.h>
 # include <dirent.h>

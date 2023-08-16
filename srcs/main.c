@@ -6,8 +6,10 @@ t_token	**get_token_address(t_token *new)
 {
 	static t_token	*addr;
 
-	if (addr == 0)
+	if (!addr)
 		addr = new;
+	ft_printf("ingettok\n");
+	read_tokens(addr);
 	return (&addr);
 }
 
@@ -50,12 +52,14 @@ int	main(int argc, char **argv, char **envp)
 		{
 			tokens = parse_tokens(&tokens, free);
 			expansion(&tokens);
-			read_tokens(tokens);
 			get_token_address(tokens);
 			sigaction_set_parent();
 			g_exit_stat = 0;
 			open_file_redir(get_token_address(0));
-			jobs = extract_jobs(get_token_address(0));
+			read_tokens(*get_token_address(0));
+			jobs = extract_jobs(*get_token_address(0));
+			ft_printf("%p\n", jobs);
+			read_jobs(jobs);
 			clear_tokens(get_token_address(0), free);
 			printf("after clear tokens\n");
 			execute_jobs(jobs);

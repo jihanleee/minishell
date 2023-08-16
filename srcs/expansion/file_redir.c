@@ -124,8 +124,8 @@ int	open_file_redir(t_token **tokens)
 			heredoc_child(current);
 			free(current->str);
 			current->str = ft_strdup("heredoc.tmp");
-			if (g_exit_stat == 130)
-				return (clear_tokens(get_token_address(0), free), 0);
+/* 			if (g_exit_stat == 130)
+				return (clear_tokens(get_token_address(0), free), 0); */
 		}
 		open_file_errors(&current, fd);
 		if (current)
