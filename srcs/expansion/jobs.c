@@ -41,7 +41,7 @@ t_job	*extract_jobs(t_token *tokens)
 	t_job	*cur_result;
 	t_token	*current;
 
-	if (tokens == NULL)
+	if (tokens == NULL);
 		return (NULL);
 	result = (t_job *)ft_calloc(1, sizeof(t_job));
 	cur_result = result;

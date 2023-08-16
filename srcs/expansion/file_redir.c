@@ -26,6 +26,17 @@ char	*gnl_heredoc(bool hereq, char **line)
 	return (*line);
 }
 
+char	*readline_nl(char *str)
+{
+	char	*line;
+	char	*withnl;
+
+	line = readline(str);
+	withnl = ft_strjoin(line, "\n");
+	free(line);
+	return (withnl);
+}
+
 void	create_heredoc(const char *delim, bool hereq)
 {
 	int		fd;
@@ -34,7 +45,7 @@ void	create_heredoc(const char *delim, bool hereq)
 	fd = open("heredoc.tmp", O_RDWR | O_CREAT | O_TRUNC, 0777);
 	while (1)
 	{
-		line = ft_printf("heredoc> ") * 0 + get_next_line(0);
+		line = readline_nl("> ");
 		if (line == 0 || line[ft_strlen(line) - 1] != '\n')
 		{
 			if (line)
@@ -76,13 +87,30 @@ void	open_file_errors(t_token **current, int fd)
 		}
 	}
 }
+void	heredoc_child(t_token *current)
+{
+	pid_t	cpid;
 
-void	open_file_redir(t_token *token)
+	g_exit_stat = 0;
+	cpid = fork();
+	if (cpid == 0)
+	{
+		sigaction_set_heredoc();
+		create_heredoc(current->str, current->hereq);
+		clear_tokens(get_token_address(0), free);
+		rl_clear_history();
+		clear_env();
+		exit(0);
+	}
+	wait(0);
+}
+
+int	open_file_redir(t_token **tokens)
 {
 	t_token	*current;
 	int		fd;
 
-	current = token;
+	current = *tokens;
 	while (current)
 	{
 		fd = 0;
@@ -93,9 +121,11 @@ void	open_file_redir(t_token *token)
 			O_TRUNC * (current->type != append), 0777);
 		if (current->type == heredoc)
 		{
-			create_heredoc(current->str, current->hereq);
+			heredoc_child(current);
 			free(current->str);
 			current->str = ft_strdup("heredoc.tmp");
+			if (g_exit_stat == 130)
+				return (clear_tokens(get_token_address(0), free), 0);
 		}
 		open_file_errors(&current, fd);
 		if (current)

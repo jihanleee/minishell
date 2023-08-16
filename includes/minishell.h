@@ -126,7 +126,7 @@ void		expansion(t_token **tokens);
 void		read_jobs(t_job *jobs);
 char		**extract_arg(t_token **tokens);
 void		create_heredoc(const char *delim, bool hereq);
-void		open_file_redir(t_token *token);
+int			open_file_redir(t_token **tokens);
 void		point_prev_job(t_job *jobs);
 t_job		*extract_jobs(t_token *tokens);
 void		clear_jobs(t_job *current);
@@ -136,7 +136,7 @@ void		new_prompt(void);
 void		sig_handler(int signum, siginfo_t *info, void *context);
 int			sigaction_set_prompt(void);
 int 		sigaction_set_parent(void);
-
+int			sigaction_set_heredoc(void);
 /* cd.c */
 int			ft_cd(t_job **lst, int fd);
 bool		is_dir(char *path);
@@ -204,4 +204,5 @@ void		read_env(void);
 t_env		**get_env_address(void);
 void		clear_env(void);
 
+t_token	**get_token_address(t_token *new);
 #endif
