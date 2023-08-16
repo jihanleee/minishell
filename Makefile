@@ -58,6 +58,7 @@ clean:
 	${RM} ./*.o
 	${RM} ./*/*.o
 	${RM} ./*/*/*.o
+	${RM} ./*/*/*/*.o
 
 fclean: clean
 	${RM} ${NAME}
