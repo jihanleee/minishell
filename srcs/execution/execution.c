@@ -34,7 +34,7 @@ int	exec_builtin(t_job *cmd_line, int fd, bool child)
 	if (ft_strncmp("pwd", cmd_line->cmd, 4) == 0)
 		ft_pwd(fd);
 	else if (ft_strncmp("cd", cmd_line->cmd, 3) == 0)
-		ft_cd(&cmd_line, fd);
+		ft_cd(&cmd_line);
 	else if (ft_strncmp("echo", cmd_line->cmd, 5) == 0)
 		ft_echo(cmd_line, fd);
 	else if (ft_strncmp("env", cmd_line->cmd, 4) == 0)
