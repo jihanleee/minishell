@@ -4,7 +4,6 @@ void	cd_old_path(void)
 {
 	char	*new;
 
-	printf("old\n");
 	new = find_param("OLDPWD");
 	if (!new)
 		cd_nonexist_error("\b\b");
@@ -27,7 +26,6 @@ void	cd_normal_path(t_job *current)
 	char	*path_modified;
 	char	*new;
 
-	printf("normal\n");
 	path = getcwd(NULL, 0);
 	path_modified = ft_strjoin(path, "/");
 	new = ft_strjoin(path_modified, current->arg[0]);
@@ -48,7 +46,6 @@ void	cd_to_home(void)
 {
 	char	*new;
 
-	printf("home\n");
 	new = find_param("HOME");
 	if (!new)
 		write(2, "bash: HOME: No such file or directory\n", 38);
@@ -67,7 +64,6 @@ void	cd_absolute_path(t_job *current)
 {
 	char	*new;
 
-	printf("absolute\n");
 	if (!current->arg[0][1])
 		cd_to_home();
 	else if (current->arg[0][1] == '/')

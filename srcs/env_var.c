@@ -1,23 +1,25 @@
 #include "minishell.h"
 
-t_env	**get_env_address()
+t_env	**get_env_address(void)
 {
-	static t_env *env;
+	static	t_env *env;
+
 	return (&env);
 }
 
-void	read_env()
+void	read_env(void)
 {
 	t_env	*current;
 
 	current = *get_env_address();
 	while (current)
 	{
+		printf("%s\n", current->str);
 		current = current->next;
 	}
 }
 
-void	clear_env()
+void	clear_env(void)
 {
 	t_env	*current;
 	t_env	*next;
@@ -31,7 +33,6 @@ void	clear_env()
 		free(current);
 		current = next;
 	}
-	
 }
 
 void	init_env_var(char **envp)
