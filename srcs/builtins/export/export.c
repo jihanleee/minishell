@@ -1,77 +1,33 @@
 #include "minishell.h"
 
-int	middle_is_valid(char c)
-{
-	//0 = no problem
-	//1 = problem
-	if (c == '=' || c == '_') //c == '-' || c == '\\' || c == ' ' || ||  c == '|'
-		return (0);
-	else if (c == '(' || c == ')')
-		return (0);
-	else if (c >= 'a' && c <= 'z')
-		return (0);
-	else if (c >= 'A' && c <= 'Z')
-		return (0);
-	else if (c >= '0' && c <= '9')
-		return (0);
-	return (1);
-}
-
-int	first_is_valid(char c)
-{
-	//0 = no problem
-	//1 = probem
-	if (c >= '0' && c <= '9')
-		return (1);
-	else if (c == 92 || c == 95)
-		return (0);
-	else if (c>= 'a' && c <= 'z')
-		return (0);
-	else if (c >= 'A' || c <= 'Z')
-		return (0);
-	return (1);
-}
-
 int	get_block_count(t_job **lst)
 {
 	t_job	*current;
 	int	count;
-	int	flag;
 	int	i;
 	int	j;
 
 	current = *lst;
-	flag = 0;
 	count = 0;
 	i = 0;
+	//printf("in get block count\n");
 	while (current->arg[i])
 	{
-		if (flag == 0 && first_is_valid(current->arg[i][0]) == 1)
+		if (first_is_valid(current->arg[i][0]) == 1)
 		{
-			write(2, "bash: export: \'", 15);
-			write(2, current->arg[i], get_length(current->arg[i]));
-			write(2, "\': not a valid identifier\n", 26);
+			//printf("get block error\n");
+			export_error(current->arg[i]);
 			if (current->arg[i + 1])
 				i++;
 			else
 				return (count);
 		}
 		j = 0;
-		while (current->arg[i][j])
-		{
-			if (current->arg[i][j] == '\\')
-				j++;
-			if (current->arg[i][j] == '=')
-				flag = 1;
-			j++;
-		}
-		if (flag == 1)
-		{
-			flag = 0;
+		if (check_middle(current->arg[i]) == 0) //valid arg
 			count++;
-		}
 		i++;
 	}
+	//ft_printf("block count: %d\n", count);
 	return (count);
 }
 
@@ -91,32 +47,36 @@ int	malloc_combine_lines(char **combine, t_job **lst)
 	i = -1;
 	while (current->arg[++i])
 	{
-		j = 0;
-		while (current->arg[i][j])
+		if (first_is_valid(current->arg[i][0]) == 0 && check_middle(current->arg[i]) == 0)
 		{
-			if (current->arg[i][j] == '=')
-				flag = 1;
-			length++;
-			j++;
-		}
-		if (flag == 1)
-		{
-			flag = 0;
+			length = get_length(current->arg[i]);
 			combine[count] = (char*)ft_calloc(length + 1, sizeof(char));
 			count++;
 		}
-		length = 0;
 	}
 	return (0);
 }
 
-void	export_error(char *str)
+int	middle_error_case(char *str)
 {
-	write(2, "bash: export: \'", 15);//
-	write(2, str, get_length(str));//
-	write(2, "\': not a valid identifier\n", 26);//
-}
+	int	i;
 
+	i = 0;
+	//printf("\tlooking at %s\n", str);
+	while (str[i])
+	{
+		if (str[i] == '\\')
+			i++;
+		if (str[i] == '=' && i == 0)
+			return (1);
+		if (str[i] == '=' && i != 0)
+			break ;
+		if (ft_isalnum(str[i]) == 0 && str[i] != '_')
+			return (1);
+		i++;
+	}
+	return (0);
+}
 
 int	fill_blocks(char **combine, t_job **lst)
 {
@@ -132,49 +92,23 @@ int	fill_blocks(char **combine, t_job **lst)
 	count = 0;
 	index = 0;
 	i = 0;
-	while (current->arg[i] && combine[count])
+	//printf("current line: %s\n", current->arg[0]);
+	while (current->arg[i]) // && combine[count]
 	{
 		j = 0;
-		while (current->arg[i] && first_is_valid(current->arg[i][j]) == 1)
-			i++;
-		while (current->arg[i][j] && combine[count])
+		//printf("current line: %s\n", current->arg[i]);
+		//if (first_is_valid(current->arg[i][j]) == 1)
+		//	export_error(current->arg[i]);
+		if (check_middle(current->arg[i]) == 0)
 		{
-			if (current->arg[i][j] == '\\')
-				j++;
-			if (flag == 0 && current->arg[i][j] == '=' && j == 0)
-				combine[count][index++] = ' ';
-			if (middle_is_valid(current->arg[i][j]) == 1)
-				return (export_error(current->arg[i]), 1);
-			if (current->arg[i][j] == '=')
-				flag = 1;
-			if (middle_is_valid(current->arg[i][j]) == 0)
-				combine[count][index] = current->arg[i][j];
-			index++;
-			j++;
-		}
-		if (flag == 1)
-		{
-			flag = 0;
+			//printf("adding line to combine: \n\t%s\n", current->arg[i]);
+			combine[count] = ft_strdup(current->arg[i]);
 			count++;
-			index = 0;
 		}
-		else if (flag == 0)
-		{
-			if (current->arg[i + 1][0] != '=')
-			{
-				while (index >= 0)
-				{
-					combine[count][index] = 0;
-					index--;
-				}
-				index = 0;
-			}
-		}
+		else if (middle_error_case(current->arg[i]) == 1)
+			export_error(current->arg[i]);
 		i++;
 	}
-	i = 0;
-	while (combine[i])
-		i++;
 	return (0);
 }
 
