@@ -165,7 +165,7 @@ int			first_is_valid(char c);
 int			middle_is_valid(char c);
 void		export_combined(char **combine);
 int			get_block_count(t_job **lst);
-int			fill_blocks(char **combine, t_job **lst);
+int			fill_blocks(char **combine, t_job *lst);
 int			ft_export(t_job **lst, int fd);
 void	export_error(char *str);
 

@@ -60,4 +60,3 @@ void	ft_echo(t_job *current, int fd)
 	if (flag == 0)
 		write(fd, "\n", 1);
 }
-

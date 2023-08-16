@@ -10,11 +10,8 @@ void	clear_tokens(t_token **lst, void (*del)(void *))
 	if (del == 0)
 		return ;
 	current = *lst;
-/* 	printf("\n-----------------------------------\n");
-	printf("currently in clear tokens function\n"); */
 	while (current)
 	{
-		/* printf("\ttoken we are deleting is %s\n", current->str); */
 		next = current->next;
 		if (current->str)
 			del(current->str);

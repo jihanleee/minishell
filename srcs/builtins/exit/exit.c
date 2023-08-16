@@ -5,7 +5,6 @@ bash shell 에서 exit 256 넘어가면 256의 나머지 값으로 exit status �
 256배수로 exit 해보면 exit status 0 으로 나옴
 exit 함수 조건문 약간 바꿈
 */
-int	g_exit_stat;
 
 int	check_int(char *arg)
 {
@@ -36,6 +35,7 @@ int	cnt_arg(t_job *current)
 		cnt++;
 	return (cnt);
 }
+
 void	free_exit(int exit_status, t_job *job)
 {
 	rl_clear_history();
@@ -46,14 +46,14 @@ void	free_exit(int exit_status, t_job *job)
 
 void	exit_error_cases(int arg_cnt, t_job *current)
 {
-	if (arg_cnt > 1 && check_int(current->arg[0]) == 0) // exit with too many arguments
+	if (arg_cnt > 1 && check_int(current->arg[0]) == 0)
 	{
 		write(2, "exit\n", 5);
 		write(2, "bash: exit: too many arguments\n", 31);
-		g_exit_stat = 1; //error
+		g_exit_stat = 1;
 		free_exit(1, current);
 	}
-	else // arg_cnt 1 이상이고, int 아닐 때, arg_cnt 1개이고 int 아닐때 pigone hada
+	else
 	{
 		write(2, "bash: exit: ", 12);
 		write(2, current->arg[0], ft_strlen(current->arg[0]));
@@ -71,20 +71,19 @@ int	ft_exit(t_job **lst, int fd)
 	exit_num = 0;
 	current = *lst;
 	arg_cnt = cnt_arg(current);
-
 	if (current->next)
-		return (0); // If there's a pipe after exit cmd, the execution stops here!!!
+		return (0);
 	if (arg_cnt == 0)
-		free_exit(0, current); // If pipe or arg not found, exit(0)
-	if (arg_cnt == 1 && check_int(current->arg[0]) == 0)  //exit 1234564
+		free_exit(0, current);
+	if (arg_cnt == 1 && check_int(current->arg[0]) == 0)
 	{
 		exit_num = atoi(current->arg[0]) % 256;
 		write(fd, "exit\n", 5);
 		g_exit_stat = exit_num;
 		if (exit_num == 0)
-			return (0);	//only case where it's true
+			return (0);
 		free_exit(exit_num, current);
 	}
 	exit_error_cases(arg_cnt, current);
-	return (-1); //if not 0 or 125, 
+	return (-1);
 }

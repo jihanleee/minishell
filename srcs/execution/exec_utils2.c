@@ -1,11 +1,12 @@
 #include "minishell.h"
 
-char	**get_envp()
+char	**get_envp(void)
 {
 	t_env	*env;
 	t_env	*fst;
 	int		i;
 	char	**result;
+
 	i = 0;
 	env = *get_env_address();
 	fst = env;

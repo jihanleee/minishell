@@ -15,7 +15,7 @@ static bool	is_allexp(t_lexeme *lexemes)
 	return (allexp);
 }
 
-static bool quote_is_found(t_lexeme *lexemes)
+static bool	quote_is_found(t_lexeme *lexemes)
 {
 	bool	found;
 

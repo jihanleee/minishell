@@ -6,13 +6,13 @@
 /*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 17:09:14 by hesong            #+#    #+#             */
-/*   Updated: 2023/08/16 06:18:51 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/08/16 11:25:51 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void sig_handler_prompt(int signum, siginfo_t *info, void *context)
+void	sig_handler_prompt(int signum, siginfo_t *info, void *context)
 {
 	(void)info;
 	(void)context;
@@ -21,7 +21,7 @@ void sig_handler_prompt(int signum, siginfo_t *info, void *context)
 		g_exit_stat = 130;
 		write(1, "\n", 1);
 		rl_replace_line("", 0);
- 		rl_on_new_line();
+		rl_on_new_line();
 		rl_redisplay();
 	}
 	else if (signum == SIGQUIT)
@@ -29,9 +29,9 @@ void sig_handler_prompt(int signum, siginfo_t *info, void *context)
 	return ;
 }
 
-int sigaction_set_prompt(void)
+int	sigaction_set_prompt(void)
 {
-	static struct sigaction sig_struct;
+	static struct sigaction	sig_struct;
 
 	sigemptyset(&sig_struct.sa_mask);
 	sig_struct.sa_flags = SA_SIGINFO;
@@ -44,13 +44,13 @@ int sigaction_set_prompt(void)
 	return (1);
 }
 
-void sig_handler_parent(int signum, siginfo_t *info, void *context)
+void	sig_handler_parent(int signum, siginfo_t *info, void *context)
 {
 	int	stat;
-	
+
 	(void)info;
 	(void)context;
-	if (signum == SIGINT) 
+	if (signum == SIGINT)
 	{
 		waitpid(-1, &stat, 0);
 		g_exit_stat = get_child_status(stat);
@@ -67,9 +67,9 @@ void sig_handler_parent(int signum, siginfo_t *info, void *context)
 	return ;
 }
 
-int sigaction_set_parent(void)
+int	sigaction_set_parent(void)
 {
-	static struct sigaction sig_struct;
+	static struct sigaction	sig_struct;
 
 	sigemptyset(&sig_struct.sa_mask);
 	sig_struct.sa_flags = SA_SIGINFO;

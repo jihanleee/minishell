@@ -83,7 +83,7 @@ bool	is_dir(char *path)
 	DIR	*dir;
 
 	dir = opendir(path);
-	if(dir)
+	if (dir)
 	{
 		closedir(dir);
 		return (TRUE);

@@ -20,4 +20,3 @@ int	len_lvname(char *str)
 		i++;
 	return (i);
 }
-

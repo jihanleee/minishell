@@ -10,7 +10,7 @@ char	*gnl_heredoc(bool hereq, char **line)
 	if (hereq || !*line)
 		return (*line);
 	lexemes = new_lexeme(ft_strdup(*line), 0);
-	split_expansions((free(*line),lexemes));
+	split_expansions((free(*line), lexemes));
 	replace_params(lexemes);
 	*line = (char *)ft_calloc(lexemelen(lexemes, 0) + 1, sizeof (char));
 	i = 0;

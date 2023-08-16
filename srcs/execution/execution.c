@@ -21,10 +21,10 @@ void	non_builtin_child(t_job *job)
 			error_exit((free(cmd_path), "malloc error\n"), 1, job);
 		envp = get_envp();
 		if (!envp)
-			error_exit((free((free_arrays(envp),cmd_path)), "malloc error\n"), 1, job);
+			error_exit((free((free_arrays(envp), cmd_path)), \
+			"malloc error\n"), 1, job);
 		execve(cmd_path, argv, envp);
-		free((free(cmd_path), (free_arrays(envp), argv)));
-		perror(job->cmd);
+		free((free((perror(job->cmd), cmd_path)), (free_arrays(envp), argv)));
 		error_exit("", 126, job);
 	}
 }
