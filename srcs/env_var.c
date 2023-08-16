@@ -43,7 +43,7 @@ void	init_env_var(char **envp)
 
 	env = get_env_address();
 	if (!envp[0])
-		return 0;
+		return ;
 	*env = (t_env *)ft_calloc(1, sizeof (t_env));
 	(*env)->str = ft_strdup(envp[0]);
 	current = (*env);

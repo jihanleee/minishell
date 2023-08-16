@@ -10,7 +10,6 @@ void	non_builtin_child(t_job *job)
 	cpid = fork();
 	if (cpid == 0)
 	{
-		sigaction_set();
 		close(job->pipefd[0]);
 		redirect_fds(job);
 		if (ft_strchr(job->cmd, '/'))
@@ -39,7 +38,6 @@ int	exec_builtin(t_job *cmd_line, int fd)
 		ft_cd(&cmd_line, fd);
 	else if (ft_strncmp("echo", cmd_line->cmd, 5) == 0)
 		ft_echo(cmd_line, fd);
-		//ft_echo(&cmd_line, env, fd);
 	else if (ft_strncmp("env", cmd_line->cmd, 4) == 0)
 		ft_env(&cmd_line, fd);
 	else if (ft_strncmp("export", cmd_line->cmd, 7) == 0)
@@ -83,6 +81,7 @@ void	execute_jobs(t_job *current)
 	int		stat;
 	int		n_child;
 	int		i;
+	int		r_wait;
 
 	stat = 0;
 	n_child = 0;
@@ -101,8 +100,7 @@ void	execute_jobs(t_job *current)
 	}
 	i = 0;
 	while (i++ < n_child)
-		wait(&stat);
-	ft_printf("wait done\n");
-	if (n_child)
+		r_wait = wait(0);
+	if (n_child && r_wait == 0)
 		g_exit_stat = get_child_status(stat);
 }

@@ -11,11 +11,13 @@
 # include <stdlib.h>
 # include <curses.h>
 # include <term.h>
-# include <signal.h>
+# ifndef __USE_POSIX
+# 	define __USE_POSIX
+# 	include <signal.h>
+# endif
 # include <errno.h>
 # include <dirent.h>
 # include "libft.h"
-
 # define GREEN "\033[32m"
 
 typedef struct s_env
@@ -134,11 +136,11 @@ void		clear_jobs(t_job *current);
 /*signal.c*/
 void		new_prompt(void);
 void		sig_handler(int signum, siginfo_t *info, void *context);
-int			sigaction_set(void);
-
+int			sigaction_set_prompt(void);
+int 		sigaction_set_parent(void);
 /* cd.c */
 int			ft_cd(t_job **lst, int fd);
-
+bool	is_dir(char *path);
 /* cd_utils.c */
 int		invalid_cd(char *path);
 int		cd_strncmp(const char *s1, const char *s2, size_t n);
@@ -181,6 +183,7 @@ void		error_exit(char *str, int exit_status, t_job *job);
 char		**bin_path(t_job *job);
 char		*file_path(char *cmd, t_job *job);
 char		*find_cmd_path(char *cmd, t_job *job);
+void		assign_cmd_arg(t_token *current, t_job *cur_result);
 char		**get_argv(t_job *jobs);
 int			redirect_fds(t_job *job);
 void		non_builtin_child(t_job *job);

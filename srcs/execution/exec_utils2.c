@@ -82,6 +82,6 @@ int	get_child_status(int stat)
 	if (WIFEXITED(stat))
 		return (WEXITSTATUS(stat));
 	else if (WIFSIGNALED(stat))
-		return (WTERMSIG(stat));
+		return (WTERMSIG(stat) + 128);
 	return (0);
 }

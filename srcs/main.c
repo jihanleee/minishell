@@ -13,7 +13,7 @@ int	main(int argc, char **argv, char **envp)
 
 	while (1)
 	{
-		if (!sigaction_set())
+		if (!sigaction_set_prompt())
 			write(STDERR_FILENO, "Error: sigaction_set_failed\n", 28);
 		line = readline(GREEN "MINISHELL> ");
 		if (line == NULL)
@@ -39,6 +39,7 @@ int	main(int argc, char **argv, char **envp)
 /* 			read_tokens(tokens); */
 			g_exit_stat = 0;
 			open_file_redir(tokens);
+			sigaction_set_parent();
 			jobs = extract_jobs(tokens);
 /* 			read_jobs(jobs); */
 			clear_tokens(&tokens, free);

@@ -77,3 +77,17 @@ void	cd_export(char *arg, char *path)
 	current->next->str = ft_strjoin(arg, path);
 	current->next->next = NULL;
 }
+
+bool	is_dir(char *path)
+{
+	DIR	*dir;
+
+	dir = opendir(path);
+	if(dir)
+	{
+		closedir(dir);
+		return (TRUE);
+	}
+	else 
+		return (FALSE);
+}
