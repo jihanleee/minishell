@@ -164,7 +164,7 @@ void		clear_jobs(t_job *current);
 /* --------------------execution--------------------*/
 /* execution.c */
 void		non_builtin_child(t_job *job);
-int			exec_builtin(t_job *cmd_line, int fd);
+int			exec_builtin(t_job *cmd_line, int fd, bool child);
 void		builtin(t_job *job);
 int			check_builtin(char *cmd);
 void		execute_jobs(t_job *jobs);

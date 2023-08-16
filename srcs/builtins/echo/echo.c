@@ -32,6 +32,7 @@ int	print_args(t_job *current, int i, int fd)
 		if (current->arg[i])
 			write(fd, " ", 1);
 	}
+	g_exit_stat = 0;
 	return (0);
 }
 

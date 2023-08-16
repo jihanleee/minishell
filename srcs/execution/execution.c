@@ -29,9 +29,8 @@ void	non_builtin_child(t_job *job)
 	}
 }
 
-int	exec_builtin(t_job *cmd_line, int fd)
+int	exec_builtin(t_job *cmd_line, int fd, bool child)
 {
-	g_exit_stat = 0;
 	if (ft_strncmp("pwd", cmd_line->cmd, 4) == 0)
 		ft_pwd(fd);
 	else if (ft_strncmp("cd", cmd_line->cmd, 3) == 0)
@@ -43,25 +42,31 @@ int	exec_builtin(t_job *cmd_line, int fd)
 	else if (ft_strncmp("export", cmd_line->cmd, 7) == 0)
 		ft_export(&cmd_line, fd);
 	else if (ft_strncmp("unset", cmd_line->cmd, 6) == 0)
+	{
+		g_exit_stat = 0;
 		ft_unset(&cmd_line);
+	}
 	else if (ft_strncmp("exit", cmd_line->cmd, 5) == 0)
 		ft_exit(&cmd_line, fd);
+	if (child == TRUE)
+	{
+		error_exit("", 0, cmd_line);
+		exit(g_exit_stat);
+	}
 	return (0);
 }
 
-void	builtin(t_job *job)
+void	builtin_child(t_job *job)
 {
-	int		outfd;
+	pid_t	cpid;
 
-	if (job->out == 3)
-		outfd = open(job->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	else if (job->out == 4)
-		outfd = open(job->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
-	else if (job->next && job->out == 0)
-		outfd = job->pipefd[1];
-	else if (!job->next)
-		outfd = 1;
-	exec_builtin(job, outfd);
+	cpid = fork();
+	if (cpid == 0)
+	{
+		close(job->pipefd[0]);
+		redirect_fds(job);
+		exec_builtin(job, 1, TRUE);
+	}
 }
 
 int	check_builtin(char *cmd)
@@ -76,12 +81,11 @@ int	check_builtin(char *cmd)
 	return (0);
 }
 
-void	execute_jobs(t_job *current)
+void	execute_pipes(t_job *current)
 {
 	int		stat;
 	int		n_child;
 	int		i;
-	int		r_wait;
 
 	stat = 0;
 	n_child = 0;
@@ -89,9 +93,9 @@ void	execute_jobs(t_job *current)
 	{
 		if (pipe(current->pipefd) < 0)
 			perror("pipe");
-		if (current->cmd && check_builtin(current->cmd))
-			builtin(current);
-		else if (current->cmd)
+		if (current->cmd && check_builtin(current->cmd) && current->in != -1)
+			builtin_child((n_child++, current));
+		else if (current->cmd && current->in != -1)
 			non_builtin_child((n_child++, current));
 		close(current->pipefd[1]);
 		if (current->prev)
@@ -100,7 +104,26 @@ void	execute_jobs(t_job *current)
 	}
 	i = 0;
 	while (i++ < n_child)
-		r_wait = wait(0);
-	if (n_child && r_wait == 0)
+		wait(&stat);
+	if (n_child)
 		g_exit_stat = get_child_status(stat);
+}
+
+void	execute_jobs(t_job *jobs)
+{
+	int	outfd;
+
+	if (!jobs)
+		return ;
+	if (check_builtin(jobs->cmd) && !jobs->next && jobs->in != -1)
+	{
+		outfd = 1;
+		if (jobs->out == 3)
+		outfd = open(jobs->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		else if (jobs->out == 4)
+		outfd = open(jobs->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		exec_builtin(jobs, outfd, FALSE);
+	}
+	else
+		execute_pipes(jobs);
 }

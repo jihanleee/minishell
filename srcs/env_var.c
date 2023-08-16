@@ -36,7 +36,7 @@ void	clear_env()
 
 void	init_env_var(char **envp)
 {
-	int	i;
+	int		i;
 	t_env	**env;
 	t_env	*current;
 

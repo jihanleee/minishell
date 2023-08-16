@@ -17,6 +17,7 @@ int	main(int argc, char **argv, char **envp)
 	t_job	*jobs;
 	char	*line;
 
+	g_exit_stat = 0;
 	init_env_var(envp);
 	read_env();
 	(void)argc;
@@ -46,7 +47,6 @@ int	main(int argc, char **argv, char **envp)
 			expansion(&tokens);
 			get_token_address(tokens);
 			sigaction_set_parent();
-			g_exit_stat = 0;
 			open_file_redir(get_token_address(0));
 			//read_tokens(*get_token_address(0));
 			jobs = extract_jobs(*get_token_address(0));

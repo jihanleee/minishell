@@ -61,4 +61,5 @@ void	export_error(char *str)
 	write(2, "bash: export: \'", 15);
 	write(2, str, get_length(str));
 	write(2, "\': not a valid identifier\n", 26);
+	g_exit_stat = 1;
 }

@@ -72,7 +72,8 @@ char	*file_path(char *cmd, t_job *job)
 		clear_jobs(job);
 		if (errno == 13)
 			exit(126);
-		exit(127);
+		else
+			exit(127);
 	}
 }
 
