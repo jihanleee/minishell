@@ -36,6 +36,7 @@ SRCS		=	./srcs/parser.c \
 				./srcs/builtins/env/env.c \
 				./srcs/builtins/exit/exit.c \
 				./srcs/builtins/export/export.c \
+				./srcs/builtins/export/export_utils.c \
 				./srcs/builtins/pwd/pwd.c \
 				./srcs/builtins/unset/unset.c \
 				./srcs/builtins/cd/cd.c \
