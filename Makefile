@@ -11,7 +11,7 @@ L_PATH		= ./includes/libft/
 
 INCLUDES	= -I ${I_PATH} -I ${L_PATH}
 
-SRCS		=	./srcs/parser.c \
+SRCS		=	./srcs/parsing/parser.c \
 				./srcs/signal.c \
 				./srcs/main.c \
 				./srcs/debug.c \
