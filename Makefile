@@ -12,7 +12,8 @@ L_PATH		= ./includes/libft/
 INCLUDES	= -I ${I_PATH} -I ${L_PATH}
 
 SRCS		=	./srcs/parsing/parser.c \
-				./srcs/signal.c \
+				./srcs/signal/signal.c \
+				./srcs/signal/signal_heredoc.c \
 				./srcs/main.c \
 				./srcs/debug.c \
 				./srcs/expansion/find_param.c \
@@ -41,6 +42,7 @@ SRCS		=	./srcs/parsing/parser.c \
 				./srcs/builtins/unset/unset.c \
 				./srcs/builtins/cd/cd.c \
 				./srcs/builtins/cd/cd_utils.c \
+				./srcs/builtins/cd/cd_error.c \
 				./srcs/env_var.c
 
 OBJS		= ${SRCS:.c=.o}

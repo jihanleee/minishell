@@ -77,134 +77,199 @@ typedef struct s_job
 
 extern int	g_exit_stat;
 
-/*tokenizer*/
-char		*find_param(char *p_name);
-void		mark_single_quote(char *line, int *result, int *i);
-void		mark_double_quote(char *line, int *result, int *i);
-int			*create_quote_info(char *line);
-bool		is_op(char c);
-bool		is_blank(char c);
-int			token_op_len(char *line, int start, int *quote_info);
-int			token_word_len(char *line, int start, \
-							t_ttype *type, int *quote_info);
-void		read_tokens(t_token *current);
+
+/* --------------------tokenizer--------------------*/
+/* create_tokens.c */
 t_token		*new_token(char *line, int start, int len, t_ttype type);
 int			append_token(t_token **tokens, t_token *new);
 void		set_tokentype(t_token *tokens);
 int			line_to_token(t_token **tokens, int *quote_info, char *line);
 t_token		*create_tokens(char *line);
 
-/*parser.c*/
-void		temp_read_tokens(t_token **lst);
-int			check_tokens(t_token *tokens);
-void		exit_error(char *message, t_token **temp);
-void		print_parse_error(t_token **input);
-int			token_error_check(t_token *tokens);
+/* token_substr_len.c */
+bool		is_op(char c);
+bool		is_blank(char c);
+int			token_op_len(char *line, int start, int *quote_info);
+int			token_word_len(char *line, int start, \
+							t_ttype *type, int *quote_info);
+
+/* token_utils.c */
+void		mark_single_quote(char *line, int *result, int *i);
+void		mark_double_quote(char *line, int *result, int *i);
+int			*create_quote_info(char *line);
+
+
+/* --------------------parsing--------------------*/
+/* parser.c */
 void		change_type(t_token *current, t_token *next);
 t_token		*parse_tokens(t_token **lst, void (*del)(void *));
+int			token_error_check(t_token *tokens);
+int			check_tokens(t_token *tokens);
+void		print_parse_error(t_token **input);
 
-/*expander*/
-void		clear_tokens(t_token **lst, void (*del)(void *));
+
+/* --------------------expansion--------------------*/
+/* expander.c */
+void		split_expansions(t_lexeme *lexemes);
+void		expansion(t_token **tokens);
+
+/* token_conversion1.c */
+t_token		*new_expanded_token(int *lexeme, int start, int len);
+int			*lexemes_to_int(t_lexeme *lexemes, t_ttype type);
+t_token		*iword_to_tokens(int *lexeme);
+
+/* token_conversion2.c */
+t_token		*token_to_etoken(t_token *old);
+
+/* assign_quotes.c */
 char		*assign_single_quote(char *line, int *i, int *quote_info, \
 								t_qtype *type);
 char		*assign_double_quote(char *line, int *i, int *quote_info, \
 								t_qtype *type);
 char		*assign_non_quote(char *line, int *i, int *quote_info, \
 								t_qtype *type);
-void		clear_lexemes(t_lexeme **lst, void (*del)(void *));
+
+/* replace.c */
+void		replace_params(t_lexeme *lexemes);
+
+/* lexemes.c */
 t_lexeme	*new_lexeme(char *str, t_qtype type);
 int			append_lexeme(t_lexeme **lexemes, t_lexeme *new);
-void		read_lexemes(t_lexeme *current);
-int			len_lvname(char *str);
-void		split_expansions(t_lexeme *lexemes);
-t_lexeme	*word_to_lexemes(char *str);
-void		replace_params(t_lexeme *lexemes);
 int			lexemelen(t_lexeme *lexemes, t_ttype type);
-bool		is_ifs(char c);
-t_token		*new_expanded_token(int *lexeme, int start, int len);
-int			*lexemes_to_int(t_lexeme *lexemes, t_ttype type);
-t_token		*iword_to_tokens(int *lexeme);
-t_token		*token_to_etoken(t_token *old);
-void		expansion(t_token **tokens);
-void		read_jobs(t_job *jobs);
-char		**extract_arg(t_token **tokens);
-void		create_heredoc(const char *delim, bool hereq);
-int			open_file_redir(t_token **tokens);
+t_lexeme	*word_to_lexemes(char *str);
+
+/* jobs.c */
 void		point_prev_job(t_job *jobs);
 t_job		*extract_jobs(t_token *tokens);
+char		**extract_arg(t_token **tokens);
+void		assign_cmd_arg(t_token *current, t_job *cur_result);
+
+/* find_paramc. */
+char		*find_param(char *p_name);
+
+/* file_redir.c */
+void		create_heredoc(const char *delim, bool hereq);
+int			open_file_redir(t_token **tokens);
+
+/* expansion_utils.c */
+bool		is_ifs(char c);
+int		len_lvname(char *str);
+
+/* clear.c */
+void	clear_tokens(t_token **lst, void (*del)(void *));
+void	clear_lexemes(t_lexeme **lst, void (*del)(void *));
 void		clear_jobs(t_job *current);
 
-/*signal.c*/
-void		new_prompt(void);
-void		sig_handler(int signum, siginfo_t *info, void *context);
-int			sigaction_set_prompt(void);
-int 		sigaction_set_parent(void);
-int			sigaction_set_heredoc(void);
-/* cd.c */
-int			ft_cd(t_job **lst, int fd);
-bool		is_dir(char *path);
 
-/* cd_utils.c */
-int			invalid_cd(char *path);
-int			cd_strncmp(const char *s1, const char *s2, size_t n);
-void		cd_unset(char *arg);
-void		cd_export(char *arg, char *path);
-
-/* echo.c */
-int			get_length(char *str);
-int			print_args(t_job *current, int i, int fd);
-void		ft_echo(t_job *current, int fd);
-
-/* env.c */
-void		ft_env(t_job **lst, int fd);
-
-/* exit.c */
-int			check_int(char *arg);
-int			get_exit_num(t_job current);
-int			ft_exit(t_job **lst, int fd);
-
-/* export.c */
-
-int			validate_and_add(t_job **lst);
-int			add_to_env(char *str);
-int			ft_export(t_job **lst, int fd);
-
-/* export_utils.c */
-int			first_is_valid(char c);
-int			middle_is_valid(char *str);
-int			middle_error_case(char *str);
-void		export_error(char *str);
-
-/* pwd.c */
-int			ft_pwd(int fd);
-
-/* unset.c */
-int			unset_strncmp(const char *s1, const char *s2, size_t n);
-t_env		*check_first(t_env *env, char *value);
-void		ft_unset(t_job **lst);
-
-/*execution*/
-void		free_arrays(char **str);
-void		error_exit(char *str, int exit_status, t_job *job);
-char		**bin_path(t_job *job);
-char		*file_path(char *cmd, t_job *job);
-char		*find_cmd_path(char *cmd, t_job *job);
-void		assign_cmd_arg(t_token *current, t_job *cur_result);
-char		**get_argv(t_job *jobs);
-int			redirect_fds(t_job *job);
+/* --------------------execution--------------------*/
+/* execution.c */
 void		non_builtin_child(t_job *job);
 int			exec_builtin(t_job *cmd_line, int fd);
 void		builtin(t_job *job);
 int			check_builtin(char *cmd);
 void		execute_jobs(t_job *jobs);
+
+/* exec_utils1.c */
+void		free_arrays(char **str);
+void		error_exit(char *str, int exit_status, t_job *job);
+char		**bin_path(t_job *job);
+char		*file_path(char *cmd, t_job *job);
+char		*find_cmd_path(char *cmd, t_job *job);
+
+/* exec_utils2.c */
 char		**get_envp(void);
+char		**get_argv(t_job *jobs);
+int			redirect_fds(t_job *job);
 int			get_child_status(int stat);
 
-/*env_var*/
-void		init_env_var(char **envp);
-void		read_env(void);
-t_env		**get_env_address(void);
-void		clear_env(void);
 
+/* --------------------signal--------------------*/
+/*signal.c*/
+void	sig_handler_prompt(int signum, siginfo_t *info, void *context);
+int	sigaction_set_prompt(void);
+int	sigaction_set_parent(void);
+void	sig_handler_parent(int signum, siginfo_t *info, void *context);
+
+/* signal_heredoc.c */
+int	sigaction_set_heredoc(void);
+void	sig_handler_heredoc(int signum, siginfo_t *info, void *context);
+
+
+/* --------------------cd--------------------*/
+/* cd.c */
+int			ft_cd(t_job **lst, int fd);
+
+/* cd_utils.c */
+int			cd_strncmp(const char *s1, const char *s2, size_t n);
+int	path_compare(char *s1, char *s2);
+void		cd_unset(char *arg);
+void		cd_export(char *arg, char *path);
+bool		is_dir(char *path);
+
+/* cd_error.c */
+void	cd_dir_error(char *str);
+void	cd_error(char *str);
+int		invalid_cd(char *path);
+
+
+/* --------------------echo--------------------*/
+int	get_length(char *str);
+int	print_args(t_job *current, int i, int fd);
+void	ft_echo(t_job *current, int fd);
+
+/* --------------------env--------------------*/
+void	ft_env(t_job **lst, int fd);
+
+
+/* --------------------exit--------------------*/
+int		check_int(char *arg);
+int		cnt_arg(t_job *current);
+void	free_exit(int exit_status, t_job *job);
+void	exit_error_cases(int arg_cnt, t_job *current);
+int		ft_exit(t_job **lst, int fd);
+
+
+/* --------------------export--------------------*/
+/* export.c */
+int	validate_and_add(t_job **lst);
+char	*get_key(char *str);
+int	add_to_env(char *str);
+int	ft_export(t_job **lst, int fd);
+
+/* export_utils.c */
+int	first_is_valid(char c);
+int	middle_is_valid(char *str);
+int	middle_error_case(char *str);
+void	export_error(char *str);
+
+
+/* --------------------pwd--------------------*/
+/* pwd.c */
+int	ft_pwd(int fd);
+
+
+/* --------------------unset--------------------*/
+/* unset.c */
+int	unset_strncmp(const char *s1, const char *s2, size_t n);
+t_env	*check_first(t_env *env, char *value);
+void	ft_unset(t_job **lst);
+
+
+/* --------------------others--------------------*/
+/* debug.c */
+void	read_jobs(t_job *jobs);
+void	read_lexemes(t_lexeme *crnt);
+void	read_tokens(t_token *current);
+
+/* env_var.c */
+t_env	**get_env_address();
+void	read_env();
+void	clear_env();
+void	init_env_var(char **envp);
+
+/* main.c */
 t_token	**get_token_address(t_token *new);
+
+//-----------------------------------------------
+
 #endif

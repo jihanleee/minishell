@@ -25,13 +25,13 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		if (!sigaction_set_prompt())
-			write(STDERR_FILENO, "Error: sigaction_set_failed\n", 28);
+			write(2, "Error: sigaction_set_failed\n", 28);
 		line = readline(GREEN "MINISHELL> " BACK);
 		if (line == NULL)
 		{
 			clear_env();
 			rl_clear_history();
-			write(STDOUT_FILENO, "exit\n", 5);
+			write(1, "exit\n", 5);
 			return (0);
 		}
 		if (ft_strlen(line) == 0)

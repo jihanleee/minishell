@@ -1,20 +1,6 @@
 #include "minishell.h"
 
-void	cd_dir_error(char *str)
-{
-	write(2, "bash: cd: ", 10);
-	write(2, str, get_length(str));
-	write(2, ": Not a directory\n", 18);
-}
-
-void	cd_error(char *str)
-{
-	write(2, "bash: cd: ", 10);
-	write(2, str, get_length(str));
-	write(2, ": No such file or directory\n", 28);
-}
-
-static void	cd_old_path()
+static void	cd_old_path(void)
 {
 	char	*new;
 	char	*cwd;
@@ -61,7 +47,7 @@ static void	cd_normal_path(t_job *current)
 	}
 }
 
-static void	cd_to_home()
+static void	cd_to_home(void)
 {
 	char	*new;
 	char	*cwd;
@@ -70,7 +56,7 @@ static void	cd_to_home()
 	if (!new)
 		write(2, "bash: HOME: No such file or directory\n", 38);
 	else if (is_dir(new) == FALSE)
-			cd_dir_error(new);
+		cd_dir_error(new);
 	else if (access(new, X_OK) == 0)
 	{
 		cwd = getcwd(NULL, 0);
@@ -93,7 +79,7 @@ static void	cd_absolute_path(t_job *current)
 	char	*old;
 
 	if (!current->arg[0][1])
-		cd_to_home(current);
+		cd_to_home();
 	else if (current->arg[0][1] == '/')
 	{
 		old = getcwd(NULL, 0);
@@ -117,25 +103,27 @@ static void	cd_absolute_path(t_job *current)
 int	ft_cd(t_job **lst, int fd)
 {
 	t_job	*current;
+	char	*cwd;
 
 	current = *lst;
+	(void)fd;
 	if (current->arg && current->arg[1])
-		return (write(fd, "bash: cd: too many arguments\n", 29), 1);
+		return (write(2, "bash: cd: too many arguments\n", 29), 1);
+	cwd = getcwd(NULL, 0);
+	if (path_compare(current->arg[0], cwd) == 0)
+		return (0);
+	free(cwd);
 	if (!current->arg || (current->arg[0][0] == '/' && !current->arg[0][1]))
-		cd_to_home(current);
+		cd_to_home();
 	else if (current->arg[0][0] == '-' && !current->arg[0][1])
-		cd_old_path(current);
+		cd_old_path();
 	else if (current->arg[0][0] == '~' && \
 		(!current->arg[0][1] || current->arg[0][1] == '/'))
 		cd_absolute_path(current);
 	else
 	{
 		if (invalid_cd(current->arg[0]) == 1)
-		{
-			write(2, "bash: cd: ", 10);
-			write(2, current->arg[0], get_length(current->arg[0]));
-			write(2, ": No such file or directory\n", 28);
-		}
+			cd_error(current->arg[0]);
 		cd_normal_path(current);
 	}
 	return (0);
