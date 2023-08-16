@@ -32,6 +32,7 @@ int	print_args(t_job *current, int i, int fd)
 		if (current->arg[i])
 			write(fd, " ", 1);
 	}
+	return (0);
 }
 
 void	ft_echo(t_job *current, int fd)

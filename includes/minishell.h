@@ -167,7 +167,6 @@ int			ft_exit(t_job **lst, int fd);
 
 int			validate_and_add(t_job **lst);
 int			add_to_env(char *str);
-static void	export_unset(char *key);
 int			ft_export(t_job **lst, int fd);
 
 /* export_utils.c */
@@ -177,12 +176,12 @@ int			middle_error_case(char *str);
 void		export_error(char *str);
 
 /* pwd.c */
-int			ft_pwd(t_job **lst, int fd);
+int			ft_pwd(int fd);
 
 /* unset.c */
 int			unset_strncmp(const char *s1, const char *s2, size_t n);
 t_env		*check_first(t_env *env, char *value);
-void		ft_unset(t_job **lst, int fd);
+void		ft_unset(t_job **lst);
 
 /*execution*/
 void		free_arrays(char **str);

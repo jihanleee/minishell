@@ -3,7 +3,7 @@ NAME		= minishell
 LIBFT		= libft.a
 
 CC			= gcc
-CFLAGS		= -Wall -Wextra -g3 #-Werror commented out for now, erase it before submission
+CFLAGS		= -Wall -Wextra -g3 -Werror
 RM			= rm -f
 
 I_PATH		= ./includes/

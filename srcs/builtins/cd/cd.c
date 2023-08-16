@@ -14,7 +14,7 @@ void	cd_error(char *str)
 	write(2, ": No such file or directory\n", 28);
 }
 
-static void	cd_old_path(t_job *current)
+static void	cd_old_path()
 {
 	char	*new;
 	char	*cwd;
@@ -61,7 +61,7 @@ static void	cd_normal_path(t_job *current)
 	}
 }
 
-static void	cd_to_home(t_job *current)
+static void	cd_to_home()
 {
 	char	*new;
 	char	*cwd;

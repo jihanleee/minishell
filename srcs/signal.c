@@ -6,7 +6,7 @@
 /*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 17:09:14 by hesong            #+#    #+#             */
-/*   Updated: 2023/08/16 15:47:43 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/08/16 17:19:04 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,6 @@ int	sigaction_set_parent(void)
 }
 void	sig_handler_heredoc(int signum, siginfo_t *info, void *context)
 {
-	char	buf;
-
-	buf = 0;
 	(void)info;
 	(void)context;
 	if (signum == SIGINT)

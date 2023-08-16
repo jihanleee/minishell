@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+static void	export_unset(char *key);
+
 int	validate_and_add(t_job **lst)
 {
 	t_job	*current;
@@ -59,9 +61,7 @@ int	add_to_env(char *str)
 {
 	t_env	**env;
 	t_env	*current;
-	t_env	*new;
 	char	*key;
-	int		i;
 
 	if (middle_error_case(str) == 1)
 		export_error(str);
@@ -69,7 +69,6 @@ int	add_to_env(char *str)
 	export_unset(key);
 	free(key);
 	env = get_env_address();
-	i = 0;
 	if (*env == NULL)
 	{
 		*env = (t_env *)ft_calloc(1, sizeof(t_env));
@@ -88,7 +87,6 @@ static void	export_unset(char *key)
 	t_env	**env;
 	t_env	*current;
 	t_env	*next;
-	t_job	*temp;
 
 	env = get_env_address();
 	current = (*env);
@@ -115,10 +113,6 @@ static void	export_unset(char *key)
 int	ft_export(t_job **lst, int fd)
 {
 	t_job	*current;
-	char	**combine;
-	int		count;
-	int		i;
-	int		x;
 
 	current = *lst;
 	if (!current->arg)

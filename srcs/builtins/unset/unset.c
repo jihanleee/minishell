@@ -33,7 +33,7 @@ t_env	*check_first(t_env *env, char *value)
 	return (current);
 }
 
-void	ft_unset(t_job **lst, int fd)
+void	ft_unset(t_job **lst)
 {
 	t_env	**env;
 	t_env	*current;

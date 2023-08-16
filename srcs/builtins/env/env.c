@@ -2,13 +2,11 @@
 
 void	ft_env(t_job **lst, int fd)
 {
-	int		i;
 	t_job	*job;
 	t_env	**env;
 	t_env	*current;
 
 	job = *lst;
-	i = 0;
 	if (job->arg)
 	{
 		write(fd, "env: \'", 6);

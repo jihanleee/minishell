@@ -18,6 +18,7 @@ int	invalid_cd(char *path)
 		}
 		i++;
 	}
+	return (0);
 }
 
 int	cd_strncmp(const char *s1, const char *s2, size_t n)

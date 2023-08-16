@@ -33,7 +33,7 @@ int	exec_builtin(t_job *cmd_line, int fd)
 {
 	g_exit_stat = 0;
 	if (ft_strncmp("pwd", cmd_line->cmd, 4) == 0)
-		ft_pwd(&cmd_line, fd);
+		ft_pwd(fd);
 	else if (ft_strncmp("cd", cmd_line->cmd, 3) == 0)
 		ft_cd(&cmd_line, fd);
 	else if (ft_strncmp("echo", cmd_line->cmd, 5) == 0)
@@ -43,7 +43,7 @@ int	exec_builtin(t_job *cmd_line, int fd)
 	else if (ft_strncmp("export", cmd_line->cmd, 7) == 0)
 		ft_export(&cmd_line, fd);
 	else if (ft_strncmp("unset", cmd_line->cmd, 6) == 0)
-		ft_unset(&cmd_line, fd);
+		ft_unset(&cmd_line);
 	else if (ft_strncmp("exit", cmd_line->cmd, 5) == 0)
 		ft_exit(&cmd_line, fd);
 	return (0);
