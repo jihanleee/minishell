@@ -37,12 +37,6 @@ void	mark_double_quote(char *line, int *result, int *i)
 	else if (line[*i] == '\"')
 		result[(*i)] = 2;
 }
-/*
-creates quote info in a malloc'd int array. returns -1 for malloc failure.
-ex)
-00000011111100000222222
-sgkfgj'sgjs'fskgj"sfdf"
-*/
 
 int	*create_quote_info(char *line)
 {

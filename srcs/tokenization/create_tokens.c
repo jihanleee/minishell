@@ -76,9 +76,6 @@ int	line_to_token(t_token **tokens, int *quote_info, char *line)
 	return (0);
 }
 
-/*breaks up a line into tokens ,
-assigns them to a t_token type linked-list,
-and returns it. NULL is returned for malloc failure.*/
 t_token	*create_tokens(char *line)
 {
 	t_token			*tokens;
