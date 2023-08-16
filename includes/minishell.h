@@ -197,13 +197,20 @@ void	sig_handler_heredoc(int signum, siginfo_t *info, void *context);
 
 /* --------------------cd--------------------*/
 /* cd.c */
-int			ft_cd(t_job **lst, int fd);
+void		change_update(char *new);
+void		ft_cd(t_job **lst);
+
+/* cd_paths.c */
+void	cd_old_path(void);
+void	cd_normal_path(t_job *current);
+void	cd_to_home(void);
+void	cd_absolute_path(t_job *current);
+void	cd_to_root(void);
 
 /* cd_utils.c */
 int			cd_strncmp(const char *s1, const char *s2, size_t n);
-int	path_compare(char *s1, char *s2);
+int			path_compare(char *s1, char *s2);
 void		cd_unset(char *arg);
-void		cd_export(char *arg, char *path);
 bool		is_dir(char *path);
 
 /* cd_error.c */
