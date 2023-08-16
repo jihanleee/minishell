@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+int	g_exit_stat = 0;
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_token	*tokens;
