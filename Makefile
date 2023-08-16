@@ -41,6 +41,7 @@ SRCS		=	./srcs/parsing/parser.c \
 				./srcs/builtins/pwd/pwd.c \
 				./srcs/builtins/unset/unset.c \
 				./srcs/builtins/cd/cd.c \
+				./srcs/builtins/cd/cd_paths.c \
 				./srcs/builtins/cd/cd_utils.c \
 				./srcs/builtins/cd/cd_error.c \
 				./srcs/env_var.c
