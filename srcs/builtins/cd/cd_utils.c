@@ -63,21 +63,6 @@ void	cd_unset(char *arg)
 	}
 }
 
-void	cd_export(char *arg, char *path)
-{
-	t_env	**env;
-	t_env	*current;
-
-	env = get_env_address();
-	current = (*env);
-	cd_unset(arg);
-	while (current && current->next != NULL)
-		current = current->next;
-	current->next = (t_env *)ft_calloc(1, sizeof(t_env));
-	current->next->str = ft_strjoin(arg, path);
-	current->next->next = NULL;
-}
-
 bool	is_dir(char *path)
 {
 	DIR	*dir;
@@ -88,6 +73,5 @@ bool	is_dir(char *path)
 		closedir(dir);
 		return (TRUE);
 	}
-	else
-		return (FALSE);
+	return (FALSE);
 }

@@ -1,5 +1,12 @@
 #include "minishell.h"
 
+void	cd_nonexist_error(char *str)
+{
+	write(2, "bash: cd: ", 10);
+	write(2, str, get_length(str));
+	write(2, ": No such file or directory\n", 28);
+}
+
 void	cd_dir_error(char *str)
 {
 	write(2, "bash: cd: ", 10);

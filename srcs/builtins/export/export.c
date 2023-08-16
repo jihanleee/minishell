@@ -74,11 +74,14 @@ int	add_to_env(char *str)
 		*env = (t_env *)ft_calloc(1, sizeof(t_env));
 		(*env)->str = ft_strdup(str);
 	}
-	current = (*env);
-	while (current && current->next != NULL)
-		current = current->next;
-	current->next = (t_env *)ft_calloc(1, sizeof (t_env));
-	current->next->str = ft_strdup(str);
+	else
+	{
+		current = (*env);
+		while (current && current->next != NULL)
+			current = current->next;
+		current->next = (t_env *)ft_calloc(1, sizeof (t_env));
+		current->next->str = ft_strdup(str);
+	}
 	return (0);
 }
 
