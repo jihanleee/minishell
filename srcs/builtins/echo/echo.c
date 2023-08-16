@@ -5,6 +5,8 @@ int	get_length(char *str)
 	int	length;
 
 	length = 0;
+	if (!str)
+		return (0);
 	while (str[length])
 	{
 		length++;

@@ -1,6 +1,6 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
-/*add more headers if needed.*/
+
 # include <stdio.h>
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -61,8 +61,6 @@ typedef struct s_token
 	struct s_token	*next;
 }			t_token;
 
-/*in : 0(stdin), 1(infile, heredoc)
-out : 0(stdout), 3(outfile), 4(append) */
 typedef struct s_job
 {
 	int				in;
@@ -138,14 +136,16 @@ void		new_prompt(void);
 void		sig_handler(int signum, siginfo_t *info, void *context);
 int			sigaction_set_prompt(void);
 int 		sigaction_set_parent(void);
+
 /* cd.c */
 int			ft_cd(t_job **lst, int fd);
-bool	is_dir(char *path);
+bool		is_dir(char *path);
+
 /* cd_utils.c */
-int		invalid_cd(char *path);
-int		cd_strncmp(const char *s1, const char *s2, size_t n);
-void	cd_unset(char *arg);
-void	cd_export(char *arg, char *path);
+int			invalid_cd(char *path);
+int			cd_strncmp(const char *s1, const char *s2, size_t n);
+void		cd_unset(char *arg);
+void		cd_export(char *arg, char *path);
 
 /* echo.c */
 int			get_length(char *str);
@@ -161,25 +161,25 @@ int			get_exit_num(t_job current);
 int			ft_exit(t_job **lst, int fd);
 
 /* export.c */
-//int			first_is_valid(char c);
-//int			middle_is_valid(char c);
-void		export_combined(char **combine);
-int			get_block_count(t_job **lst);
-int		fill_blocks(char **combine, t_job **lst);
+
+int			validate_and_add(t_job **lst);
+int			add_to_env(char *str);
+static void	export_unset(char *key);
 int			ft_export(t_job **lst, int fd);
 
 /* export_utils.c */
 int			first_is_valid(char c);
-int			middle_is_valid(char c);
+int			middle_is_valid(char *str);
+int			middle_error_case(char *str);
 void		export_error(char *str);
 
 /* pwd.c */
 int			ft_pwd(t_job **lst, int fd);
 
 /* unset.c */
-int		unset_strncmp(const char *s1, const char *s2, size_t n);
-t_env	*check_first(t_env *env, char *value);
-void	ft_unset(t_job **lst, int fd);
+int			unset_strncmp(const char *s1, const char *s2, size_t n);
+t_env		*check_first(t_env *env, char *value);
+void		ft_unset(t_job **lst, int fd);
 
 /*execution*/
 void		free_arrays(char **str);
@@ -195,12 +195,13 @@ int			exec_builtin(t_job *cmd_line, int fd);
 void		builtin(t_job *job);
 int			check_builtin(char *cmd);
 void		execute_jobs(t_job *jobs);
-char		**get_envp();
+char		**get_envp(void);
 int			get_child_status(int stat);
+
 /*env_var*/
-void	init_env_var(char **envp);
-void	read_env();
-t_env	**get_env_address();
-void	clear_env();
+void		init_env_var(char **envp);
+void		read_env(void);
+t_env		**get_env_address(void);
+void		clear_env(void);
 
 #endif

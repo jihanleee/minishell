@@ -13,7 +13,6 @@ void	read_env()
 	current = *get_env_address();
 	while (current)
 	{
-		//ft_printf("current %s\n", current->str);
 		current = current->next;
 	}
 }
@@ -23,7 +22,7 @@ void	clear_env()
 	t_env	*current;
 	t_env	*next;
 
-	current = *get_env_address(); //unconditonal jump 나와서 추가
+	current = *get_env_address();
 	while (current)
 	{
 		next = current->next;
