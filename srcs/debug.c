@@ -4,7 +4,6 @@ void	read_jobs(t_job *jobs)
 {
 	int	i;
 
-	printf("in read jobs\n");
 	while (jobs)
 	{
 		printf("--------------------\n");

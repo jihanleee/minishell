@@ -12,9 +12,18 @@ void	temp_read_tokens(t_token **lst)
 	}
 }
 
-t_token	*check_first_node()
+void	change_type(t_token *current, t_token *next)
 
-
+{
+	if (next->type != 0 && next->type != 5)
+	{
+		next->next->type = next->type;
+		current->next = next->next;
+		next->next = NULL;
+		free(next->str);
+		free(next);
+	}
+}
 t_token	*parse_tokens(t_token **lst, void (*del)(void *))
 {
 	t_token	*current;
@@ -39,14 +48,7 @@ t_token	*parse_tokens(t_token **lst, void (*del)(void *))
 	while (current && current->next)
 	{
 		next = current->next;
-		if (next->type != 0 && next->type != 5)
-		{
-			next->next->type = next->type;
-			current->next = next->next;
-			next->next = NULL;
-			free(next->str);
-			free(next);
-		}
+		change_type(current, next);
 		current = current->next;
 	}
 	return (result);
@@ -75,7 +77,6 @@ void	print_parse_error(t_token **input)
 	write(2, "\'", 1);
 	write(2, "\n", 1);
 }
-
 
 int	token_error_check(t_token *tokens)
 {
@@ -112,26 +113,6 @@ int	check_tokens(t_token *tokens)
 	while (tokens && tokens->str)
 	{
 		token_error_check(tokens);
-		/*
-		if (tokens->type == 5 && tokens->next && tokens->next->type == 5)
-		{
-			print_parse_error(&tokens);
-			return (1);
-		}
-		if (tokens->type != 0 && tokens->type != 5)
-		{
-			if (tokens->next == NULL || tokens->next->type != 0)
-			{
-				print_parse_error(&tokens);
-				return (1);
-			}
-		}
-		if (tokens->type == pipe_op && tokens->next && tokens->next->type == pipe_op)
-		{
-			print_parse_error(&tokens);
-			return (1);
-		}
-		*/
 		tokens = tokens->next;
 	}
 	return (0);

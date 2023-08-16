@@ -85,8 +85,6 @@ void	execute_jobs(t_job *current)
 
 	stat = 0;
 	n_child = 0;
-	printf("in execute jobs\n");
-	read_jobs(current);
 	while (current)
 	{
 		if (pipe(current->pipefd) < 0)

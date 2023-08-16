@@ -41,12 +41,8 @@ t_job	*extract_jobs(t_token *tokens)
 	t_job	*cur_result;
 	t_token	*current;
 
-	ft_printf("imhere!!\n");
-	ft_printf("%p\n", tokens);
-	read_tokens(tokens);
 	if (tokens == 0)
 		return (0);
-	ft_printf("imhere!!\n");
 	result = (t_job *)ft_calloc(1, sizeof(t_job));
 	cur_result = result;
 	current = tokens;

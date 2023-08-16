@@ -74,7 +74,6 @@ static void	cd_to_home(t_job *current)
 	else if (access(new, X_OK) == 0)
 	{
 		cwd = getcwd(NULL, 0);
-		ft_printf("\tcwd = %s\n", cwd);
 		cd_export("OLDPWD=", cwd);
 		free(cwd);
 		chdir(new);

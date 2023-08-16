@@ -18,7 +18,8 @@
 # include <errno.h>
 # include <dirent.h>
 # include "libft.h"
-# define GREEN "\033[32m"
+# define GREEN "\e[1;32m"
+# define BACK "\e[0m"
 
 typedef struct s_env
 {
@@ -98,6 +99,8 @@ void		temp_read_tokens(t_token **lst);
 int			check_tokens(t_token *tokens);
 void		exit_error(char *message, t_token **temp);
 void		print_parse_error(t_token **input);
+int			token_error_check(t_token *tokens);
+void		change_type(t_token *current, t_token *next);
 t_token		*parse_tokens(t_token **lst, void (*del)(void *));
 
 /*expander*/
