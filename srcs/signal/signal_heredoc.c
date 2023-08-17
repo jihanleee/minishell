@@ -1,4 +1,3 @@
-
 #include "minishell.h"
 
 int	sigaction_set_heredoc(void)

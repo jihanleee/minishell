@@ -2,7 +2,7 @@
 
 t_env	**get_env_address(void)
 {
-	static	t_env *env;
+	static t_env	*env;
 
 	return (&env);
 }

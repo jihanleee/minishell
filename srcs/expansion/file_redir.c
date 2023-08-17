@@ -87,6 +87,7 @@ void	open_file_errors(t_token **current, int fd)
 		}
 	}
 }
+
 void	heredoc_child(t_token *current)
 {
 	pid_t	cpid;

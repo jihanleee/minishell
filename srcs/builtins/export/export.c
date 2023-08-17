@@ -34,8 +34,8 @@ int	validate_and_add(t_job **lst)
 char	*get_key(char *str)
 {
 	char	*result;
-	int	i;
-	int	j;
+	int		i;
+	int		j;
 
 	if (!str)
 		return (NULL);

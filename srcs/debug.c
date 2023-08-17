@@ -6,20 +6,15 @@ void	read_jobs(t_job *jobs)
 
 	while (jobs)
 	{
-		printf("--------------------\n");
-		printf("in read jobs function, expander\n");
 		ft_printf("\tintype\t%d\n", jobs->in);
 		ft_printf("\touttype\t%d\n", jobs->out);
 		if (jobs->cmd)
 			ft_printf("\tcmd\t%s\n", jobs->cmd);
-		i = 0;
+		i = -1;
 		if (jobs->arg)
 		{
-			while (jobs->arg[i])
-			{
+			while (jobs->arg[++i])
 				ft_printf("\targ[%d]\t%s\n", i, jobs->arg[i]);
-				i++;
-			}
 		}
 		if (jobs->infile)
 			ft_printf("\tinfile\t%s\n", jobs->infile);
@@ -27,7 +22,6 @@ void	read_jobs(t_job *jobs)
 		{
 			ft_printf("\toutfile\t%s\n", jobs->outfile);
 		}
-		ft_printf("--------------------\n");
 		if (jobs->next != NULL)
 			jobs = jobs->next;
 		else
