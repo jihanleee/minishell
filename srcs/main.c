@@ -2,12 +2,33 @@
 
 int	g_exit_stat = 0;
 
-t_token	**get_token_address(t_token *new)
+int terminate_minishell(void)
+{
+	clear_env();
+	rl_clear_history();
+	write(1, "exit\n", 5);
+	return (0);
+}
+
+void	do_the_job(t_token **tokens, t_job **jobs)
+{
+	t_token	**tmp;
+
+	tmp = get_token_address();
+	*tmp = parse_tokens(tokens, free);
+	expansion(get_token_address());
+	open_file_redir(get_token_address());
+	*jobs = extract_jobs(*get_token_address());
+	clear_tokens(get_token_address(), free);
+	sigaction_set_parent();
+	execute_jobs(*jobs);
+	clear_jobs(*jobs);
+}
+
+t_token	**get_token_address(void)
 {
 	static t_token	*addr;
 
-	if (!addr)
-		addr = new;
 	return (&addr);
 }
 
@@ -19,21 +40,14 @@ int	main(int argc, char **argv, char **envp)
 
 	g_exit_stat = 0;
 	init_env_var(envp);
-	(void)argc;
-	(void)argv;
 	tokens = 0;
-	while (1)
+	while (argc || argv)
 	{
-/* 		if (!sigaction_set_prompt())
-			write(2, "Error: sigaction_set_failed\n", 28); */
+		if (!sigaction_set_prompt())
+			write(2, "Error: sigaction_set_failed\n", 28);
 		line = readline("MINISHELL> ");
 		if (line == NULL)
-		{
-			clear_env();
-			rl_clear_history();
-			write(1, "exit\n", 5);
-			return (0);
-		}
+			return (terminate_minishell());
 		if (ft_strlen(line) == 0)
 			continue ;
 		add_history(line);
@@ -41,17 +55,7 @@ int	main(int argc, char **argv, char **envp)
 		if (check_tokens(tokens) != 0)
 			clear_tokens(&tokens, free);
 		else
-		{
-			tokens = parse_tokens(&tokens, free);
-			expansion(&tokens);
-			get_token_address(tokens);
-			open_file_redir(get_token_address(0));
-			jobs = extract_jobs(*get_token_address(0));
-			clear_tokens(get_token_address(0), free);
-			sigaction_set_parent();
-			execute_jobs(jobs);
-			clear_jobs(jobs);
-		}
+			do_the_job(&tokens, &jobs);
 	}
 	return (0);
 }

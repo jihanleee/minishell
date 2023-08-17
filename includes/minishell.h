@@ -267,6 +267,6 @@ void		clear_env(void);
 void		init_env_var(char **envp);
 
 /* main.c */
-t_token		**get_token_address(t_token *new);
+t_token		**get_token_address();
 
 #endif
