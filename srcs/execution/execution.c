@@ -36,7 +36,10 @@ int	exec_builtin(t_job *cmd_line, int fd, bool child)
 	else if (ft_strncmp("cd", cmd_line->cmd, 3) == 0)
 		ft_cd(&cmd_line);
 	else if (ft_strncmp("echo", cmd_line->cmd, 5) == 0)
+	{
+		g_exit_stat = 0;
 		ft_echo(cmd_line, fd);
+	}
 	else if (ft_strncmp("env", cmd_line->cmd, 4) == 0)
 		ft_env(&cmd_line, fd);
 	else if (ft_strncmp("export", cmd_line->cmd, 7) == 0)
@@ -49,10 +52,7 @@ int	exec_builtin(t_job *cmd_line, int fd, bool child)
 	else if (ft_strncmp("exit", cmd_line->cmd, 5) == 0)
 		ft_exit(&cmd_line, fd);
 	if (child == TRUE)
-	{
-		error_exit("", 0, cmd_line);
-		exit(g_exit_stat);
-	}
+		error_exit("", g_exit_stat, cmd_line);
 	return (0);
 }
 
@@ -63,6 +63,9 @@ void	builtin_child(t_job *job)
 	cpid = fork();
 	if (cpid == 0)
 	{
+		signal(SIGPIPE, SIG_IGN);
+		if (job->in == -1)
+			error_exit("", 1, job);
 		close(job->pipefd[0]);
 		redirect_fds(job);
 		exec_builtin(job, 1, TRUE);
@@ -81,7 +84,7 @@ void	execute_pipes(t_job *current)
 	{
 		if (pipe(current->pipefd) < 0)
 			perror("pipe");
-		if (current->cmd && check_builtin(current->cmd) && current->in != -1)
+		if (current->out == -1 || (current->cmd && check_builtin(current->cmd)))
 			builtin_child((n_child++, current));
 		else if (current->cmd && current->in != -1)
 			non_builtin_child((n_child++, current));
@@ -93,7 +96,7 @@ void	execute_pipes(t_job *current)
 	i = 0;
 	while (i++ < n_child)
 		wait(&stat);
-	if (n_child)
+	if (n_child && get_child_status(stat) != 141)
 		g_exit_stat = get_child_status(stat);
 }
 

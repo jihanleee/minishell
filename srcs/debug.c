@@ -32,7 +32,7 @@ void	read_jobs(t_job *jobs)
 void	read_lexemes(t_lexeme *crnt)
 {
 	int		i;
-	
+
 	i = 0;
 	while (crnt)
 	{

@@ -88,7 +88,6 @@ void	cd_to_root(void)
 	char	*cwd;
 	char	*line;
 
-	printf("root\n");
 	cwd = getcwd(NULL, 0);
 	cd_unset("OLDPWD");
 	line = ft_strjoin("OLDPWD=", cwd);

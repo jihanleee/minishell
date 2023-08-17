@@ -19,6 +19,7 @@ SRCS		=	./srcs/parsing/parser.c \
 				./srcs/expansion/find_param.c \
 				./srcs/expansion/assign_quotes.c \
 				./srcs/expansion/file_redir.c \
+				./srcs/expansion/file_redir_utils.c \
 				./srcs/expansion/clear.c \
 				./srcs/expansion/expander.c \
 				./srcs/expansion/expansion_utils.c \
@@ -36,6 +37,7 @@ SRCS		=	./srcs/parsing/parser.c \
 				./srcs/builtins/echo/echo.c \
 				./srcs/builtins/env/env.c \
 				./srcs/builtins/exit/exit.c \
+				./srcs/builtins/exit/exit_utils.c \
 				./srcs/builtins/export/export.c \
 				./srcs/builtins/export/export_utils.c \
 				./srcs/builtins/pwd/pwd.c \

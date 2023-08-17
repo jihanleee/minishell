@@ -20,6 +20,12 @@ void	change_update(char *new)
 	free((free(cwd_two), line_two));
 }
 
+void	toomanyargs(void)
+{
+	g_exit_stat = 1;
+	write(2, "bash: cd: too many arguments\n", 29);
+}
+
 void	ft_cd(t_job **lst)
 {
 	t_job	*current;
@@ -30,7 +36,7 @@ void	ft_cd(t_job **lst)
 	if (!current->arg)
 		cd_to_home();
 	else if (current->arg && current->arg[1])
-		write(2, "bash: cd: too many arguments\n", 29);
+		toomanyargs();
 	else if (path_compare(current->arg[0], cwd) == 0)
 	{
 		return (free(cwd));

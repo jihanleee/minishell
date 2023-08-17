@@ -72,8 +72,7 @@ char	*file_path(char *cmd, t_job *job)
 		clear_jobs(job);
 		if (errno == 13)
 			exit(126);
-		else
-			exit(127);
+		exit(127);
 	}
 }
 
@@ -101,6 +100,6 @@ char	*find_cmd_path(char *cmd, t_job *job)
 	}
 	free_arrays(path);
 	if (!withcmd || cmd[0] == '\0')
-		error_exit((ft_putstr_fd(cmd, 2), ": Command not found\n"), 127, job);
+		error_exit((ft_putstr_fd(cmd, 2), ": command not found\n"), 127, job);
 	return (withcmd);
 }

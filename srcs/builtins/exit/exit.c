@@ -2,12 +2,14 @@
 
 int	check_int(char *arg)
 {
-	int	i;
+	int		i;
 
 	i = 0;
 	if (arg == NULL)
 		return (1);
-	if (arg[i] == '-')
+	if (arg[i] == '\0')
+		return (1);
+	if (arg[i] == '-' || arg[i] == '+')
 		i++;
 	while (arg[i])
 	{
@@ -15,6 +17,8 @@ int	check_int(char *arg)
 			return (1);
 		i++;
 	}
+	if (is_overflow(arg) == 1)
+		return (1);
 	return (0);
 }
 
@@ -42,14 +46,14 @@ void	exit_error_cases(int arg_cnt, t_job *current)
 {
 	if (arg_cnt > 1 && check_int(current->arg[0]) == 0)
 	{
-		write(2, "exit\n", 5);
+		write(1, "exit\n", 5);
 		write(2, "bash: exit: too many arguments\n", 31);
 		g_exit_stat = 1;
 		free_exit(1, current);
 	}
 	else
 	{
-		write(2, "bash: exit: ", 12);
+		write(1, "bash: exit: ", 12);
 		write(2, current->arg[0], ft_strlen(current->arg[0]));
 		write(2, ": numeric argument required\n", 28);
 		g_exit_stat = 2;
@@ -59,7 +63,7 @@ void	exit_error_cases(int arg_cnt, t_job *current)
 int	ft_exit(t_job **lst, int fd)
 {
 	t_job	*current;
-	int		exit_num;
+	long	exit_num;
 	int		arg_cnt;
 
 	exit_num = 0;
@@ -71,7 +75,7 @@ int	ft_exit(t_job **lst, int fd)
 		free_exit(0, current);
 	if (arg_cnt == 1 && check_int(current->arg[0]) == 0)
 	{
-		exit_num = atoi(current->arg[0]) % 256;
+		exit_num = ft_atol(current->arg[0]) % 256;
 		write(fd, "exit\n", 5);
 		g_exit_stat = exit_num;
 		if (exit_num == 0)

@@ -2,6 +2,7 @@
 
 void	cd_nonexist_error(char *str)
 {
+	g_exit_stat = 1;
 	write(2, "bash: cd: ", 10);
 	write(2, str, get_length(str));
 	write(2, ": No such file or directory\n", 28);
@@ -9,6 +10,7 @@ void	cd_nonexist_error(char *str)
 
 void	cd_dir_error(char *str)
 {
+	g_exit_stat = 1;
 	write(2, "bash: cd: ", 10);
 	write(2, str, get_length(str));
 	write(2, ": Not a directory\n", 18);
@@ -16,6 +18,7 @@ void	cd_dir_error(char *str)
 
 void	cd_error(char *str)
 {
+	g_exit_stat = 1;
 	write(2, "bash: cd: ", 10);
 	write(2, str, get_length(str));
 	write(2, ": No such file or directory\n", 28);

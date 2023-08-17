@@ -147,6 +147,8 @@ char		*find_param(char *p_name);
 /* file_redir.c */
 void		create_heredoc(const char *delim, bool hereq);
 int			open_file_redir(t_token **tokens);
+char		*gnl_heredoc(bool hereq, char **line);
+char		*readline_nl(char *str);
 
 /* expansion_utils.c */
 bool		is_ifs(char c);
@@ -228,7 +230,7 @@ int			cnt_arg(t_job *current);
 void		free_exit(int exit_status, t_job *job);
 void		exit_error_cases(int arg_cnt, t_job *current);
 int			ft_exit(t_job **lst, int fd);
-
+bool 		is_overflow(char *arg);
 /* --------------------export--------------------*/
 /* export.c */
 int			validate_and_add(t_job **lst);
