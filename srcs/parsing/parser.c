@@ -23,7 +23,7 @@ t_token	*parse_tokens(t_token **lst, void (*del)(void *))
 		return (NULL);
 	result = *lst;
 	current = *lst;
-	if (current->type != 0)
+	if (current->type != 0 && current->next)
 	{
 		temp = current;
 		current->next->type = current->type;
@@ -76,7 +76,8 @@ int	check_tokens(t_token *tokens)
 	}
 	while (tokens && tokens->str)
 	{
-		token_error_check(tokens);
+		if (token_error_check(tokens))
+			return (1);
 		tokens = tokens->next;
 	}
 	return (0);

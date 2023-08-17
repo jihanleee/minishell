@@ -34,26 +34,26 @@ int	cnt_arg(t_job *current)
 	return (cnt);
 }
 
-void	free_exit(int exit_status, t_job *job)
+void	free_exit(int exit_status, t_job *job, int fd)
 {
+	write(fd, "exit\n", 5);
 	rl_clear_history();
 	clear_env();
 	clear_jobs(job);
 	exit(exit_status);
 }
 
-void	exit_error_cases(int arg_cnt, t_job *current)
+void	exit_error_cases(int arg_cnt, t_job *current, int fd)
 {
 	if (arg_cnt > 1 && check_int(current->arg[0]) == 0)
 	{
-		write(1, "exit\n", 5);
 		write(2, "bash: exit: too many arguments\n", 31);
 		g_exit_stat = 1;
-		free_exit(1, current);
+		free_exit(1, current, fd);
 	}
 	else
 	{
-		write(1, "bash: exit: ", 12);
+		write(2, "bash: exit: ", 12);
 		write(2, current->arg[0], ft_strlen(current->arg[0]));
 		write(2, ": numeric argument required\n", 28);
 		g_exit_stat = 2;
@@ -72,16 +72,15 @@ int	ft_exit(t_job **lst, int fd)
 	if (current->next)
 		return (0);
 	if (arg_cnt == 0)
-		free_exit(0, current);
+		free_exit(0, current, fd);
 	if (arg_cnt == 1 && check_int(current->arg[0]) == 0)
 	{
 		exit_num = ft_atol(current->arg[0]) % 256;
-		write(fd, "exit\n", 5);
 		g_exit_stat = exit_num;
 		if (exit_num == 0)
 			return (0);
-		free_exit(exit_num, current);
+		free_exit(exit_num, current, fd);
 	}
-	exit_error_cases(arg_cnt, current);
+	exit_error_cases(arg_cnt, current, fd);
 	return (-1);
 }

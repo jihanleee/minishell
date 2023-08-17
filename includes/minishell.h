@@ -227,8 +227,8 @@ void		ft_env(t_job **lst, int fd);
 /* --------------------exit--------------------*/
 int			check_int(char *arg);
 int			cnt_arg(t_job *current);
-void		free_exit(int exit_status, t_job *job);
-void		exit_error_cases(int arg_cnt, t_job *current);
+void		free_exit(int exit_status, t_job *job, int fd);
+void		exit_error_cases(int arg_cnt, t_job *current, int fd);
 int			ft_exit(t_job **lst, int fd);
 bool 		is_overflow(char *arg);
 /* --------------------export--------------------*/

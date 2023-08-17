@@ -110,9 +110,9 @@ void	execute_jobs(t_job *jobs)
 	{
 		outfd = 1;
 		if (jobs->out == 3)
-		outfd = open(jobs->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			outfd = open(jobs->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		else if (jobs->out == 4)
-		outfd = open(jobs->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+			outfd = open(jobs->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		exec_builtin(jobs, outfd, FALSE);
 	}
 	else

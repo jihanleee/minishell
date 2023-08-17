@@ -24,9 +24,9 @@ int	main(int argc, char **argv, char **envp)
 	tokens = 0;
 	while (1)
 	{
-		if (!sigaction_set_prompt())
-			write(2, "Error: sigaction_set_failed\n", 28);
-		line = readline(GREEN "MINISHELL> " BACK);
+/* 		if (!sigaction_set_prompt())
+			write(2, "Error: sigaction_set_failed\n", 28); */
+		line = readline("MINISHELL> ");
 		if (line == NULL)
 		{
 			clear_env();
