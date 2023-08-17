@@ -45,10 +45,10 @@ int	main(int argc, char **argv, char **envp)
 			tokens = parse_tokens(&tokens, free);
 			expansion(&tokens);
 			get_token_address(tokens);
-			sigaction_set_parent();
 			open_file_redir(get_token_address(0));
 			jobs = extract_jobs(*get_token_address(0));
 			clear_tokens(get_token_address(0), free);
+			sigaction_set_parent();
 			execute_jobs(jobs);
 			clear_jobs(jobs);
 		}

@@ -5,7 +5,7 @@ void	create_heredoc(const char *delim, bool hereq)
 	int		fd;
 	char	*line;
 
-	fd = open("heredoc.tmp", O_RDWR | O_CREAT | O_TRUNC, 0777);
+	fd = open("/tmp/heredoc.tmp", O_RDWR | O_CREAT | O_TRUNC, 0777);
 	while (1)
 	{
 		line = readline_nl("> ");
@@ -55,6 +55,7 @@ void	heredoc_child(t_token *current)
 {
 	pid_t	cpid;
 
+	sigaction_set_heredoc_parent();
 	g_exit_stat = 0;
 	cpid = fork();
 	if (cpid == 0)
@@ -87,7 +88,7 @@ int	open_file_redir(t_token **tokens)
 		{
 			heredoc_child(current);
 			free(current->str);
-			current->str = ft_strdup("heredoc.tmp");
+			current->str = ft_strdup("/tmp/heredoc.tmp");
 			if (g_exit_stat == 130)
 				return ((clear_tokens(get_token_address(0), free), 0));
 		}

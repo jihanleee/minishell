@@ -187,7 +187,7 @@ void		sig_handler_prompt(int signum, siginfo_t *info, void *context);
 int			sigaction_set_prompt(void);
 int			sigaction_set_parent(void);
 void		sig_handler_parent(int signum, siginfo_t *info, void *context);
-
+int			sigaction_set_heredoc_parent(void);
 /* signal_heredoc.c */
 int			sigaction_set_heredoc(void);
 void		sig_handler_heredoc(int signum, siginfo_t *info, void *context);
