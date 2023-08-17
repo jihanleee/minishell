@@ -92,6 +92,7 @@ void	print_parse_error(t_token **input)
 	write(2, "bash: syntax error near unexpected token \'", 42);
 	if (current->type >= 1 && current->type <= 4)
 	{
+		if (current->next)
 			write(2, current->next->str, get_length(current->next->str));
 	}
 	else
