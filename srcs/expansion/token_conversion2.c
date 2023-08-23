@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   token_conversion2.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/17 12:22:43 by solee2            #+#    #+#             */
+/*   Updated: 2023/08/17 20:45:41 by jihalee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static bool	is_allexp(t_lexeme *lexemes)
@@ -49,5 +61,6 @@ t_token	*token_to_etoken(t_token *old)
 	if (old->type == heredoc && quote_is_found(lexemes))
 		result->hereq = 1;
 	clear_lexemes(&lexemes, free);
-	return (free(iword), result);
+	free(iword);
+	return (result);
 }

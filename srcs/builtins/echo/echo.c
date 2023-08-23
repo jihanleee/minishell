@@ -1,18 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   echo.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/17 13:59:25 by solee2            #+#    #+#             */
+/*   Updated: 2023/08/23 16:34:21 by jihalee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-
-int	get_length(char *str)
-{
-	int	length;
-
-	length = 0;
-	if (!str)
-		return (0);
-	while (str[length])
-	{
-		length++;
-	}
-	return (length);
-}
 
 int	print_args(t_job *current, int i, int fd)
 {
@@ -25,7 +23,8 @@ int	print_args(t_job *current, int i, int fd)
 		{
 			if (current->arg[i][j] == '\\')
 				j++;
-			write(fd, &current->arg[i][j], 1);
+			if (current->arg[i][j])
+				write(fd, &current->arg[i][j], 1);
 			j++;
 		}
 		i++;

@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/05 17:09:14 by hesong            #+#    #+#             */
-/*   Updated: 2023/08/17 00:10:39 by jihalee          ###   ########.fr       */
+/*   Created: 2023/08/17 17:45:06 by jihalee           #+#    #+#             */
+/*   Updated: 2023/08/23 17:13:14 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ int	sigaction_set_prompt(void)
 	if (sigaction(SIGQUIT, &sig_struct, NULL) == -1)
 		return (0);
 	signal(SIGQUIT, SIG_IGN);
+	signal(SIGTSTP, SIG_IGN);
 	return (1);
 }
 
@@ -76,7 +77,7 @@ void	sig_handler_parent(int signum, siginfo_t *info, void *context)
 		waitpid(-1, &stat, 0);
 		g_exit_stat = get_child_status(stat);
 		if (g_exit_stat == 131)
-			ft_putstr_fd("quit (core dumped)\n", 2);
+			ft_putstr_fd("Quit (core dumped)\n", 2);
 	}
 	return ;
 }

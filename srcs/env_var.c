@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_var.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/17 12:12:56 by solee2            #+#    #+#             */
+/*   Updated: 2023/08/21 01:01:11 by jihalee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 t_env	**get_env_address(void)
@@ -5,18 +17,6 @@ t_env	**get_env_address(void)
 	static t_env	*env;
 
 	return (&env);
-}
-
-void	read_env(void)
-{
-	t_env	*current;
-
-	current = *get_env_address();
-	while (current)
-	{
-		printf("%s\n", current->str);
-		current = current->next;
-	}
 }
 
 void	clear_env(void)
@@ -35,6 +35,26 @@ void	clear_env(void)
 	}
 }
 
+void	init_surpressed_env(void)
+{
+	char	*pwd;
+	char	*line;
+	t_env	**env;
+
+	env = get_env_address();
+	*env = ft_calloc(1, sizeof (t_env));
+	(*env)->str = ft_strdup("_=/usr/bin/env");
+	pwd = getcwd(NULL, 0);
+	if (pwd)
+	{
+		line = ft_strjoin("PWD=", pwd);
+		free(pwd);
+		add_to_env(line);
+		free(line);
+	}
+	add_to_env("SHLVL=1");
+}
+//beware of the functions that manipulate first node. test required
 void	init_env_var(char **envp)
 {
 	int		i;
@@ -43,7 +63,10 @@ void	init_env_var(char **envp)
 
 	env = get_env_address();
 	if (!envp[0])
+	{
+		init_surpressed_env();
 		return ;
+	}
 	*env = (t_env *)ft_calloc(1, sizeof (t_env));
 	(*env)->str = ft_strdup(envp[0]);
 	current = (*env);
@@ -51,7 +74,10 @@ void	init_env_var(char **envp)
 	while (envp[i])
 	{
 		current->next = (t_env *)ft_calloc(1, sizeof (t_env));
-		current->next->str = ft_strdup(envp[i]);
+		if (ft_strncmp(envp[i], "_=", 2) == 0)
+			current->next->str = ft_strdup("_=/usr/bin/env");
+		else
+			current->next->str = ft_strdup(envp[i]);
 		current = current->next;
 		i++;
 	}

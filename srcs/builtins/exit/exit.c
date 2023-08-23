@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/17 13:59:48 by solee2            #+#    #+#             */
+/*   Updated: 2023/08/18 14:41:35 by jihalee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	check_int(char *arg)
@@ -36,7 +48,7 @@ int	cnt_arg(t_job *current)
 
 void	free_exit(int exit_status, t_job *job, int fd)
 {
-	write(fd, "exit\n", 5);
+	(void)fd;
 	rl_clear_history();
 	clear_env();
 	clear_jobs(job);
@@ -47,16 +59,18 @@ void	exit_error_cases(int arg_cnt, t_job *current, int fd)
 {
 	if (arg_cnt > 1 && check_int(current->arg[0]) == 0)
 	{
+		write(2, "exit\n", 5);
 		write(2, "bash: exit: too many arguments\n", 31);
 		g_exit_stat = 1;
-		free_exit(1, current, fd);
 	}
 	else
 	{
+		write(2, "exit\n", 5);
 		write(2, "bash: exit: ", 12);
 		write(2, current->arg[0], ft_strlen(current->arg[0]));
 		write(2, ": numeric argument required\n", 28);
 		g_exit_stat = 2;
+		free_exit(2, current, fd);
 	}
 }
 
@@ -72,7 +86,7 @@ int	ft_exit(t_job **lst, int fd)
 	if (current->next)
 		return (0);
 	if (arg_cnt == 0)
-		free_exit(0, current, fd);
+		free_exit(g_exit_stat, current, fd); // the last exit status becomes the exit state of the shell
 	if (arg_cnt == 1 && check_int(current->arg[0]) == 0)
 	{
 		exit_num = ft_atol(current->arg[0]) % 256;

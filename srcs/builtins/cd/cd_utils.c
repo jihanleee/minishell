@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cd_utils.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/17 13:59:08 by solee2            #+#    #+#             */
+/*   Updated: 2023/08/23 17:19:34 by jihalee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	cd_strncmp(const char *s1, const char *s2, size_t n)
@@ -14,26 +26,6 @@ int	cd_strncmp(const char *s1, const char *s2, size_t n)
 	return (0);
 }
 
-int	path_compare(char *s1, char *s2)
-{
-	int	lengthone;
-	int	lengthtwo;
-	int	i;
-
-	lengthone = get_length(s1);
-	lengthtwo = get_length(s2);
-	if (lengthone != lengthtwo)
-		return (1);
-	i = 0;
-	while (s1[i] && s2[i])
-	{
-		if (s1[i] != s2[i])
-			return (1);
-		i++;
-	}
-	return (0);
-}
-
 void	cd_unset(char *arg)
 {
 	t_env	**env;
@@ -43,7 +35,7 @@ void	cd_unset(char *arg)
 	env = get_env_address();
 	current = (*env);
 	if (((*env) && (*env)->str) && \
-		(cd_strncmp(current->str, arg, get_length(arg)) == 0))
+		(cd_strncmp(current->str, arg, ft_strlen(arg)) == 0))
 	{
 		next = current->next;
 		free((free(current->str), current));
@@ -53,7 +45,7 @@ void	cd_unset(char *arg)
 	while (current)
 	{
 		next = current->next;
-		if (next && cd_strncmp(next->str, arg, get_length(arg)) == 0)
+		if (next && cd_strncmp(next->str, arg, ft_strlen(arg)) == 0)
 		{
 			current->next = current->next->next;
 			free((free(next->str), next));
@@ -74,4 +66,21 @@ bool	is_dir(char *path)
 		return (TRUE);
 	}
 	return (FALSE);
+}
+
+void	cd_to_root(void)
+{
+	char	*cwd;
+	char	*line;
+
+	cwd = getcwd(NULL, 0);
+	cd_unset("OLDPWD");
+	line = ft_strjoin("OLDPWD=", cwd);
+	add_to_env(line);
+	free(cwd);
+	free(line);
+	chdir("/");
+	g_exit_stat = 0;
+	cd_unset("PWD");
+	add_to_env("PWD=/");
 }

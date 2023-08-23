@@ -1,11 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   file_redir.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/17 12:21:37 by solee2            #+#    #+#             */
+/*   Updated: 2023/08/21 00:23:32 by jihalee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-void	create_heredoc(const char *delim, bool hereq)
+void	create_heredoc(const char *delim, bool hereq, char *randname)
 {
 	int		fd;
 	char	*line;
 
-	fd = open("/tmp/heredoc.tmp", O_RDWR | O_CREAT | O_TRUNC, 0777);
+	fd = open(randname, O_RDWR | O_CREAT | O_TRUNC, 0777);
 	while (1)
 	{
 		line = readline_nl("> ");
@@ -54,20 +66,24 @@ void	open_file_errors(t_token **current, int fd)
 void	heredoc_child(t_token *current)
 {
 	pid_t	cpid;
+	char	randname[12];
 
 	sigaction_set_heredoc_parent();
+	set_random_filename(randname);
 	g_exit_stat = 0;
 	cpid = fork();
 	if (cpid == 0)
 	{
 		sigaction_set_heredoc();
-		create_heredoc(current->str, current->hereq);
-		clear_tokens(get_token_address(0), free);
+		create_heredoc(current->str, current->hereq, randname);
+		clear_tokens(get_token_address(), free);
 		rl_clear_history();
 		clear_env();
 		exit(0);
 	}
 	wait(0);
+	free(current->str);
+	current->str = ft_strdup(randname);
 }
 
 int	open_file_redir(t_token **tokens)
@@ -87,10 +103,8 @@ int	open_file_redir(t_token **tokens)
 		if (current->type == heredoc)
 		{
 			heredoc_child(current);
-			free(current->str);
-			current->str = ft_strdup("/tmp/heredoc.tmp");
 			if (g_exit_stat == 130)
-				return ((clear_tokens(get_token_address(0), free), 0));
+				return ((clear_tokens(get_token_address(), free), 0));
 		}
 		open_file_errors(&current, fd);
 		if (current)

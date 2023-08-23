@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   file_redir_utils.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/17 12:21:45 by solee2            #+#    #+#             */
+/*   Updated: 2023/08/21 00:23:27 by jihalee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 char	*gnl_heredoc(bool hereq, char **line)
@@ -35,4 +47,29 @@ char	*readline_nl(char *str)
 	withnl = ft_strjoin(line, "\n");
 	free(line);
 	return (withnl);
+}
+
+void	set_random_filename(char *randname)
+{
+	char	*tmp;
+	char	buf;
+	int		i;
+	int		fd;
+
+	tmp = "/tmp/";
+	fd = open("/dev/random", O_RDONLY);
+	i = 0;
+	while (tmp[i])
+	{
+		randname[i] = tmp[i];
+		i++;
+	}
+	while (i < 6)
+	{
+		read(fd, &buf, 1);
+		randname[i] = buf % 50 + 50;
+		i++;
+	}
+	randname[i] = '\0';
+	close(fd);
 }

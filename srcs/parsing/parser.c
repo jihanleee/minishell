@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/17 13:58:19 by solee2            #+#    #+#             */
+/*   Updated: 2023/08/23 16:34:08 by jihalee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	change_type(t_token *current, t_token *next)
@@ -93,10 +105,10 @@ void	print_parse_error(t_token **input)
 	if (current->type >= 1 && current->type <= 4)
 	{
 		if (current->next)
-			write(2, current->next->str, get_length(current->next->str));
+			write(2, current->next->str, ft_strlen(current->next->str));
 	}
 	else
-		write(2, current->str, get_length(current->str));
+		write(2, current->str, ft_strlen(current->str));
 	write(2, "\'", 1);
 	write(2, "\n", 1);
 }

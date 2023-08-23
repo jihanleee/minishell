@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execution.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/17 12:16:07 by solee2            #+#    #+#             */
+/*   Updated: 2023/08/23 17:12:56 by jihalee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	non_builtin_child(t_job *job)
@@ -77,6 +89,7 @@ void	execute_pipes(t_job *current)
 	int		stat;
 	int		n_child;
 	int		i;
+	int		r_wait;
 
 	stat = 0;
 	n_child = 0;
@@ -95,8 +108,8 @@ void	execute_pipes(t_job *current)
 	}
 	i = 0;
 	while (i++ < n_child)
-		wait(&stat);
-	if (n_child && get_child_status(stat) != 141)
+		r_wait = wait(&stat);
+	if (n_child && r_wait != -1 && get_child_status(stat) != 141)
 		g_exit_stat = get_child_status(stat);
 }
 

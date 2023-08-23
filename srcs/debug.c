@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   debug.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/17 12:13:28 by solee2            #+#    #+#             */
+/*   Updated: 2023/08/18 14:46:02 by jihalee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	read_jobs(t_job *jobs)
@@ -65,5 +77,18 @@ void	read_tokens(t_token *current)
 		printf("\ttype:\t%d\n", current->type);
 		current = current->next;
 		i++;
+	}
+}
+
+//protect the first node... it should be reset to 0 when empty.
+void	read_env(void)
+{
+	t_env	*current;
+
+	current = *get_env_address();
+	while (current)
+	{
+		printf("%s\n", current->str);
+		current = current->next;
 	}
 }

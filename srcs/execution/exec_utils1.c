@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_utils1.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/17 12:14:55 by solee2            #+#    #+#             */
+/*   Updated: 2023/08/17 19:58:54 by jihalee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	free_arrays(char **str)
@@ -33,17 +45,18 @@ char	**bin_path(t_job *job)
 		env = env->next;
 	}
 	if (!env)
+		path = 0;
+	else
 	{
-		path = ft_split("/bin", ' ');
-		return (path);
-	}
-	i = 0;
-	while (env->str[i] && env->str[i] != '=')
+		i = 0;
+		while (env->str[i] && env->str[i] != '=')
+			i++;
 		i++;
-	i++;
-	path = ft_split(&(env->str[i]), ':');
+		path = ft_split(&(env->str[i]), ':');
+	}
 	if (path == 0)
-		error_exit("malloc error\n", 1, job);
+		error_exit((write(2, job->cmd, ft_strlen(job->cmd)), \
+		": No such file or directory\n"), 127, job);
 	return (path);
 }
 

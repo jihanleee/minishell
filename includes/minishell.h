@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/17 12:11:59 by solee2            #+#    #+#             */
+/*   Updated: 2023/08/23 16:34:38 by jihalee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -145,7 +157,7 @@ void		assign_cmd_arg(t_token *current, t_job *cur_result);
 char		*find_param(char *p_name);
 
 /* file_redir.c */
-void		create_heredoc(const char *delim, bool hereq);
+void		create_heredoc(const char *delim, bool hereq, char *randname);
 int			open_file_redir(t_token **tokens);
 char		*gnl_heredoc(bool hereq, char **line);
 char		*readline_nl(char *str);
@@ -153,7 +165,7 @@ char		*readline_nl(char *str);
 /* expansion_utils.c */
 bool		is_ifs(char c);
 int			len_lvname(char *str);
-
+void		set_random_filename(char *str);
 /* clear.c */
 void		clear_tokens(t_token **lst, void (*del)(void *));
 void		clear_lexemes(t_lexeme **lst, void (*del)(void *));
@@ -202,22 +214,21 @@ void		cd_old_path(void);
 void		cd_normal_path(t_job *current);
 void		cd_to_home(void);
 void		cd_absolute_path(t_job *current);
-void		cd_to_root(void);
+void		cd_absolute_path_two(t_job *current);
 
 /* cd_utils.c */
 int			cd_strncmp(const char *s1, const char *s2, size_t n);
-int			path_compare(char *s1, char *s2);
 void		cd_unset(char *arg);
 bool		is_dir(char *path);
+void		cd_to_root(void);
 
-/* cd_error.c */
+/* cd_permission_error.c */
 void		cd_nonexist_error(char *str);
 void		cd_dir_error(char *str);
-void		cd_error(char *str);
+void		cd_permission_error(char *str);
 int			invalid_cd(char *path);
 
 /* --------------------echo--------------------*/
-int			get_length(char *str);
 int			print_args(t_job *current, int i, int fd);
 void		ft_echo(t_job *current, int fd);
 
@@ -230,7 +241,7 @@ int			cnt_arg(t_job *current);
 void		free_exit(int exit_status, t_job *job, int fd);
 void		exit_error_cases(int arg_cnt, t_job *current, int fd);
 int			ft_exit(t_job **lst, int fd);
-bool 		is_overflow(char *arg);
+bool		is_overflow(char *arg);
 /* --------------------export--------------------*/
 /* export.c */
 int			validate_and_add(t_job **lst);
@@ -243,7 +254,11 @@ int			first_is_valid(char c);
 int			middle_is_valid(char *str);
 int			middle_error_case(char *str);
 void		export_error(char *str);
+void		export_env(int fd);
 
+/*export_unset*/
+void		pop_env_node(t_env **env, t_env **current, t_env **prev);
+int			export_unset(char *key);
 /* --------------------pwd--------------------*/
 /* pwd.c */
 int			ft_pwd(int fd);
@@ -267,6 +282,6 @@ void		clear_env(void);
 void		init_env_var(char **envp);
 
 /* main.c */
-t_token		**get_token_address();
+t_token		**get_token_address(void);
 
 #endif

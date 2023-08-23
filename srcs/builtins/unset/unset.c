@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   unset.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/17 14:00:35 by solee2            #+#    #+#             */
+/*   Updated: 2023/08/23 16:34:08 by jihalee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	unset_strncmp(const char *s1, const char *s2, size_t n)
@@ -5,6 +17,8 @@ int	unset_strncmp(const char *s1, const char *s2, size_t n)
 	size_t	i;
 
 	i = 0;
+	if (s2 && s2[0] == '_' && s2[1] == '\0')
+		return (-1000);
 	while ((s1[i] || s2[i]) && i < n)
 	{
 		if (s1[i] != s2[i])
@@ -23,7 +37,7 @@ t_env	*check_first(t_env *env, char *value)
 
 	current = env;
 	if ((current && current->str) && \
-		(unset_strncmp(current->str, value, get_length(value)) == 0))
+		(unset_strncmp(current->str, value, ft_strlen(value)) == 0))
 	{
 		next = current->next;
 		free(current->str);
@@ -51,7 +65,7 @@ void	ft_unset(t_job **lst)
 		{
 			next = current->next;
 			if (next && unset_strncmp(next->str, temp->arg[i], \
-				get_length(temp->arg[i])) == 0)
+				ft_strlen(temp->arg[i])) == 0)
 			{
 				current->next = current->next->next;
 				free((free(next->str), next));

@@ -1,6 +1,6 @@
 
 NAME		= minishell
-LIBFT		= libft.a
+LIBFT		= ./includes/libft/libft.a
 
 CC			= gcc
 CFLAGS		= -Wall -Wextra -g3 -Werror
@@ -40,13 +40,15 @@ SRCS		=	./srcs/parsing/parser.c \
 				./srcs/builtins/exit/exit_utils.c \
 				./srcs/builtins/export/export.c \
 				./srcs/builtins/export/export_utils.c \
+				./srcs/builtins/export/export_unset.c \
 				./srcs/builtins/pwd/pwd.c \
 				./srcs/builtins/unset/unset.c \
 				./srcs/builtins/cd/cd.c \
 				./srcs/builtins/cd/cd_paths.c \
 				./srcs/builtins/cd/cd_utils.c \
 				./srcs/builtins/cd/cd_error.c \
-				./srcs/env_var.c
+				./srcs/env_var.c \
+
 
 OBJS		= ${SRCS:.c=.o}
 
@@ -55,10 +57,12 @@ all: ${NAME}
 %.o: %.c 
 	${CC} ${CFLAGS} ${INCLUDES} -c $< -o $@
 
-${NAME}: ${OBJS}
-	@${MAKE} -C ${L_PATH}
+${NAME}: ${OBJS} ${LIBFT}
 	echo ${SRCS}
 	${CC} ${CLFAGS} ${OBJS} ${INCLUDES} -o ${NAME} -L${L_PATH} -lft -lreadline
+
+${LIBFT}:
+	@${MAKE} -C ${L_PATH}
 
 clean:
 	${RM} ./*.o

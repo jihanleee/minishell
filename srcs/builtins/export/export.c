@@ -1,6 +1,16 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   export.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/17 14:00:07 by solee2            #+#    #+#             */
+/*   Updated: 2023/08/18 14:46:19 by jihalee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-static void	export_unset(char *key);
+#include "minishell.h"
 
 int	validate_and_add(t_job **lst)
 {
@@ -63,63 +73,40 @@ int	add_to_env(char *str)
 	t_env	*current;
 	char	*key;
 
+	env = get_env_address();
 	if (middle_error_case(str) == 1)
 		export_error(str);
 	key = get_key(str);
-	export_unset(key);
-	free(key);
-	env = get_env_address();
-	if (*env == NULL)
+	if (export_unset(key) == 0)
 	{
-		*env = (t_env *)ft_calloc(1, sizeof(t_env));
-		(*env)->str = ft_strdup(str);
-	}
-	else
-	{
-		current = (*env);
-		while (current && current->next != NULL)
-			current = current->next;
-		current->next = (t_env *)ft_calloc(1, sizeof (t_env));
-		current->next->str = ft_strdup(str);
-	}
-	return (0);
-}
-
-static void	export_unset(char *key)
-{
-	t_env	**env;
-	t_env	*current;
-	t_env	*next;
-
-	env = get_env_address();
-	current = (*env);
-	if (current && current->str)
-	{
-		if (current && unset_strncmp(current->str, key, get_length(key)) == 0)
+		if (*env == NULL)
 		{
-			next = current->next;
-			current = next;
+			*env = (t_env *)ft_calloc(1, sizeof(t_env));
+			(*env)->str = ft_strdup(str);
+		}
+		else
+		{
+			current = (*env);
+			while (current && current->next != NULL)
+				current = current->next;
+			current->next = (t_env *)ft_calloc(1, sizeof (t_env));
+			current->next->str = ft_strdup(str);
 		}
 	}
-	while (current)
-	{
-		next = current->next;
-		if (next && unset_strncmp(next->str, key, get_length(key)) == 0)
-		{
-			current->next = current->next->next;
-			break ;
-		}
-		current = next;
-	}
+	return (free(key), 0);
 }
 
+//problems found when env is emtpy, 
 int	ft_export(t_job **lst, int fd)
 {
 	t_job	*current;
 
 	current = *lst;
 	if (!current->arg)
+	{
+		export_env(fd);
 		return (-1);
+	}
 	else if (current->arg == NULL)
 	{
 		export_error("");

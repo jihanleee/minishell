@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signal_heredoc.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/17 13:57:51 by solee2            #+#    #+#             */
+/*   Updated: 2023/08/17 14:14:19 by jihalee          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	sigaction_set_heredoc(void)
@@ -21,7 +33,7 @@ void	sig_handler_heredoc(int signum, siginfo_t *info, void *context)
 	(void)context;
 	if (signum == SIGINT)
 	{
-		clear_tokens(get_token_address(0), free);
+		clear_tokens(get_token_address(), free);
 		rl_clear_history();
 		clear_env();
 		exit(130);
@@ -30,6 +42,7 @@ void	sig_handler_heredoc(int signum, siginfo_t *info, void *context)
 		return ;
 	return ;
 }
+
 void	sig_handler_heredoc_parent(int signum, siginfo_t *info, void *context)
 {
 	int	stat;
