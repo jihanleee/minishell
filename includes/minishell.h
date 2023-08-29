@@ -6,7 +6,7 @@
 /*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 12:11:59 by solee2            #+#    #+#             */
-/*   Updated: 2023/08/23 16:34:38 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/08/29 15:08:59 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,13 +48,13 @@ typedef enum e_quote_type
 
 typedef enum e_token_type
 {
-	word,
-	in,
-	heredoc,
-	out,
-	append,
-	pipe_op,
-	amb_redir
+	word, //0
+	in, //1
+	heredoc, //2
+	out, //3
+	append, //4
+	pipe_op, //5
+	amb_redir //6
 }			t_ttype;
 
 typedef struct s_lexeme
