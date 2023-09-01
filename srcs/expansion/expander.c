@@ -6,7 +6,7 @@
 /*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 12:21:15 by solee2            #+#    #+#             */
-/*   Updated: 2023/08/17 22:55:07 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/08/29 17:11:54 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,13 +52,9 @@ void	split_expansions(t_lexeme *lexemes)
 	}
 	while (lexemes)
 	{
-		if ((lexemes->str[0] == '$' \
+		if (lexemes->str[0] == '$' \
 			&& lexemes->str[1] != '\0' \
-			&& lexemes->type != 1) || \
-			(lexemes->str[0] == '$' \
-			&& lexemes->str[1] == '\0' \
-			&& lexemes->type != 1 \
-			&& lexemes->next && !(is_blank(lexemes->next->str[0]))))
+			&& lexemes->type != 1)
 			lexemes->exp = TRUE;
 		lexemes = lexemes->next;
 	}

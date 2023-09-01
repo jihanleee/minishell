@@ -6,7 +6,7 @@
 /*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 12:22:32 by solee2            #+#    #+#             */
-/*   Updated: 2023/08/17 20:52:36 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/08/29 15:45:31 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ t_token	*new_expanded_token(int *lexeme, int start, int len)
 	if (len)
 		new->str = ft_calloc(sizeof(char), len + 1);
 	else
-		return (NULL);
+		return (free(new), NULL);
 	if (new->str == NULL)
 		return (free(new), NULL);
 	i = 0;
@@ -88,7 +88,7 @@ t_token	*iword_to_tokens(int *lexeme)
 		while (lexeme[start + len] && lexeme[start + len] != -1)
 			len++;
 		if (append_token(&result, new_expanded_token(lexeme, start, len)) == -1)
-			return (clear_tokens(&result, free), (free(lexeme), NULL));
+			return (result);
 		start += len;
 	}
 	return (result);
