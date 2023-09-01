@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hesong <hesong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 13:59:48 by solee2            #+#    #+#             */
-/*   Updated: 2023/08/18 14:41:35 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/09/01 15:47:30 by hesong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ int	ft_exit(t_job **lst, int fd)
 	if (current->next)
 		return (0);
 	if (arg_cnt == 0)
-		free_exit(g_exit_stat, current, fd); // the last exit status becomes the exit state of the shell
+		free_exit(g_exit_stat, current, fd);
 	if (arg_cnt == 1 && check_int(current->arg[0]) == 0)
 	{
 		exit_num = ft_atol(current->arg[0]) % 256;

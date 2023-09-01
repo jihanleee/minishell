@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hesong <hesong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 12:11:59 by solee2            #+#    #+#             */
-/*   Updated: 2023/08/23 16:34:38 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/09/01 15:40:43 by hesong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,7 +180,6 @@ void		execute_pipes(t_job *current);
 void		execute_jobs(t_job *jobs);
 
 /* exec_utils1.c */
-void		free_arrays(char **str);
 void		error_exit(char *str, int exit_status, t_job *job);
 char		**bin_path(t_job *job);
 char		*file_path(char *cmd, t_job *job);
@@ -192,6 +191,10 @@ char		**get_envp(void);
 char		**get_argv(t_job *jobs);
 int			redirect_fds(t_job *job);
 int			get_child_status(int stat);
+
+/* exec_free.c*/
+void		free_arrays(char **str);
+void		free_empty_cmd(char *cmd_path, t_job *job);
 
 /* --------------------signal--------------------*/
 /*signal.c*/

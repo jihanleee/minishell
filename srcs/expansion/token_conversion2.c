@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token_conversion2.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hesong <hesong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 12:22:43 by solee2            #+#    #+#             */
-/*   Updated: 2023/08/17 20:45:41 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/09/01 14:31:18 by hesong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ t_token	*token_to_etoken(t_token *old)
 		replace_params(lexemes);
 	iword = lexemes_to_int(lexemes, old->type);
 	result = iword_to_tokens(iword);
+	free(iword);
 	if (!is_allexp(lexemes) && !result)
 	{
 		result = (t_token *)ft_calloc(1, sizeof (t_token));
@@ -61,6 +62,5 @@ t_token	*token_to_etoken(t_token *old)
 	if (old->type == heredoc && quote_is_found(lexemes))
 		result->hereq = 1;
 	clear_lexemes(&lexemes, free);
-	free(iword);
 	return (result);
 }

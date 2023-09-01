@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_var.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hesong <hesong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 12:12:56 by solee2            #+#    #+#             */
-/*   Updated: 2023/08/21 01:01:11 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/09/01 15:47:49 by hesong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	init_surpressed_env(void)
 	}
 	add_to_env("SHLVL=1");
 }
-//beware of the functions that manipulate first node. test required
+
 void	init_env_var(char **envp)
 {
 	int		i;

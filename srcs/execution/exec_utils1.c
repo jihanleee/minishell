@@ -3,24 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils1.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hesong <hesong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 12:14:55 by solee2            #+#    #+#             */
-/*   Updated: 2023/08/17 19:58:54 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/09/01 15:47:10 by hesong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	free_arrays(char **str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-		free(str[i++]);
-	free(str);
-}
 
 void	error_exit(char *str, int exit_status, t_job *job)
 {
@@ -112,7 +102,8 @@ char	*find_cmd_path(char *cmd, t_job *job)
 		withcmd = 0;
 	}
 	free_arrays(path);
-	if (!withcmd || cmd[0] == '\0')
+	free_empty_cmd(withcmd, job);
+	if (!withcmd)
 		error_exit((ft_putstr_fd(cmd, 2), ": command not found\n"), 127, job);
 	return (withcmd);
 }

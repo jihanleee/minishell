@@ -30,6 +30,7 @@ SRCS		=	./srcs/parsing/parser.c \
 				./srcs/expansion/token_conversion2.c \
 				./srcs/execution/exec_utils1.c \
 				./srcs/execution/exec_utils2.c \
+				./srcs/execution/exec_free.c \
 				./srcs/execution/execution.c \
 				./srcs/tokenization/create_tokens.c \
 				./srcs/tokenization/token_substr_len.c \
@@ -54,7 +55,7 @@ OBJS		= ${SRCS:.c=.o}
 
 all: ${NAME}
 
-%.o: %.c 
+%.o: %.c
 	${CC} ${CFLAGS} ${INCLUDES} -c $< -o $@
 
 ${NAME}: ${OBJS} ${LIBFT}

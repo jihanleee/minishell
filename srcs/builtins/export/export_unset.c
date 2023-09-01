@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export_unset.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*   By: hesong <hesong@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/18 09:58:12 by jihalee           #+#    #+#             */
-/*   Updated: 2023/08/23 16:34:08 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/09/01 15:47:41 by hesong           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	pop_env_node(t_env **env, t_env **current, t_env **prev)
 {
-	if (*prev == 0)//fixed a typo
+	if (*prev == 0)
 	{
 		(*env) = (*current)->next;
 		free((free((*current)->str), (*current)));
