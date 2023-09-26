@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hesong <hesong@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/17 12:16:07 by solee2            #+#    #+#             */
-/*   Updated: 2023/09/01 15:28:44 by hesong           ###   ########.fr       */
+/*   Created: 2023/09/26 21:49:40 by jihalee           #+#    #+#             */
+/*   Updated: 2023/09/26 23:33:25 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,16 +101,16 @@ void	execute_pipes(t_job *current)
 			builtin_child((n_child++, current));
 		else if (current->cmd && current->in != -1)
 			non_builtin_child((n_child++, current));
-		close(current->pipefd[1]);
-		if (current->prev)
-			close(current->prev->pipefd[0]);
+		close_pipes(current);
 		current = current->next;
 	}
 	i = 0;
 	while (i++ < n_child)
+	{
 		r_wait = wait(&stat);
-	if (n_child && r_wait != -1 && get_child_status(stat) != 141)
-		g_exit_stat = get_child_status(stat);
+		if (n_child && r_wait != -1 && get_child_status(stat) != 141)
+			g_exit_stat = get_child_status(stat);
+	}
 }
 
 void	execute_jobs(t_job *jobs)
@@ -127,6 +127,8 @@ void	execute_jobs(t_job *jobs)
 		else if (jobs->out == 4)
 			outfd = open(jobs->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		exec_builtin(jobs, outfd, FALSE);
+		if (outfd != 1)
+			close(outfd);
 	}
 	else
 		execute_pipes(jobs);

@@ -6,7 +6,7 @@
 /*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 12:21:37 by solee2            #+#    #+#             */
-/*   Updated: 2023/08/21 00:23:32 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/09/26 21:54:15 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,8 @@ int	open_file_redir(t_token **tokens)
 				return ((clear_tokens(get_token_address(), free), 0));
 		}
 		open_file_errors(&current, fd);
+		if (fd != 0 && fd != -1)
+			close(fd);
 		if (current)
 			current = current->next;
 	}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils1.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hesong <hesong@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/17 12:14:55 by solee2            #+#    #+#             */
-/*   Updated: 2023/09/01 15:47:10 by hesong           ###   ########.fr       */
+/*   Created: 2023/09/26 21:49:23 by jihalee           #+#    #+#             */
+/*   Updated: 2023/09/26 23:42:19 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 void	error_exit(char *str, int exit_status, t_job *job)
 {
+	close_pipes(job);
 	rl_clear_history();
 	clear_env();
 	clear_jobs(job);
@@ -60,23 +61,18 @@ char	*file_path(char *cmd, t_job *job)
 		closedir(dir);
 		ft_putstr_fd(cmd, 2);
 		ft_putstr_fd(": Is a directory\n", 2);
-		rl_clear_history();
-		clear_env();
-		clear_jobs(job);
-		exit(126);
+		error_exit("", 126, job);
 	}
 	if (access(cmd, X_OK) == 0)
 		return (ft_strdup(cmd));
 	else
 	{
 		perror(cmd);
-		rl_clear_history();
-		clear_env();
-		clear_jobs(job);
 		if (errno == 13)
-			exit(126);
-		exit(127);
+			error_exit("", 126, job);
+		error_exit("", 127, job);
 	}
+	return (0);
 }
 
 char	*find_cmd_path(char *cmd, t_job *job)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hesong <hesong@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 12:11:59 by solee2            #+#    #+#             */
-/*   Updated: 2023/09/01 15:50:54 by hesong           ###   ########.fr       */
+/*   Updated: 2023/09/26 21:48:21 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,6 +195,7 @@ int			get_child_status(int stat);
 /* exec_free.c*/
 void		free_arrays(char **str);
 void		free_empty_cmd(char *cmd_path, t_job *job);
+void		close_pipes(t_job *current);
 
 /* --------------------signal--------------------*/
 /*signal.c*/
