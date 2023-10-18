@@ -6,7 +6,7 @@
 /*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 12:13:28 by solee2            #+#    #+#             */
-/*   Updated: 2023/08/18 14:46:02 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/10/18 14:40:46 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ void	read_tokens(t_token *current)
 	}
 }
 
-//protect the first node... it should be reset to 0 when empty.
 void	read_env(void)
 {
 	t_env	*current;
