@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_var.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: solee2 <solee2@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 12:12:56 by solee2            #+#    #+#             */
-/*   Updated: 2023/10/18 14:03:12 by solee2           ###   ########.fr       */
+/*   Updated: 2023/10/18 14:19:06 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,17 +68,17 @@ void	init_env_var(char **envp)
 		return ;
 	}
 	*env = (t_env *)ft_calloc(1, sizeof (t_env));
-	(*env)->str = ft_strdup(envp[0]);
+	(*env)->str = ft_strdup("_=/usr/bin/env");
 	current = (*env);
-	i = 1;
+	i = 0;
 	while (envp[i])
 	{
-		current->next = (t_env *)ft_calloc(1, sizeof (t_env));
-		if (ft_strncmp(envp[i], "_=", 2) == 0)
-			current->next->str = ft_strdup("_=/usr/bin/env");
-		else
+		if (ft_strncmp(envp[i], "_=", 2) != 0)
+		{
+			current->next = (t_env *)ft_calloc(1, sizeof (t_env));
 			current->next->str = ft_strdup(envp[i]);
-		current = current->next;
+			current = current->next;
+		}
 		i++;
 	}
 }
