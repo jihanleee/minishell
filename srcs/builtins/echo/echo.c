@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*   By: solee2 <solee2@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 13:59:25 by solee2            #+#    #+#             */
-/*   Updated: 2023/08/23 16:34:21 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/10/18 14:57:01 by solee2           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,6 @@ int	print_args(t_job *current, int i, int fd)
 		j = 0;
 		while (current->arg[i][j])
 		{
-			if (current->arg[i][j] == '\\')
-				j++;
 			if (current->arg[i][j])
 				write(fd, &current->arg[i][j], 1);
 			j++;
