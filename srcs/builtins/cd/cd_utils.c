@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd_utils.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
+/*   By: solee2 <solee2@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/17 13:59:08 by solee2            #+#    #+#             */
-/*   Updated: 2023/08/23 17:19:34 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/10/19 11:14:38 by solee2           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,16 @@ void	cd_to_root(void)
 	char	*line;
 
 	cwd = getcwd(NULL, 0);
-	cd_unset("OLDPWD");
-	line = ft_strjoin("OLDPWD=", cwd);
-	add_to_env(line);
-	free(cwd);
-	free(line);
+	if (!cwd)
+		cwd = find_param("PWD");
+	if (cwd)
+	{
+		cd_unset("OLDPWD");
+		line = ft_strjoin("OLDPWD=", cwd);
+		free(cwd);
+		add_to_env(line);
+		free(line);
+	}
 	chdir("/");
 	g_exit_stat = 0;
 	cd_unset("PWD");
