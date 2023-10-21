@@ -6,7 +6,7 @@
 /*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:49:40 by jihalee           #+#    #+#             */
-/*   Updated: 2023/09/26 23:33:25 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/10/21 15:13:48 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,9 +97,9 @@ void	execute_pipes(t_job *current)
 	{
 		if (pipe(current->pipefd) < 0)
 			perror("pipe");
-		if (current->out == -1 || (current->cmd && check_builtin(current->cmd)))
+		if (current->in != -1 && (check_builtin(current->cmd)))
 			builtin_child((n_child++, current));
-		else if (current->cmd && current->in != -1)
+		else if (current->in != -1)
 			non_builtin_child((n_child++, current));
 		close_pipes(current);
 		current = current->next;
