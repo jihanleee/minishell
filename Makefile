@@ -2,7 +2,7 @@
 NAME		= minishell
 LIBFT		= ./includes/libft/libft.a
 
-CC			= gcc
+CC			= cc
 CFLAGS		= -Wall -Wextra -g3 -Werror
 RM			= rm -f
 
