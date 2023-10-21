@@ -6,7 +6,7 @@
 /*   By: jihalee <jihalee@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 21:49:33 by jihalee           #+#    #+#             */
-/*   Updated: 2023/09/26 21:49:36 by jihalee          ###   ########.fr       */
+/*   Updated: 2023/10/21 13:53:33 by jihalee          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ int	redirect_fds(t_job *job)
 		outfd = open(job->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	else if (job->next && job->out == 0)
 		outfd = job->pipefd[1];
-	else if (!job->next)
+	else
 		outfd = 1;
 	if (outfd == -1 || infd == -1)
 		error_exit("", 1, job);
